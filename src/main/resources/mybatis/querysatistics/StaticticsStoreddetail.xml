@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaticticsStoreddetailMapper">
+	<select id="selectStoreddetail" resultType="pd">
+	   SELECT 
+			a.STORE_ID,a.MONEY,b.CREATE_TIME,c.STORE_NAME,SUM(a.MONEY) moneyCount,b.STORED_MONEY,
+			COUNT(3) storedCount,a.STORED_CATEGORY_ID
+		FROM 
+			tb_stored_detail a LEFT JOIN tb_stored_category b ON a.STORED_CATEGORY_ID=b.STOREDCATEGORY_ID 
+		    LEFT JOIN tb_store c on a.STORE_ID=c.STORE_ID
+		WHERE a.TYPE in(0,1)
+			<if test="firstDate!=null and firstDate !=''" >
+			and (a.CREATE_TIME &gt; #{firstDate} or a.CREATE_TIME=#{firstDate})
+			</if>
+			<if test="lastDate!=null and lastDate !=''">
+				and a.CREATE_TIME &lt; date_add(#{lastDate},interval 1 day)
+			</if>
+		GROUP BY 
+			a.STORE_ID
+		
+	</select>
+	
+	<select id="selectStoredCategory" resultType = "pd">
+		SELECT 
+			a.STORED_CATEGORY_ID,b.STORED_MONEY,SUM(a.MONEY) moneySum
+		FROM 
+			tb_stored_detail a LEFT JOIN tb_stored_category b ON a.STORED_CATEGORY_ID=b.STOREDCATEGORY_ID 
+		    LEFT JOIN tb_store c on a.STORE_ID=c.STORE_ID
+		WHERE 1=1
+		   <if test="STORE_ID==-1">
+			  AND a.STORE_ID IS NULL
+			</if>
+		  
+		    <if test="STORE_ID!=-1 and STORE_ID!=null and STORE_ID !=''">
+			  AND a.STORE_ID=#{STORE_ID} 
+			</if>
+			
+			AND a.TYPE in(0,1)
+		GROUP BY 
+			a.STORED_CATEGORY_ID
+	</select>
+		
+	<select id="countCategory" resultType = "String">
+		select DISTINCT(STORED_CATEGORY_ID)
+		from tb_stored_detail
+		
+	</select>
+</mapper>	

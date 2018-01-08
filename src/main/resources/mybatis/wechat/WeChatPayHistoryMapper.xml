@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatPayHistoryMapper">
+	<!-- 插入用户支付历史 -->
+	<insert id="savePayHistory" parameterType="WeChatPayHistory">
+		<selectKey keyProperty="payHistoryId" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+		<if test="discountId != null">
+			TB_PAY_HISTORY(OPENID,PARENT_ORDER_ID,CHILD_ORDER_ID,STATUS,PAY_MONEY,PAY_TIME,PAY_METHOD,DISCOUNT_ID)
+			values(#{openId},#{parentOrderId},#{childOrderId},#{status},#{payMoney},#{payTime},#{payMethod},#{discountId})
+		</if>
+		<if test="discountId == null">
+			TB_PAY_HISTORY(OPENID,PARENT_ORDER_ID,CHILD_ORDER_ID,STATUS,PAY_MONEY,PAY_TIME,PAY_METHOD)
+			values(#{openId},#{parentOrderId},#{childOrderId},#{status},#{payMoney},#{payTime},#{payMethod})
+		</if>
+	</insert>
+	
+	<!-- 更新状态 -->
+	<update id="updatePayHistoryStatus" parameterType="WeChatPayHistory">
+		update
+			TB_PAY_HISTORY payHistory
+		set
+			payHistory.STATUS = #{status}
+		where
+			payHistory.PAY_HISTORY_ID = #{payHistoryId}
+	</update>
+	
+	<!-- 根据订单号查询支付历史 -->
+	<select id="getPayHistoryByOrderId" parameterType="java.lang.String" resultType="WeChatPayHistory">
+		select
+			PAY_HISTORY_ID as payHistoryId,
+			OPENID as openId,
+			PARENT_ORDER_ID as parentOrderId,
+			CHILD_ORDER_ID as childOrderId,
+			STATUS as status,
+			PAY_MONEY as payMoney,
+			PAY_TIME as payTime,
+			PAY_METHOD as payMethod,
+			DISCOUNT_ID as discountId
+		from
+			TB_PAY_HISTORY payHistory
+		where
+			payHistory.PARENT_ORDER_ID = #{outTradeNo}
+	</select>
+	
+	<!-- 根据主键查询支付历史 -->
+	<select id="getPayHistoryByPayHistoryId" parameterType="java.lang.Integer" resultType="WeChatPayHistory">
+		select
+			PAY_HISTORY_ID as payHistoryId,
+			OPENID as openId,
+			PARENT_ORDER_ID as parentOrderId,
+			CHILD_ORDER_ID as childOrderId,
+			STATUS as status,
+			PAY_MONEY as payMoney,
+			PAY_TIME as payTime,
+			PAY_METHOD as payMethod,
+			DISCOUNT_ID as discountId
+		from
+			TB_PAY_HISTORY payHistory
+		where
+			payHistory.PAY_HISTORY_ID = #{payHistoryId}
+	</select>
+</mapper>

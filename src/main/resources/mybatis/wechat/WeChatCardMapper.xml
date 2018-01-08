@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatCardMapper">
+	<!--充值的时候再增加记录，查询的时候没有记录就显示0 -->
+	<select id="getCardMoney" parameterType="Integer" resultType="pd">
+		select REMAIN_MONEY as remainMoney,REMAIN_POINTS as remainPoints
+		from
+		TB_CUSTOM_STORED
+		where
+		STATUS=0
+		and UID=#{uId}
+	</select>
+
+	<select id="getCardTypes" resultType="pd">
+		select
+		STOREDCATEGORY_ID as
+		storedCategoryId,STORED_MONEY as storedMoney,RETURN_POINTS as
+		returnPoints,REMARK as remark
+		from
+		TB_STORED_CATEGORY
+		where
+		STATUS=0
+		ORDER BY storedMoney
+		DESC
+	</select>
+
+	<select id="getRechargeDetailsByuId" resultType="pd"
+		parameterType="Integer">
+		select
+		b.STOREDCATEGORY_ID as
+		storedCategoryId,b.STORED_MONEY as
+		storedMoney,b.RETURN_POINTS as
+		returnPoints,a.WECHATPAY_MONEY as
+		weChatPayMoney,a.ALIPAY_MONEY as
+		aliPayMoney,a.BANKPAY_MONEY as
+		bankPayMoney,a.CASHPAY_MONEY as
+		cashPayMoney,a.CREATE_TIME as creatTime,
+		a.TYPE as type,
+		a.MONEY as money,
+		a.POINTS as points
+		FROM
+		TB_STORED_DETAIL
+		a LEFT JOIN TB_STORED_CATEGORY b ON a.STORED_CATEGORY_ID=b.STOREDCATEGORY_ID
+		WHERE
+		a.UID=#{uId} AND a.STATUS=0
+		ORDER BY a.CREATE_TIME DESC
+	</select>
+	<select id="getCardTypeById" parameterType="Integer" resultType="pd">
+		SELECT
+		STOREDCATEGORY_ID AS
+		storedCategoryId,STORED_MONEY AS
+		storedMoney,RETURN_POINTS AS
+		returnPoints
+		FROM
+		TB_STORED_CATEGORY
+		WHERE
+		STATUS=0
+		AND STOREDCATEGORY_ID=#{STOREDCATEGORY_ID}
+	</select>
+	<insert id="insertStoredDetail" parameterType="pd">
+		INSERT INTO
+		TB_STORED_DETAIL(
+		STOREDDETAIL_ID,
+		UID,
+		STORED_CATEGORY_ID,
+		CREATE_TIME,
+		WECHATPAY_MONEY,
+		STATUS,
+		TYPE,
+		MONEY,
+		POINTS
+		)VALUES(
+		#{STOREDDETAIL_ID},
+		#{UID},
+		#{STORED_CATEGORY_ID},
+		#{CREATE_TIME},
+		#{WECHATPAY_MONEY},
+		#{STATUS},
+		#{TYPE},
+		#{MONEY},
+		#{POINTS}
+		)
+	</insert>
+	<update id="updateStoredDetailByOutTradeNo" parameterType="String">
+		UPDATE
+		TB_STORED_DETAIL
+		SET
+		STATUS=0
+		WHERE
+		STOREDDETAIL_ID=#{out_trade_no}
+	</update>
+
+	<update id="updateStoredByDetailOutTradeNo" parameterType="pd">
+		UPDATE
+		TB_CUSTOM_STORED
+		SET
+		REMAIN_MONEY=REMAIN_MONEY+(
+		SELECT
+		STORED_MONEY
+		FROM
+		TB_STORED_CATEGORY
+		WHERE
+		STATUS=0
+		AND STOREDCATEGORY_ID=(
+		SELECT
+		STORED_CATEGORY_ID
+		FROM
+		TB_STORED_DETAIL
+		WHERE
+		STATUS =0 AND
+		STOREDDETAIL_ID=#{outTradeNo}
+		)
+		),
+		REMAIN_POINTS=REMAIN_POINTS+(
+		SELECT
+		RETURN_POINTS
+		FROM
+		TB_STORED_CATEGORY
+		WHERE
+		STATUS=0
+		AND
+		STOREDCATEGORY_ID=(
+		SELECT
+		STORED_CATEGORY_ID
+		FROM
+		TB_STORED_DETAIL
+		WHERE
+		STATUS =0 AND STOREDDETAIL_ID=#{outTradeNo}
+		)
+		)
+		WHERE
+		UID=#{uId}
+
+	</update>
+	<select id="selectStoredDetailByOutTradeNo" parameterType="String"
+		resultType="WeChatStoredDetail">
+		SELECT
+		STOREDDETAIL_ID as storedDetailId,
+		UID as uId,
+		STORED_CATEGORY_ID as storedCategoryId,
+		STORE_ID as storeId,
+		STAFF_ID as
+		staffId,
+		CREATE_TIME as createTime,
+		WECHATPAY_MONEY as weChatPayMoney,
+		ALIPAY_MONEY as aliPayMoney,
+		BANKPAY_MONEY as bankPayMoney,
+		CASHPAY_MONEY
+		as cashPayMoney,
+		REMARK as remark,
+		STATUS as status
+		FROM
+		TB_STORED_DETAIL
+		WHERE
+		STOREDDETAIL_ID=#{out_trade_no}
+	</select>
+	<!-- 插入数据 -->
+	<insert id="createCard" parameterType="WeChatStored">
+		<selectKey keyProperty="cardId" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into
+		TB_CUSTOM_STORED
+		(
+		PHONE,UID,REMAIN_MONEY,REMAIN_POINTS,NAME,STATUS
+		)values(
+		#{phone},#{uId},#{remainMoney},#{remainPoints},#{name},#{status}
+		)
+	</insert>
+	<select id="selectStoredByuId" parameterType="Integer"
+		resultType="WeChatStored">
+		SELECT
+		PHONE as phone,
+		UID as uId,
+		CARD_ID as cardId,
+		REMAIN_MONEY as remainMoney,
+		REMAIN_POINTS as remainPoints,
+		NAME as name,
+		STATUS as status
+		FROM
+		TB_CUSTOM_STORED
+		WHERE
+		STATUS =0 AND
+		UID=#{storedDetailuId}
+
+	</select>
+</mapper>

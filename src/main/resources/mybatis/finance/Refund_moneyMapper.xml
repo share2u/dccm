@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Refund_moneyMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_REFUND_MONEY
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,	
+		REFUND_PRESTORE_MONEY,	
+		REFUND_REMAIN_MONEY,	
+		TIME,	
+		SERVICE_ID,	
+		REFUND_MONEY_ID,
+		SHOUXUFEI
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{REFUND_PRESTORE_MONEY},	
+		#{REFUND_REMAIN_MONEY},	
+		#{TIME},	
+		#{SERVICE_ID},	
+		#{REFUND_MONEY_ID},
+		#{SHOUXUFEI}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REFUND_MONEY_ID = #{REFUND_MONEY_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			UID = #{UID},
+			REFUND_PRESTORE_MONEY = #{REFUND_PRESTORE_MONEY},
+			REFUND_REMAIN_MONEY = #{REFUND_REMAIN_MONEY},
+			TIME = #{TIME},
+			SERVICE_ID = #{SERVICE_ID},
+		REFUND_MONEY_ID = REFUND_MONEY_ID
+		where 
+		REFUND_MONEY_ID = #{REFUND_MONEY_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		a.name,
+		a.username,	
+		a.phone,		
+		a.uid,
+		b.REMAIN_MONEY,
+		b.REMAIN_POINTS
+		from 
+		tab_user a,
+		tb_custom_stored b
+		
+		where a.uid = b.UID
+		AND
+		a.uid = #{REFUND_MONEY_ID}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findMoneyById" parameterType="pd" resultType="pd">
+		select 
+		a.name,
+		a.username,	
+		a.phone,		
+		a.uid,
+		b.SUM_MONEY
+		from 
+		tab_user a,
+		tb_prestore b
+		
+		where a.uid = b.UID
+		AND
+		a.uid = #{REFUND_MONEY_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				()
+				
+		</if>
+		order by TIME desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REFUND_MONEY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- listall  用户管理——查询用户余额信息  -->
+	<select id="memberRefundlistPage" parameterType="page" resultType="pd">
+		select 
+		a.name,
+		a.username,	
+		a.phone,		
+		a.uid,
+		b.SUM_MONEY
+		from 
+		tab_user a,
+		tb_prestore b
+		
+		where a.uid = b.UID
+		and 
+		b.SUM_MONEY >0
+<!-- 	
+		<if test="pd.SOURCE!=null and pd.SOURCE !=''">
+			and a.source=#{pd.SOURCE}	
+		</if> 
+		<if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and a.attention_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if>-->
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				 (a.username LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 a.name LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%'))		 
+		</if>
+		order by a.attention_time desc
+	</select>
+	
+	
+	<!-- listall  用户管理——查询用户余额信息  -->
+	<select id="memberRefundPrestorelistPage" parameterType="page" resultType="pd">
+		select 
+		a.name,
+		a.username,	
+		a.phone,		
+		a.uid,
+		b.REMAIN_MONEY,
+		b.REMAIN_POINTS
+		from 
+		tab_user a,
+		tb_custom_stored b
+		
+		where a.uid = b.UID
+		AND b.remain_money>0
+<!-- 	
+		<if test="pd.SOURCE!=null and pd.SOURCE !=''">
+			and a.source=#{pd.SOURCE}	
+		</if> 
+		<if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and a.attention_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if>-->
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				 (a.username LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 a.name LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%'))		 
+		</if>
+		order by a.attention_time desc
+	</select>
+	
+	<!-- 事务管理财务退余额开始 -->
+	<!-- 新增退款表-->
+	<insert id="refundMoneySave" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+		
+	<!-- 新增订单表-->
+	<insert id="orderSave" parameterType="pd">
+		insert into 
+			TB_ORDER
+		(
+			ORDER_ID,
+			UID,
+			SERVICECOST_ID,
+			ORDER_STATUS,
+			ORDER_MONEY,
+			PAY_MONEY,
+			SERVICE_STAFF_ID,
+			CREATE_TIME,
+			URL,
+			STAFF_ID,
+			STORE_ID,
+			WECHAT_NAME,
+			WECHAT_PHONE,
+			DISCOUNT_ID,
+			PROPORTION
+		) values (
+			#{ORDER_ID},
+			#{UID},
+			#{SERVICECOST_ID},
+			#{ORDER_STATUS},
+			#{ORDER_MONEY},
+			#{PAY_MONEY},
+			#{SERVICE_ID},
+			#{CREATE_TIME},
+			#{URL},
+			#{STAFF_ID},
+			#{STORE_ID},
+			#{WECHAT_NAME},
+			#{WECHAT_PHONE},
+			#{DISCOUNT_ID},
+			#{PROPORTION}
+		)
+	</insert>
+	
+	<!-- 删除余额表-->
+	<delete id="editPrestore" parameterType="pd">
+		update
+			TB_PRESTORE
+		set 
+			SUM_MONEY = 0.0
+			
+		where 
+			UID = #{UID}
+	</delete>
+	
+	<!-- 删除余额明细表-->
+	<delete id="prestoreMxDelete" parameterType="pd">
+		delete from
+			TB_PRESTOREMX
+		where 
+			UID = #{UID}
+	</delete>
+	<!-- 插入余额明细表-->
+	<insert id="prestoreMxInsert" parameterType="pd">
+		insert into
+		TB_PRESTOREMX
+		(
+		UID,
+		PHONE,
+		USERNAME,
+		REMITNO,
+		BANK,
+		ADDRESS,
+		PRESTOREMONEY,
+		STAFF_ID,
+		CREATE_TIME,
+		TYPE,
+		PRESTOREMX_ID,
+		PRESTORE_ID
+		) values (
+		#{UID},
+		#{PHONE},
+		#{USERNAME},
+		#{REMITNO},
+		#{BANK},
+		#{ADDRESS},
+		#{PRESTOREMONEY},
+		#{STAFF_ID},
+		#{CREATE_TIME},
+		#{TYPE},
+		#{PRESTOREMX_ID},
+		#{PRESTORE_ID}
+		)
+	</insert>
+	
+	<!-- 插入储值卡明细表-->
+	<insert id="storedDetailInsert" parameterType="pd">
+		insert into
+		TB_STORED_DETAIL
+		(
+		STOREDDETAIL_ID,
+		UID,
+		STAFF_ID,
+		CREATE_TIME,
+		MONEY,
+		TYPE,
+		POINTS,
+		STATUS,
+		STORE_ID
+		) values (
+		#{STOREDDETAIL_ID},
+		#{UID},
+		#{STAFF_ID},
+		#{CREATE_TIME},
+		#{MONEY},
+		#{TYPE},
+		#{POINTS},
+		#{STATUS},
+		#{STORE_ID}
+		)
+	</insert>
+	
+		<!-- 删除储值卡表-->
+	<delete id="customStoredDelete" parameterType="pd">
+		delete from
+			TB_CUSTOM_STORED
+		where 
+			UID = #{UID}
+	</delete>
+	
+	<!-- 修改储值卡表 -->
+	<update id="editCustomStored" parameterType="pd">
+		update
+		TB_CUSTOM_STORED
+		set 
+			REMAIN_MONEY = 0.0,
+			REMAIN_POINTS = 0.0
+			
+		where 
+			UID = #{UID}
+	</update>
+	
+	<!-- 删除储值卡明细表-->
+	<delete id="storedDetailDelete" parameterType="pd">
+		delete from
+			TB_STORED_DETAIL
+		where 
+			UID = #{UID}
+	</delete>
+		<!-- 事务管理财务退余额结束 -->
+		
+		<!-- 插入储值卡明细表-->
+	<insert id="saveProcedureTime" parameterType="pd">
+		insert into
+		tb_transaction_process_statistics
+		(
+		transaction_name,
+		transaction_operation,
+		begin_time,
+		end_time,
+		operate_time,
+		comment
+		) values (
+		#{transaction_name},
+		#{transaction_operation},
+		#{begin_time},
+		#{end_time},
+		#{operate_time},
+		#{comment}
+		)
+	</insert>
+	
+</mapper>

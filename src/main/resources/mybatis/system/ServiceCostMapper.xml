@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServiceCostMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		service_cost
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		STORE_ID,	
+		PID,	
+		STAFF_ID,	
+		EFFECTIVE_DATE,	
+		PRICE,	
+		ISFIRST,	
+		STATUS,	
+		SERVICECOST_ID,
+		CATEGORY_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{STORE_ID},	
+		#{PID},	
+		#{STAFF_ID},	
+		#{EFFECTIVE_DATE},	
+		#{PRICE},	
+		#{ISFIRST},	
+		#{STATUS},	
+		#{SERVICECOST_ID},
+		#{CATEGORY_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into service_cost(STORE_ID,PID,STAFF_ID,	EFFECTIVE_DATE,PRICE,ISFIRST,STATUS,CATEGORY_ID)
+		  values(#{STORE_ID},#{PID},#{STAFF_ID},#{EFFECTIVE_DATE},#{PRICE},	#{ISFIRST},	#{STATUS},#{CATEGORY_ID})
+	
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SERVICECOST_ID = #{SERVICECOST_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			STORE_ID = #{STORE_ID},
+			PID = #{PID},
+			STAFF_ID = #{STAFF_ID},
+			EFFECTIVE_DATE = #{EFFECTIVE_DATE},
+			PRICE = #{PRICE},
+			ISFIRST = #{ISFIRST},
+			STATUS = #{STATUS},
+		SERVICECOST_ID = SERVICECOST_ID
+		where 
+		SERVICECOST_ID = #{SERVICECOST_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select a.*, 
+			   b.PNAME,
+			   c.STAFF_NAME,c.STAFF_ID 
+		from service_cost a left join service_project b 
+		on a.PID=b.PROJECT_ID LEFT JOIN tb_staff c 
+		on a.STAFF_ID=c.STAFF_ID
+		where 
+			SERVICECOST_ID = #{SERVICECOST_ID}
+	</select>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById2" parameterType="pd" resultType="pd">
+		select * 
+		from service_cost 
+		where 
+			SERVICECOST_ID = #{SERVICECOST_ID}
+	</select>
+	
+	<!-- 通过staff_id获取数据 -->
+	<select id="findServiceAndCostByStaff_id" parameterType="pd" resultType="pd">
+		select 
+		a.STORE_ID,	
+		a.PID,	
+		a.STAFF_ID,	
+		a.EFFECTIVE_DATE,	
+		a.PRICE,	
+		a.ISFIRST,	
+		a.STATUS,	
+		a.SERVICECOST_ID,
+		b.PNAME
+		from 
+		service_cost a,service_project b
+		where 
+			STAFF_ID = #{STAFF_ID}
+			<!--and
+			STORE_ID = #{STORE_ID}-->
+			and
+			a.PID=b.PROJECT_ID
+			and a.STATUS='1'
+	</select>
+	
+	<!-- 通过pid获取数据 -->
+	<select id="queryPriceByPID" parameterType="pd" resultType="pd">
+		select 
+		STORE_ID,	
+		PID,	
+		STAFF_ID,	
+		EFFECTIVE_DATE,	
+		PRICE,	
+		ISFIRST,	
+		STATUS,	
+		SERVICECOST_ID
+		
+		from 
+		service_cost
+		where 
+			PID = #{PID}
+			
+	</select>
+	
+	<!-- 通过pid和staff_id获取服务项目的价格 -->
+	<select id="queryPriceByPIDAndStaff" parameterType="pd" resultType="pd">
+		select 
+		STORE_ID,	
+		PID,	
+		STAFF_ID,	
+		EFFECTIVE_DATE,	
+		PRICE,	
+		ISFIRST,	
+		STATUS,	
+		SERVICECOST_ID
+		
+		from 
+		service_cost
+		where 
+			PID = #{PID}
+			and
+			STAFF_ID = #{STAFF_ID}
+			
+	</select>
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+			<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		STORE_ID = #{pd.STORE_ID}
+		</if>
+	</select>
+	
+	<!-- 自己写的 查询门店、项目、收费表、医生、项目分类 综合列表 -->
+	<select id="listservicecostlistPage" parameterType="page" resultType="pd">
+		select a.*, 
+			   b.PNAME,
+			   c.STORE_NAME,
+			   d.STAFF_NAME 
+		from service_cost a ,service_project b,tb_store c,tb_staff d 
+		where a.PID=b.PROJECT_ID 
+		and a.STORE_ID=c.STORE_ID  
+		and a.STAFF_ID=d.STAFF_ID
+	<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+		and
+
+		(
+				 b.PNAME LIKE CONCAT('%', #{pd.keywords},'%')
+
+				   or
+				 d.STAFF_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords},'%'))
+				 
+			)	
+		</if>
+		<if test="pd.STATUS!= null and pd.STATUS != ''">
+			and a.STATUS = #{pd.STATUS}
+		</if>
+		<if test="pd.ISFIRST!= null and pd.ISFIRST != ''">
+			and a.ISFIRST = #{pd.ISFIRST}
+		</if>
+	<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		and
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+		and
+		a.STORE_ID = #{pd.STOREID}
+		</if>
+		
+	</select>
+	
+	<!-- 根据该记录的STORE_ID、STAFF_ID、PID查出之前生效的相同的项目 -->
+	<select id="queryProjectByThreeParameters" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where STATUS='1'
+		and
+			STORE_ID=#{STORE_ID}
+		and 
+			STAFF_ID=#{STAFF_ID}
+		and 
+			PID=#{PID}
+	</select>
+	
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listValidAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where STATUS='0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SERVICECOST_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!--批量更新-->
+	<update id="batchUpdateStatusToInvalid" parameterType="pd">
+		update 
+			service_cost 
+		set
+			STATUS='0'
+		where SERVICECOST_ID =#{SERVICECOST_ID}
+	</update>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

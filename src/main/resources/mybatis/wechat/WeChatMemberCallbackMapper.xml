@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 客户回电 -->
+<mapper namespace="WeChatMemberCallbackMapper">
+	<!-- 查询当前(今天)门店未回复的所有记录 -->
+	<select id="getAllNonresponseMemberCallback" parameterType="java.lang.String" resultType="WeChatMemberCallback">
+		select
+			memberCallBack.MEMBERCALLBACK_ID as memberCallbackId,
+			memberCallBack.UID as uId,
+			memberCallBack.`NAME` as name,
+			memberCallBack.STORE_ID as storeId,
+			memberCallBack.STAFF_ID as staffId,
+			memberCallBack.PHONE as phone,
+			memberCallBack.`STATUS` as status,
+			memberCallBack.CREATE_TIME as createTime
+		from 
+			TB_MEMBERCALLBACK memberCallBack
+		where
+			date_format(memberCallBack.CREATE_TIME,'%Y-%c-%d') = date_format(now(),'%Y-%c-%d')
+			and
+			memberCallBack.STORE_ID = #{storeId}
+			and
+			memberCallBack.`STATUS` = '0';
+	</select>
+</mapper>

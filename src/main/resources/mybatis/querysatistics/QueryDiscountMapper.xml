@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QueryDiscountMapper">
+	<select id="selectUserByUId" resultType="WeChatUser" >
+		select UID uId,USERNAME userName,Name name,PHONE phone,CITY city from tab_user where uId =#{uId}
+	</select>
+	<select id="selectDiscountByDiscountId" resultType="Discount">
+		select DISCOUNT_ID,DISCOUNT_NAME from tb_discount where DISCOUNT_ID=#{discountId}
+	</select>
+	<select id="selectStaffById" resultType="Staff">
+		select STAFF_ID,STAFF_NAME from tb_staff where STAFF_ID=#{staffId}
+	</select>
+	<select id="selectDiscountGroupByGroupId" resultType="DiscountGroup">
+		select DISTINCT GROUP_ID,GROUP_NAME from tb_discount_group where group_id=#{groupId}
+	</select>
+
+	<resultMap type="QueryUserDiscount" id="queryDiscountMapper">
+		<id property="id" column="id"/>
+		<result property="isScan" column="isScan"/>
+		<result property="isUsed" column="isUsed"/>
+		<result property="createTime" column="createTime"/>
+		<result property="startTime" column="startTime"/>
+		<result property="endTime" column="endTime"/>
+		<association property="user" column="uId" javaType="WeChatUser" select="selectUserByUId"/>	
+		<association property="discount" column="discountId" javaType="Discount" select="selectDiscountByDiscountId"/>	
+		<association property="staff" column="staffId" javaType="Staff" select="selectStaffById"/>	
+		<association property="discountGroup" column="groupId" javaType="DiscountGroup" select="selectDiscountGroupByGroupId"/>	
+	</resultMap>
+
+	<!-- 列表 -->
+	<select id="queryDiscountlistPage" parameterType="page" resultMap="queryDiscountMapper">
+		SELECT 
+			ID id,
+			UID uId,
+			DISCOUNT_ID discountId,
+			ISSCAN isScan,
+			ISUSED isUsed,
+			CREATE_TIME createTime,
+			START_TIME startTime,
+			END_TIME endTime,
+			STAFF_ID staffId,
+			GROUP_ID groupId
+		FROM 
+			tab_user_discount
+			where 1=1
+		<if test="pd.uIds != null and pd.uIds.size > 0">
+			and UID in
+			<foreach collection="pd.uIds" index="index" open="("
+				close=")" separator=",">
+				#{pd.uIds[${index}]}
+			</foreach>
+		</if>
+		<if test="pd.discountIds != null and pd.discountIds.size > 0">
+			and DISCOUNT_ID in
+			<foreach collection="pd.discountIds" index="index" open="("
+				close=")" separator=",">
+				#{pd.discountIds[${index}]}
+			</foreach>
+		</if>
+		<if test="pd.staffIds != null and pd.staffIds.size > 0">
+			and STAFF_ID in
+			<foreach collection="pd.staffIds" index="index" open="("
+				close=")" separator=",">
+				#{pd.staffIds[${index}]}
+			</foreach>
+		</if>
+		<if test="pd.groupId !=null and pd.groupId !=''">
+			and GROUP_ID=#{pd.groupId}
+		</if>
+		<if test="pd.isUsed !=null and pd.isUsed !=''">
+			and ISUSED=#{pd.isUsed}
+		</if>
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (CREATE_TIME &gt; #{pd.firstDate} or CREATE_TIME=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if>
+			order by createTime DESC
+	</select>
+	<select id="queryDiscountAll" parameterType="pd" resultMap="queryDiscountMapper">
+		SELECT 
+			ID id,
+			UID uId,
+			DISCOUNT_ID discountId,
+			ISSCAN isScan,
+			ISUSED isUsed,
+			CREATE_TIME createTime,
+			START_TIME startTime,
+			END_TIME endTime,
+			STAFF_ID staffId,
+			GROUP_ID groupId
+		FROM 
+			tab_user_discount
+			where 1=1
+		<if test="uIds != null and uIds.size > 0">
+			and UID in
+			<foreach collection="uIds" index="index" open="("
+				close=")" separator=",">
+				#{uIds[${index}]}
+			</foreach>
+		</if>
+		<if test="discountIds != null and discountIds.size > 0">
+			and DISCOUNT_ID in
+			<foreach collection="discountIds" index="index" open="("
+				close=")" separator=",">
+				#{discountIds[${index}]}
+			</foreach>
+		</if>
+		<if test="staffIds != null and staffIds.size > 0">
+			and STAFF_ID in
+			<foreach collection="staffIds" index="index" open="("
+				close=")" separator=",">
+				#{staffIds[${index}]}
+			</foreach>
+		</if>
+		<if test="groupId !=null and groupId !=''">
+			and GROUP_ID=#{groupId}
+		</if>
+		<if test="isUsed !=null and isUsed !=''">
+			and ISUSED=#{isUsed}
+		</if>
+		<if test="firstDate!=null and firstDate !=''" >
+			and (CREATE_TIME &gt; #{firstDate} or CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1 day)
+		</if>
+			order by createTime DESC
+	</select>
+	<select id="selectDisCountsByName" resultType="pd">
+		select DISCOUNT_ID discountId from tb_discount where DISCOUNT_NAME like CONCAT('%',#{discountName},'%')
+	</select>
+	
+	<select id="selectGrantDiscountGrouplistPage" parameterType="page" resultType="pd">
+		SELECT 
+			a.`discount_group_id` discountGroupId,a.`create_time` createTime,a.`staff_id` staffId,b.`GROUP_NAME` groupName,c.STAFF_NAME staffName
+		FROM 
+			tab_user_discount_group a LEFT JOIN tb_discount_group b ON a.`discount_group_id`=b.`GROUP_ID`  LEFT JOIN tb_staff c ON a.`staff_id`=c.`STAFF_ID`
+		GROUP BY a.discount_group_id,a.`staff_id`
+		HAVING 1=1
+		<if test="pd.discountGroupId !=null and pd.discountGroupId !=''">
+			and discount_group_id = #{pd.discountGroupId}
+		</if>
+		<if test="pd.staffName !=null and pd.staffName !=''">
+			and STAFF_NAME like CONCAT('%',#{pd.staffName},'%')
+		</if>
+		<if test="pd.groupName !=null and pd.groupName !=''">
+			and GROUP_NAME like CONCAT('%',#{pd.groupName},'%')
+		</if>
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (CREATE_TIME &gt; #{pd.firstDate} or CREATE_TIME=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if>
+		ORDER BY createTime DESC
+	</select>
+	<select id="selectGrantDiscountGroupAll" parameterType="pd" resultType="pd">
+		SELECT 
+			a.`discount_group_id` discountGroupId,a.`create_time` createTime,a.`staff_id` staffId,b.`GROUP_NAME` groupName,c.STAFF_NAME staffName
+		FROM 
+			tab_user_discount_group a LEFT JOIN tb_discount_group b ON a.`discount_group_id`=b.`GROUP_ID`  LEFT JOIN tb_staff c ON a.`staff_id`=c.`STAFF_ID`
+		GROUP BY a.discount_group_id,a.`staff_id`
+		HAVING 1=1
+		<if test="discountGroupId !=null and discountGroupId !=''">
+			and discount_group_id = #{pd.discountGroupId}
+		</if>
+		<if test="staffName !=null and staffName !=''">
+			and STAFF_NAME like CONCAT('%',#{staffName},'%')
+		</if>
+		<if test="groupName !=null and groupName !=''">
+			and GROUP_NAME like CONCAT('%',#{groupName},'%')
+		</if>
+		<if test="firstDate!=null and firstDate !=''" >
+			and (CREATE_TIME &gt; #{firstDate} or CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1 day)
+		</if>
+		ORDER BY createTime DESC
+	</select>
+	
+</mapper>

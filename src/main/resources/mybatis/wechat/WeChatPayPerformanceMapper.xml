@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatPayPerformanceMapper">
+	<insert id="savePayPerformance" parameterType="WeChatPayPerformance">
+		insert into
+			tb_pay_performance(transaction_name, transaction_operation, begin_time, end_time, operate_time, comment)
+		values(
+			#{transactionName},
+			#{transactionOperation},
+			#{beginTime},
+			#{endTime},
+			#{operateTime},
+			#{comment}
+		)
+	</insert>
+	
+	<insert id="saveDelayOfNetwork" parameterType="WeChatDelayOfNetwork">
+		insert into
+			tb_delay_network(delay_start, delay_mid, delay_end, delay_create_time, delay_ip, delay_comment, delay_staff, delay_finish)
+		values (
+			#{delayStart},
+			#{delayMid},
+			#{delayEnd},
+			#{delayCreateTime},
+			#{delayIp},
+			#{delayComment},
+			#{delayStaff},
+			#{delayFinish}
+		)
+	</insert>
+</mapper>

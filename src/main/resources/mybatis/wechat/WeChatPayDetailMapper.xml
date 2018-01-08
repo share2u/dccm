@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatPayDetailMapper">
+	<insert id="savePayDetail" parameterType="WeChatPayDetail">
+		insert into
+			TB_PAY_DETAIL(ORDERMX_ID,UID,ORDER_ID,ORDER_MONEY,PAY_MONEY,PAY_METHOD,PAY_TIME)
+		values(#{payDetailId},#{uId},#{orderId},#{orderMoney},#{payMoney},#{payMethod},#{payTime})
+	</insert>
+</mapper>

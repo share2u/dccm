@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatCreditMapper">
+
+	<select id="getTotalCredit" parameterType="Integer" resultType="Integer">
+		select
+		credit
+		from
+		TB_CREDIT
+		where
+		STATUS = 0 and UID=#{uId}
+	</select>
+	<select id="getCreditDetails" parameterType="Integer" resultType="pd">
+		select
+		original_credit as originalCredit,now_credit as nowCredit,CREATE_TIME as createTime
+		from
+		TB_CREDITMX
+		where
+		UID=#{uId}
+		ORDER BY CREATE_TIME DESC
+	</select>
+</mapper>

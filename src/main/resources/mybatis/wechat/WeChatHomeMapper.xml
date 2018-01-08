@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatHomeMapper">
+
+	<select id="getAds">
+		
+	
+	</select>
+	<select id="getServiceModules" resultType="pd">
+		select 
+			M_NAME as mName,M_INFO as mInfo,SERVICEMODULE_ID as mId,M_IMG as mImg
+		from
+			TB_SERVICEMODULE
+		where 
+			STATUS =0
+	</select>
+</mapper>

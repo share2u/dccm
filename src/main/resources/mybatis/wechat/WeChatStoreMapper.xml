@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatStoreMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		TB_STORE
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		STORE_ID,
+		STORE_NAME,
+		ADDRESS,
+		TRAFFIC_MESSAGE,
+		WORKTIME,
+		TELEPHONE,
+		M_ID,
+		STAFF_ID,
+		STORE_SMALL_IMG,
+		STORE_BIG_IMG,
+		STATUS,
+		BUSSINPATTERN,
+		CITY_ID,
+		IS_QUALIFICATION,
+		STORE_NUMBER,
+		STORE_INFO
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{storeId},
+		#{storeName},
+		#{address},
+		#{trafficMessage},
+		#{workTime},
+		#{telephone},
+		#{mId},
+		#{staffId},
+		#{storeSmallImg},
+		#{storeBigImg},
+		#{status},
+		#{bussinPattern},
+		#{cityId},
+		#{isQualification},
+		#{storeNumber},
+		#{storeInfo}
+	</sql>
+	<resultMap type="WeChatStore" id="weChatStoreResultMap">
+		<id column="STORE_ID" property="storeId" />
+		<result column="STORE_NAME" property="storeName" />
+		<result column="ADDRESS" property="address" />
+		<result column="TRAFFIC_MESSAGE" property="trafficMessage" />
+		<result column="WORKTIME" property="workTime" />
+		<result column="TELEPHONE" property="telephone" />
+		<result column="M_ID" property="mId" />
+		<result column="STAFF_ID" property="staffId" />
+		<result column="STORE_SMALL_IMG" property="storeSmallImg" />
+		<result column="STORE_BIG_IMG" property="storeBigImg" />
+		<result column="STATUS" property="status" />
+		<result column="BUSSINPATTERN" property="bussinPattern" />
+		<result column="CITY_ID" property="cityId" />
+		<result column="IS_QUALIFICATION" property="isQualification" />
+		<result column="STORE_NUMBER" property="storeNumber" />
+		<result column="STORE_INFO" property="storeInfo" />
+
+	</resultMap>
+
+	<select id="getStoresBymId" parameterType="String" resultMap="weChatStoreResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		M_ID=#{mId} and STATUS=1 and
+		STORE_ID LIKE
+		CONCAT(#{mId},'%')
+	</select>
+	<select id="getStoresByName" parameterType="String"
+		resultMap="weChatStoreResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		STORE_NAME LIKE '%${value}%'
+	</select>
+	<select id="getStoresByAddress" parameterType="String"
+		resultMap="weChatStoreResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		ADDRESS LIKE '%${value}%'
+	</select>
+	<select id="getStoresBySome" parameterType="String"
+		resultMap="weChatStoreResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		ADDRESS LIKE '%${value}%' OR STORE_NAME LIKE '%${value}%'
+		ORDER BY
+		STORE_NAME,ADDRESS
+	</select>
+	<select id="getStoreDetailByStoreId" parameterType="String"
+		resultMap="weChatStoreResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		STORE_ID=#{storeId}
+	</select>
+	<select id="getStoreDoctersByStoreId" parameterType="pd"
+		resultType="pd">
+		select
+		STAFF_ID,STAFF_NAME,SPECIAL,INFO,STAFF_IMG,STORE_ID
+		from
+		TB_STAFF
+		where
+		STATUS=0 and STORE_ID=#{storeId}
+		and
+		DEPART_ID='06'
+
+	</select>
+	<select id="getDoctorDetailById" parameterType="String"
+		resultType="pd">
+		select
+		STORE_ID,STAFF_ID,STAFF_NAME,SPECIAL,INFO,STAFF_IMG
+		from
+		TB_STAFF
+		where
+		DEPART_ID='06' and STATUS=0 and STAFF_ID=#{staffId}
+	</select>
+
+	<select id="getServiceProjectsById" parameterType="pd"
+		resultType="pd">
+		SELECT PROJECT_ID,PNAME,PRICE,REMARK FROM service_project
+		a,service_cost b WHERE b.STAFF_ID=#{staffId} AND
+		STORE_ID LIKE
+		CONCAT(#{storeIdSub2},'%') AND
+		a.STATUS=1 AND b.STATUS=1 AND
+		a.`PROJECT_ID`=b.`PID`
+	</select>
+	<select id="getCommentsByStoreId" parameterType="String"
+		resultType="pd">
+		select
+		LEFT(a.CREATETIME,10) as createTime,a.MESSAGE_INFO as
+		messageInfo,b.USERIMG as userImg
+		from
+		TAB_CUSTOM_COMMENT as a,TAB_USER
+		as b
+		where
+		a.STORE_ID=#{storeId} and a.UID=B.UID
+		and a.status='1'
+	</select>
+
+	<insert id="sendTelToStoreCallback" parameterType="pd">
+		insert into
+		TB_MEMBERCALLBACK
+		(
+		UID,STORE_ID,STAFF_ID,PHONE,STATUS,CREATE_TIME,NAME
+		)values(
+		#{uId},#{storeId},#{staffId},#{phone},#{status},#{createTime},#{name}
+		)
+	</insert>
+
+</mapper>

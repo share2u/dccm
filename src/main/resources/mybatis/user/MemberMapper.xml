@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tab_user
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		openid,	
+		name,	
+		username,	
+		userimg,	
+		sex,	
+		age,	
+		phone,	
+		idcode,	
+		city,	
+		first_date,	
+		usercategory_id,
+		proportion,		
+		uid,
+		email,
+		section,
+		remark,
+		source,
+		address,attention_time
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{OPENID},	
+		#{NAME},	
+		#{USERNAME},	
+		#{USERIMG},	
+		#{SEX},	
+		#{AGE},	
+		#{PHONE},	
+		#{IDCODE},	
+		#{CITY},	
+		#{FIRST_DATE},	
+		#{USERCATEGORY_ID},
+		#{PROPORTION},		
+		#{UID},
+		#{EMAIL},
+		#{SECTION},
+		#{REMARK},
+		#{SOURCE},
+		#{ADDRESS},#{ATTENTION_TIME}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(openid,	
+		name,	
+		username,	
+		userimg,	
+		sex,	
+		age,	
+		phone,	
+		idcode,	
+		city,	
+		first_date,	
+		usercategory_id,
+		proportion,
+		email,
+		section,
+		remark,
+		source,
+		address
+		) values (
+		#{OPENID},	
+		#{NAME},	
+		#{USERNAME},	
+		#{USERIMG},	
+		#{SEX},	
+		#{AGE},	
+		#{PHONE},	
+		#{IDCODE},	
+		#{CITY},	
+		#{FIRST_DATE},	
+		#{USERCATEGORY_ID},
+		#{PROPORTION},
+		#{EMAIL},
+		#{SECTION},
+		#{REMARK},
+		#{SOURCE},
+		#{ADDRESS}	
+
+	
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			uid = #{UID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		name = #{NAME},
+		username = #{USERNAME},
+		phone = #{PHONE},
+		city = #{CITY},
+		idcode = #{IDCODE},
+			first_date = #{FIRST_DATE},
+			usercategory_id = #{USERCATEGORY_ID},
+			proportion = #{PROPORTION},
+			SECTION = #{SECTION},
+		    ILLNESS = #{ILLNESS},
+			age = #{AGE},
+		    email =  #{EMAIL},
+			remark = #{REMARK},
+			address = #{ADDRESS}
+		where 
+		uid = #{UID}
+	</update>
+	
+	
+	<!-- 更新用户手机号和姓名 -->
+	<update id="updatenameandphone" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		
+			name = #{NAME},
+			phone = #{PHONE}
+			
+		where 
+		uid = #{UID}
+	</update>
+	<!-- 根据PHONE查询姓名 -->
+	<select id="findName" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where phone = #{PHONE}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			uid = #{UID}
+	</select>
+	
+	<!-- 自己写的 -->
+	<select id="findMemberAndGroupById" parameterType="pd" resultType="pd">
+		select 
+		a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.address,
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,a.email,a.section,a.remark,	
+		a.uid,
+		b.CATEGORY_NAME,
+		b.PARENT_ID
+		from 
+		tab_user a LEFT OUTER JOIN tb_usercategory b 
+			on
+		 a.usercategory_id = b.USERCATEGORY_ID 
+		
+		where 
+			a.uid = #{UID}
+	</select>
+	
+	<select id="findUserStorededAndPrestoreByUid" parameterType="Integer" resultType="pd">
+		select 
+			a.uid,a.name,a.username,a.proportion,a.phone,a.remark,
+  			b.CATEGORY_NAME,b.PROPORTION as categoryproportion,
+ 			c.REMAIN_MONEY,c.REMAIN_POINTS,
+			d.SUM_MONEY
+		from 
+			tab_user a LEFT OUTER JOIN tb_usercategory b 
+		ON a.usercategory_id = b.USERCATEGORY_ID 
+		LEFT OUTER JOIN tb_custom_stored c on a.uid=c.UID
+		LEFT OUTER JOIN tb_prestore d on a.uid=d.UID 
+		where 
+			a.uid=#{uid}
+	
+	</select>
+	
+	
+	<!-- listall  用户管理——查询用户信息  -->
+	<select id="listmenberandgrouplistPage" parameterType="page" resultType="pd">
+		select 
+		a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,		
+		a.uid,
+		a.email,
+		a.remark,
+		a.section,
+		a.source,
+		b.PROPORTION as categoryproportion,
+		b.CATEGORY_NAME,
+		b.PARENT_ID,
+		a.address,
+		a.attention_time,
+		c.SUM_MONEY
+		from 
+		tab_user a LEFT OUTER JOIN tb_usercategory b 
+			on
+		 a.usercategory_id = b.USERCATEGORY_ID 
+		 LEFT OUTER JOIN tb_prestore c 
+			on
+		 a.uid = c.UID 
+	    
+		
+		where 1=1
+	
+		<if test="pd.SOURCE!=null and pd.SOURCE !=''">
+			and a.source=#{pd.SOURCE}	
+		</if>
+		<if test="pd.lastStart!=null and pd.lastStart!=''"><!-- 关注时间检索 -->
+			and a.attention_time &gt; #{pd.lastStart} 
+		</if>
+		<if test="pd.lastEnd!=null and pd.lastEnd!=''"><!-- 关注时间检索 -->
+			and a.attention_time &lt; #{pd.lastEnd} 
+		</if>
+		<!-- <if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and a.attention_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if> -->
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				 a.name LIKE CONCAT('%',#{pd.keywords},'%')
+
+				 or
+				 a.city LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.section LIKE CONCAT('%',#{pd.keywords},'%') 
+				 or
+				 b.CATEGORY_NAME  LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')		 
+		</if>
+		order by a.attention_time desc
+	</select>
+	
+	<!-- 查询统计  用户管理——查询用户信息  -->
+	<select id="menberandgrouplistPage" parameterType="page" resultType="pd">
+		select 
+		a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,		
+		a.uid,
+		a.email,
+		a.remark,
+		a.section,
+		a.source,
+		b.PROPORTION as categoryproportion,
+		b.CATEGORY_NAME,
+		b.PARENT_ID,
+		a.address,
+		a.attention_time,
+		c.CREDIT,
+		d.SUM_MONEY
+		from 
+		tab_user a LEFT OUTER JOIN tb_usercategory b 
+			on
+		 a.usercategory_id = b.USERCATEGORY_ID 
+		LEFT OUTER JOIN TB_CREDIT c 
+			on
+		 a.uid = c.UID
+		 LEFT OUTER JOIN tb_prestore d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+		   on
+		 a.uid = d.UID
+		where 1=1
+	
+		<if test="pd.SOURCE!=null and pd.SOURCE !=''">
+			and a.source=#{pd.SOURCE}	
+		</if>
+		<if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and a.attention_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if>
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				 a.name LIKE CONCAT('%',#{pd.keywords},'%')
+
+				 or
+				 a.city LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.section LIKE CONCAT('%',#{pd.keywords},'%') 
+				 or
+				 b.CATEGORY_NAME  LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')		 
+		</if>
+		order by a.attention_time desc
+	</select>
+	<!-- listall  优惠券下发  -->
+	<select id="DiscountlistmemberlistPage" parameterType="page" resultType="pd">
+		select 
+		a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,		
+		a.uid,
+		a.email,
+		a.remark,
+		a.section,
+		b.PROPORTION as categoryproportion,
+		b.CATEGORY_NAME,
+		b.PARENT_ID,
+		a.address,
+		a.attention_time
+		from 
+		tab_user a LEFT OUTER JOIN tb_usercategory b 
+			on
+		 a.usercategory_id = b.USERCATEGORY_ID 
+		
+		where 1=1
+		and a.uid not in (
+			select uid from tab_user_discount_group where discount_group_id = #{pd.GROUP_ID})
+
+	
+		<if test="pd.first_date!=null and pd.first_date !=''">
+			and first_date between #{pd.first_date}	and #{pd.last_date}
+		</if>
+		<if test="pd.sex!=null and pd.sex !=''">
+			and sex=#{pd.sex}	
+		</if>
+		
+		<!-- <if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and attention_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if> -->
+		<if test="pd.lastStart!=null and pd.lastStart!=''"><!-- 关注时间检索 -->
+			and attention_time &gt; #{pd.lastStart} 
+		</if>
+		<if test="pd.lastEnd!=null and pd.lastEnd!=''"><!-- 关注时间检索 -->
+			and attention_time &lt; #{pd.lastEnd} 
+		</if>
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				 a.name LIKE CONCAT('%',#{pd.keywords},'%')
+
+				 or
+				 a.city LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.section LIKE CONCAT('%',#{pd.keywords},'%') 
+				 or
+				 b.CATEGORY_NAME  LIKE CONCAT('%',#{pd.keywords},'%') 
+
+				 or
+				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')		 
+		</if>
+		order by a.attention_time asc
+	</select>
+	
+	
+	
+	
+	<!--查询客户的基本信息，所属类别信息，用户的积分，用户的储值卡信息-->
+	<select id="ListCompleteMemberlistPage" parameterType="page" resultType="pd">
+		select a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,		
+		a.uid,b.SUM_MONEY,c.remain_money,c.remain_points,d.CATEGORY_NAME,d.PROPORTION as category_porportion
+		from tab_user a LEFT JOIN tb_prestore b on a.uid = b.UID 
+		LEFT JOIN tb_custom_stored c on a.uid =c.uid 
+		LEFT JOIN tb_usercategory d on a.usercategory_id=d.USERCATEGORY_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					a.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or 
+					a.username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+	</select>
+	
+	<!--查询客户的基本信息，所属类别信息，用户的积分，用户的储值卡信息-->
+	<select id="userPayQueryMemberlistPage" parameterType="page" resultType="pd">
+		select 
+			a.uid,a.name,a.username,a.sex,a.age,a.phone,a.city,a.usercategory_id,a.proportion,		
+			b.SUM_MONEY,c.remain_money,c.remain_points,d.CATEGORY_NAME,d.PROPORTION as category_porportion
+		from 
+			tab_user a LEFT JOIN tb_prestore b on a.uid = b.UID 
+		LEFT JOIN tb_custom_stored c on a.uid =c.uid 
+		LEFT JOIN tb_usercategory d on a.usercategory_id=d.USERCATEGORY_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					a.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or 
+					a.username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				)
+		</if>
+		order by a.name
+	</select>
+		
+		
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or 
+					username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+	</select>
+	
+	<select id="queryUsernameByPhone" parameterType="String" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where phone=#{phone}
+	</select>
+	
+	<select id="findByuid" parameterType="object" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where uid=#{UID}
+	</select>
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			uid in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 通过手机号查询到城市 -->
+	<select id="findCityByPhone" parameterType="String" resultType="String">
+		select
+		mobile_area
+		from
+		tb_mobileinfo
+		where
+		mobile_num=#{pHONE}
+	</select>
+	
+	<select id="findCityByAreaCode" parameterType="String" resultType="String">
+		select
+		mobile_area
+		from
+		tb_mobileinfo
+		where
+		area_code=#{pHONE}
+		limit 1
+	</select>
+	
+	<select id="isPhoneNumExist" parameterType="String" resultType="Integer">
+		select
+		count(*)
+		from
+		tab_user
+		where
+		phone=#{pHONE}
+	</select>
+	<select id="selectUsersByName" parameterType="pd" resultType="pd">
+		select DISTINCT UID uId from TAB_USER where 1 =1
+		<if test="null !=userPhone and '' != userPhone">
+					 and 
+					phone LIKE CONCAT(#{userPhone},'%') 
+		</if>
+		<if test="null !=name and '' != name">
+					 and 
+					name LIKE CONCAT('%', #{name},'%') 
+					 or 
+					username LIKE CONCAT('%', #{name},'%') 
+		</if>
+	
+	</select>
+	
+</mapper>

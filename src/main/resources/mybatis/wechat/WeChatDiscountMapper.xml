@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatDiscountMapper">
+	<!-- 
+		根据优惠券的状态查询所有的优惠券
+	 -->
+	<select id="getDiscountsByStatus" parameterType="java.lang.Integer" resultType="WeChatDiscount">
+		select 
+			discount.DISCOUNT_ID as discountId,
+			discount.DISCOUNT_NAME as discountName,
+			discount.DISCOUNT_AMOUNT as discountAmount,
+			discount.CREATETIME as createTime,
+			discount.ENDTIME as endTime,
+			discount.NUMBER as number,
+			discount.PROJECT_IDS as projectIds,
+			discount.STAFF_ID as staffId,
+			discount.STARTTIME as startTime,
+			discount.`STATUS` as status
+		from
+			tb_discount discount
+		where 
+			discount.`STATUS` = #{status}
+	</select>
+	
+	<!-- 根据主键查询 -->
+	<select id="getDiscountByDiscountId" parameterType="java.lang.String" resultType="WeChatDiscount">
+		select 
+			discount.DISCOUNT_ID as discountId,
+			discount.DISCOUNT_NAME as discountName,
+			discount.DISCOUNT_AMOUNT as discountAmount,
+			discount.CREATETIME as createTime,
+			discount.ENDTIME as endTime,
+			discount.NUMBER as number,
+			discount.PROJECT_IDS as projectIds,
+			discount.STAFF_ID as staffId,
+			discount.STARTTIME as startTime,
+			discount.`STATUS` as status
+		from
+			tb_discount discount
+		where 
+			discount.DISCOUNT_ID = #{discountId}
+	</select>
+	
+	<!-- 更新优惠券状态为status -->
+	<update id="batchUpdateDiscountStatus" parameterType="WeChatDiscount">
+		update
+			tb_discount discount
+			set discount.`STATUS` = #{status}
+		where
+			discount.DISCOUNT_ID = #{discountId}
+	</update>
+</mapper>

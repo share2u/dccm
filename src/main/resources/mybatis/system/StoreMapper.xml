@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StoreMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_STORE
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		STORE_NAME,	
+		ADDRESS,	
+		TRAFFIC_MESSAGE,	
+		WORKTIME,	
+		TELEPHONE,	
+		M_ID,	
+		STAFF_ID,	
+		STORE_SMALL_IMG,	
+		STORE_BIG_IMG,	
+		STATUS,	
+		BUSSINPATTERN,	
+		CITY_ID,	
+		IS_QUALIFICATION,	
+		STORE_NUMBER,	
+		STORE_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{STORE_NAME},	
+		#{ADDRESS},	
+		#{TRAFFIC_MESSAGE},	
+		#{WORKTIME},	
+		#{TELEPHONE},	
+		#{M_ID},	
+		#{STAFF_ID},	
+		#{STORE_SMALL_IMG},	
+		#{STORE_BIG_IMG},	
+		#{STATUS},	
+		#{BUSSINPATTERN},	
+		#{CITY_ID},	
+		#{IS_QUALIFICATION},	
+		#{STORE_NUMBER},	
+		#{STORE_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="Store">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STORE_ID = #{STORE_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="Store">
+		update
+		<include refid="tableName"></include>
+		set 
+			STORE_NAME = #{STORE_NAME},
+			ADDRESS = #{ADDRESS},
+			TRAFFIC_MESSAGE = #{TRAFFIC_MESSAGE},
+			WORKTIME = #{WORKTIME},
+			TELEPHONE = #{TELEPHONE},
+			M_ID = #{M_ID},
+			STAFF_ID = #{STAFF_ID},
+			STORE_SMALL_IMG = #{STORE_SMALL_IMG},
+			STORE_BIG_IMG = #{STORE_BIG_IMG},
+			STATUS = #{STATUS},
+			BUSSINPATTERN = #{BUSSINPATTERN},
+			CITY_ID = #{CITY_ID},
+			IS_QUALIFICATION = #{IS_QUALIFICATION},
+			STORE_NUMBER = #{STORE_NUMBER},
+		STORE_ID = STORE_ID
+		where 
+		STORE_ID = #{STORE_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			STORE_ID = #{STORE_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select a.*,b.M_NAME,c.CITY_NAME
+		from
+		TB_STORE a  left outer join TB_SERVICEMODULE b
+		   on a.M_ID=b.SERVICEMODULE_ID
+	    left outer join tab_city_code c
+		   on a.CITY_ID=c.CITY_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					c.CITY_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				
+				)
+		</if>
+		
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test="pd.model!= null and pd.model != ''"><!-- 关键词检索 -->
+			and
+				(
+					b.M_NAME LIKE CONCAT(CONCAT('%', #{pd.model}),'%')
+				
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test='STORE_ID!="1" and STORE_ID!=null and STORE_ID!=""'>
+		AND
+		STORE_ID = #{STORE_ID}
+		</if>
+	</select>
+	
+	<!-- 列出所有门店 -->
+	<select id="listAllStore" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STORE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 根据门店id查询门店名称 -->
+	<select id="findNameById" parameterType="pd" resultType="String">
+		select
+			STORE_NAME
+		from 
+		<include refid="tableName"></include>
+		where
+			STORE_ID = #{STORE_ID}
+	</select>
+	<!--根据板块id获取stores  -->
+	<select id="selectStoresBymId" parameterType="pd" resultType="pd">
+		select
+			STORE_ID,STORE_NAME
+		from
+		<include refid="tableName"></include>
+		where
+		M_ID=#{mId} and STATUS=1 
+		<!-- and
+		STORE_ID LIKE
+		CONCAT(#{mId},'%') -->
+	</select>
+	
+	<!-- 查询所有门店名称 -->
+	<select id="findAllNames" parameterType="pd" resultType="pd">
+		select
+			*
+		from 
+		tb_store 
+		where 1=1
+		
+		<if test='STORE_ID!="1" and STORE_ID!=null and STORE_ID!=""'>
+		AND
+		STORE_ID = #{STORE_ID}
+		</if>
+		<if test='STORE_ID!="1" and STORE_ID!=null and STORE_ID!=""'>
+		AND
+		STORE_ID = #{STORE_ID}
+		</if>
+		
+	</select>
+</mapper>

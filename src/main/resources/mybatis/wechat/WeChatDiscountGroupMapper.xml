@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatDiscountGroupMapper">
+	<!-- 查询某用户拥有的优惠券组合信息 -->
+	<select id="getUserDiscountGroupInfo" parameterType="java.lang.Integer" resultType="WeChatDiscountGroup">
+		select 
+			discountgroup_id as discountGroupId,
+			group_id as groupId,
+			group_name as groupName,
+			discount_id as discountId,
+			discount_number as discountNumber 
+		from tb_discount_group
+			where group_id in
+			(
+				select discount_group_id 
+				from 
+				tab_user_discount_group 
+				where 
+				uid = #{uId}
+			)
+		group by group_id,discount_id
+		order by create_time;
+	</select>
+	
+	<select id="getDiscountGroupInfoByDiscountGroupId" parameterType="WeChatDiscountGroup" resultType="WeChatDiscountGroup">
+		select 
+			discountgroup_id as discountGroupId,
+			group_id as groupId,
+			group_name as groupName,
+			discount_id as discountId,
+			discount_number as discountNumber 
+		from tb_discount_group
+		where
+			discountgroup_id = #{discountGroupId}
+	</select>
+</mapper>

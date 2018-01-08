@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StoredCategoryMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_STORED_CATEGORY
+	</sql>
+	
+	<sql id="staffTableName">
+		TB_STAFF
+	</sql>
+	
+	<sql id="memberTableName">
+		TAB_USER
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		STORED_MONEY,	
+		RETURN_POINTS,	
+		CREATE_TIME,	
+		STATUS,	
+		STAFF_ID,	
+		STOREDCATEGORY_ID,
+		REMARK
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{STORED_MONEY},	
+		#{RETURN_POINTS},	
+		#{CREATE_TIME},	
+		#{STATUS},	
+		#{STAFF_ID},	
+		#{STOREDCATEGORY_ID},
+		#{REMARK}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+		STORED_MONEY,	
+		RETURN_POINTS,	
+		CREATE_TIME,	
+		STATUS,	
+		STAFF_ID,
+		REMARK
+		) values (
+		#{STORED_MONEY},	
+		#{RETURN_POINTS},	
+		#{CREATE_TIME},	
+		#{STATUS},	
+		#{STAFF_ID},
+		#{REMARK}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STOREDCATEGORY_ID = #{STOREDCATEGORY_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			STORED_MONEY = #{STORED_MONEY},
+			RETURN_POINTS = #{RETURN_POINTS},
+			CREATE_TIME = #{CREATE_TIME},
+			STATUS = #{STATUS},
+			STAFF_ID = #{STAFF_ID},
+			REMARK = #{REMARK},
+		STOREDCATEGORY_ID = STOREDCATEGORY_ID
+		where 
+		STOREDCATEGORY_ID = #{STOREDCATEGORY_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			STOREDCATEGORY_ID = #{STOREDCATEGORY_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STOREDCATEGORY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 自己写的 -->
+	<select id="findStafflistPage" parameterType="page" resultType="pd">
+		SELECT a.* , b.STAFF_NAME
+		FROM
+		<include refid="tableName"></include> a,
+		<include refid="staffTableName"></include> b
+		WHERE
+		a.STAFF_ID = b.STAFF_ID
+		 <if test="pd.keywords!= null and pd.keywords != ''">
+			and
+				 b.STAFF_NAME LIKE CONCAT('%',#{pd.keywords},'%')	
+				    
+		</if>
+		<if test="pd.STATUS!=null and pd.STATUS !=''">
+			and a.STATUS=#{pd.STATUS}	
+		</if>
+		<if test="pd.starttime!=null and pd.starttime !=''">
+			and a.CREATE_TIME between #{pd.starttime} and #{pd.endtime}	
+		</if>
+		order by a.CREATE_TIME desc
+	</select>
+	
+	<select id="listMemberlistPage" parameterType="page" resultType="pd">
+		SELECT *
+		FROM
+		<include refid="memberTableName"></include>
+		WHERE 1=1
+	</select>
+	
+</mapper>

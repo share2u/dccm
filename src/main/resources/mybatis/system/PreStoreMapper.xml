@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PreStoreMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_PRESTORE
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,
+		PHONE,	
+		USERNAME,
+		SUM_MONEY,	
+		PRESTORE_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{PHONE},
+		#{USERNAME},
+		#{SUM_MONEY},	
+		#{PRESTORE_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			PRESTORE_ID = #{PRESTORE_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			UID = #{UID},
+			PHONE = #{PHONE},
+			USERNAME = #{USERNAME},
+			SUM_MONEY = #{SUM_MONEY},
+		PRESTORE_ID = PRESTORE_ID
+		where 
+		PRESTORE_ID = #{PRESTORE_ID}
+	</update>
+	
+	<update id="editMember" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			UID = #{UID},
+			PHONE = #{PHONE},
+			USERNAME = #{USERNAME},
+		PRESTORE_ID = PRESTORE_ID
+		where 
+		UID = #{UID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			PRESTORE_ID = #{PRESTORE_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+					PHONE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					USERNAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!--根据uid查询记录-->
+	<select id="findByUid" parameterType="Integer" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where UID=#{uid}
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			PRESTORE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

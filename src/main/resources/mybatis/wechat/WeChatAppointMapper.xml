@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatAppointMapper">
+	<insert id="saveAppoint" parameterType="WeChatAppoint">
+		insert into
+			TB_CUSTOM_APPOINT(CUSTOMAPPOINT_ID,ORDER_ID,U_ID,APPOINT_TIME,SERVICE_STAFF_ID,APPOINT_CODE,EXPIRE_TIME)
+		values(#{customAppointId},#{orderId},#{uId},#{appointTime},#{serviceStaffId},#{appointCode},#{expireTime})
+	</insert>
+</mapper>

@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>     
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_ORDER
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,	
+		STORE_ID,	
+		SERVICECOST_ID,	
+		SERVICE_STAFF_ID,	
+		CREATE_TIME,	
+		ORDER_STATUS,	
+		URL,	
+		RECOMMEND_TIME,	
+		EXPIRE_TIME,	
+		REMARK,	
+		STAFF_ID,	
+		ORDER_MONEY,	
+		PROPORTION,	
+		CREDIT,	
+		DISCOUNT_ID,	
+		PAY_MONEY,	
+		REFUND,	
+		ORDER_ID,
+		WECHAT_NAME,
+		WECHAT_PHONE
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{STORE_ID},	
+		#{SERVICECOST_ID},	
+		#{SERVICE_STAFF_ID},	
+		#{CREATE_TIME},	
+		#{ORDER_STATUS},	
+		#{URL},	
+		#{RECOMMEND_TIME},	
+		#{EXPIRE_TIME},	
+		#{REMARK},	
+		#{STAFF_ID},	
+		#{ORDER_MONEY},	
+		#{PROPORTION},	
+		#{CREDIT},	
+		#{DISCOUNT_ID},	
+		#{PAY_MONEY},	
+		#{REFUND},	
+		#{ORDER_ID},
+		#{WECHAT_NAME},
+		#{WECHAT_PHONE}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ORDER_ID = #{ORDER_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		UID = #{UID},
+			STORE_ID = #{STORE_ID},
+			SERVICECOST_ID = #{SERVICECOST_ID},
+			SERVICE_STAFF_ID = #{SERVICE_STAFF_ID},
+			CREATE_TIME = #{CREATE_TIME},
+			ORDER_STATUS = #{ORDER_STATUS},
+			URL = #{URL},
+			RECOMMEND_TIME = #{RECOMMEND_TIME},
+			EXPIRE_TIME = #{EXPIRE_TIME},
+			REMARK = #{REMARK},
+			STAFF_ID = #{STAFF_ID},
+			ORDER_MONEY = #{ORDER_MONEY},
+			PROPORTION = #{PROPORTION},
+			CREDIT = #{CREDIT},
+			DISCOUNT_ID = #{DISCOUNT_ID},
+			PAY_MONEY = #{PAY_MONEY},
+			REFUND = #{REFUND},
+			WECHAT_NAME = #{WECHAT_NAME},
+			WECHAT_PHONE = #{WECHAT_PHONE}
+		
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="updateStatus4" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			
+			ORDER_STATUS = 4
+			
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	<!-- 修改 -->
+	<update id="updateRemark" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			
+			REMARK = #{REMARK}
+			
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="updateStatus3" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			
+			ORDER_STATUS = 3
+			
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="updateStatus2" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			
+			ORDER_STATUS = 2
+			
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!-- 修改预约时间 -->
+	<update id="updateTime" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			
+			RECOMMEND_TIME = #{RECOMMEND_TIME}
+			
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			ORDER_ID = #{ORDER_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+			
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+			
+				)
+		</if>
+	</select>
+	
+	<!-- <select id="findAll" parameterType="page" resultType="pd">
+	select a.*,
+		b.STORE_NAME,
+		b.STORE_ID,
+		c.STAFF_ID,
+		c.STAFF_NAME,
+		d.uid,
+		d.name,
+		e.PNAME
+		from 
+		TB_ORDER a 
+		LEFT OUTER JOIN TB_STORE b 
+			on
+		 a.STORE_ID = b.STORE_ID
+		LEFT OUTER JOIN TB_STAFF c 
+			on
+		 a.SERVICE_STAFF_ID = c.STAFF_ID
+		 and  a.STAFF_ID = c.STAFF_ID  
+		LEFT JOIN tab_user d
+		    on
+			a.UID=d.uid
+		LEFT JOIN  service_project e
+		   on
+		   a.SERVICECOST_ID=e.PROJECT_ID	
+		where 1=1
+	   <if test="pd.keywords!= null and pd.keywords != ''">
+			and
+				 b.STORE_NAME LIKE CONCAT('%',#{pd.keywords},'%')	
+				     or
+				 d.name LIKE CONCAT('%',#{pd.keywords},'%')	
+		</if>
+		<if test="pd.ORDER_STATUS!=null and pd.ORDER_STATUS !=''">
+			and a.ORDER_STATUS=#{pd.ORDER_STATUS}	
+		</if>	
+		order by a.CREATE_TIME desc
+	</select> -->
+	
+	
+	<select id="findAlllistPage" parameterType="page" resultType="pd">
+	select a.*,
+		b.STORE_NAME,
+		d.name,
+		d.phone,
+		p.PNAME
+		from 
+		TB_ORDER a 
+		LEFT JOIN TB_STORE b on a.STORE_ID = b.STORE_ID
+		LEFT JOIN service_cost e on a.SERVICECOST_ID=e.SERVICECOST_ID
+		LEFT JOIN service_project p on e.PID = p.PROJECT_ID
+		LEFT JOIN tab_user d on a.UID=d.uid
+		where
+		1=1	
+		
+	   <if test="pd.keywords!= null and pd.keywords != ''">
+			and
+			(
+				 d.phone LIKE CONCAT('%',#{pd.keywords},'%')	
+				     or
+				 d.name LIKE CONCAT('%',#{pd.keywords},'%')	
+				  or
+				 a.WECHAT_NAME LIKE CONCAT('%',#{pd.keywords},'%')	
+				   or
+				 a.WECHAT_PHONE LIKE CONCAT('%',#{pd.keywords},'%')
+				  or
+				  a.REMARK LIKE CONCAT('%',#{pd.keywords},'%')
+				 )
+		</if>
+		<if test="pd.SERVICE_STAFF_ID!=null and pd.SERVICE_STAFF_ID !=''">
+			and a.SERVICE_STAFF_ID=#{pd.SERVICE_STAFF_ID}	
+		</if>
+				
+		<if test="pd.ORDER_STATUS==null or pd.ORDER_STATUS ==''">
+			and a.ORDER_STATUS in (2,3)	
+		</if>		
+		<if test="pd.ORDER_STATUS!=null and pd.ORDER_STATUS !=''">
+			and a.ORDER_STATUS=#{pd.ORDER_STATUS}	
+		</if>	
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+		AND
+		a.STORE_ID = #{pd.STOREID}
+		</if>
+		order by a.CREATE_TIME desc
+	</select>
+	
+	
+	<select id="findAllRefundlistPage" parameterType="page" resultType="pd">
+	select a.*,
+		b.STORE_NAME,
+		d.name,
+		d.phone,
+		p.PNAME,
+		t.DISCOUNT_AMOUNT
+		from 
+		TB_ORDER a LEFT JOIN tb_discount t on a.DISCOUNT_ID=t.DISCOUNT_ID
+		
+		LEFT JOIN TB_STORE b on a.STORE_ID = b.STORE_ID
+		LEFT JOIN service_cost e on a.SERVICECOST_ID=e.SERVICECOST_ID
+		LEFT JOIN service_project p on e.PID = p.PROJECT_ID
+		LEFT JOIN tab_user d on a.UID=d.uid
+		where
+		a.ORDER_STATUS in (2,3)	
+	   <if test="pd.keywords!= null and pd.keywords != ''">
+			and
+			(
+				 d.phone LIKE CONCAT('%',#{pd.keywords},'%')	
+				     or
+				 d.name LIKE CONCAT('%',#{pd.keywords},'%')	
+				  or
+				 a.WECHAT_NAME LIKE CONCAT('%',#{pd.keywords},'%')	
+				   or
+				 a.WECHAT_PHONE LIKE CONCAT('%',#{pd.keywords},'%')
+				  
+				 )
+		</if>
+		
+				
+			
+		<if test="pd.ORDER_STATUS!=null and pd.ORDER_STATUS !=''">
+			and a.ORDER_STATUS=#{pd.ORDER_STATUS}	
+		</if>	
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+		AND
+		a.STORE_ID = #{pd.STOREID}
+		</if>
+		order by a.CREATE_TIME desc
+	</select>
+	
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!--查询今日订单总金额 -->
+	<select id="queryTodayTotalMoney" parameterType="String" resultType="String">
+		select 
+			sum(PAY_MONEY) 
+		from
+		<include refid="tableName"></include>
+		where 
+		ORDER_STATUS IN(2,3,4,5)
+		and
+		CREATE_TIME LIKE CONCAT('%',#{d},'%')	
+	</select>
+	
+	<!--查询历史订单总金额 -->
+	<select id="queryhistoryTotalMoney" resultType="String">
+		select 
+			sum(PAY_MONEY) 
+		from
+		<include refid="tableName"></include>
+		where 
+		ORDER_STATUS IN(2,3,4,5)
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ORDER_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="editStatusAndRefund" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			ORDER_STATUS = #{ORDER_STATUS},
+			REFUND = #{total_money}
+		where 
+		ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<!--查询历史订单总金额 -->
+	<select id="findCountByUser" resultType="Integer" parameterType="pd">
+		select 
+			count(*) 
+		from
+		<include refid="tableName"></include>
+		WHERE 
+			servicecost_id = #{SERVICECOST_ID} 
+		AND 
+			order_status IN(2,3) 
+		AND 
+			UID = #{UID}
+	</select>
+	
+</mapper>

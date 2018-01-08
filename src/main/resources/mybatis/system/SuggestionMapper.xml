@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SuggestionMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tab_suggestion
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,	
+		CONTENT,	
+		CREATE_TIME,	
+		PHONE,	
+		METHOD,	
+		STATUS,	
+		SUGGESTION_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{CONTENT},	
+		#{CREATE_TIME},	
+		#{PHONE},	
+		#{METHOD},	
+		#{STATUS},	
+		#{SUGGESTION_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SUGGESTION_ID = #{SUGGESTION_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			UID = #{UID},
+			CONTENT = #{CONTENT},
+			CREATE_TIME = #{CREATE_TIME},
+			PHONE = #{PHONE},
+			METHOD = #{METHOD},
+			STATUS = #{STATUS},
+		SUGGESTION_ID = SUGGESTION_ID
+		where 
+		SUGGESTION_ID = #{SUGGESTION_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			SUGGESTION_ID = #{SUGGESTION_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select	 a.CONTENT,a.CREATE_TIME,a.PHONE,b.name  
+		from 
+		tab_suggestion a
+		left join tab_user b
+		  on a.UID=b.uid
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					a.CONTENT LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					or
+					b.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+	</select>
+	
+	<!--列出所有的评价-->
+	<select id="queryCommentById" parameterType="pd" resultType="pd">
+		select * from TAB_CUSTOM_COMMENT where message_id=#{message_id}
+	</select>
+	
+	
+	<!--列出所有的评价-->
+	<select id="listAllCommentlistPage" parameterType="page" resultType="pd">
+		select a.*,b.name,b.phone,c.STORE_NAME 
+		from TAB_CUSTOM_COMMENT a, tab_user b,tb_store c 
+		where a.uid=b.uid and a.store_id=c.STORE_ID
+		<if test="pd.checkstatus!=null and pd.checkstatus !=''">
+			and checkstatus=#{pd.checkstatus}
+		</if>
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					b.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					or
+					b.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					
+				)
+		</if>
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.store_id = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+		AND
+		a.store_id = #{pd.STOREID}
+		</if>
+	</select>
+	
+	<!--更改评价的现实状态与审核状态-->
+	<update id="updateCheckStatus" parameterType="pd">
+		update TAB_CUSTOM_COMMENT set checkstatus=#{checkstatus},status=#{status} where message_id=#{message_id}
+	</update>
+	
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SUGGESTION_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

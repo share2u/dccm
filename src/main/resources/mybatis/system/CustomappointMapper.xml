@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomappointMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		tb_custom_appoint
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		ORDER_ID,
+		U_ID,
+		APPOINT_TIME,
+		EXPIRE_TIME,
+		SERVICE_STAFF_ID,
+		APPOINT_CODE,
+		CUSTOMAPPOINT_ID
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ORDER_ID},
+		#{U_ID},
+		#{APPOINT_TIME},
+		#{EXPIRE_TIME},
+		#{SERVICE_STAFF_ID},
+		#{APPOINT_CODE},
+		#{CUSTOMAPPOINT_ID}
+	</sql>
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		ORDER_ID = #{ORDER_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+
+		APPOINT_TIME = #{APPOINT_TIME},
+		EXPIRE_TIME = #{EXPIRE_TIME}
+		where
+		CUSTOMAPPOINT_ID = #{CUSTOMAPPOINT_ID}
+	</update>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		CUSTOMAPPOINT_ID = #{CUSTOMAPPOINT_ID}
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findByOrderId" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		ORDER_ID = #{ORDER_ID}
+	</select>
+
+
+	<!-- 列表 <select id="datalistPage" parameterType="page" resultType="pd"> 
+		select a.ORDER_ID, a.U_ID, a.APPOINT_TIME, a.EXPIRE_TIME, a.SERVICE_STAFF_ID, 
+		a.APPOINT_CODE, a.CUSTOMAPPOINT_ID, b.ORDER_STATUS, b.WECHAT_NAME, b.WECHAT_PHONE, 
+		b.SERVICECOST_ID, b.REMARK, c.PID, c.STAFF_ID, d.PROJECT_ID, d.PNAME, e.STAFF_NAME, 
+		g.STORE_NAME from ( select aa.ORDER_ID,aa.U_ID,aa.APPOINT_TIME,aa.EXPIRE_TIME,aa.SERVICE_STAFF_ID,aa.APPOINT_CODE,aa.CUSTOMAPPOINT_ID 
+		FROM tb_custom_appoint aa WHERE aa.APPOINT_TIME BETWEEN #{pd.lastStart} AND 
+		#{pd.lastEnd} ) a, tb_order b,service_cost c,service_project d,tab_user f, 
+		tb_staff e,tb_store g where a.ORDER_ID = b.ORDER_ID and b.SERVICECOST_ID 
+		= c.SERVICECOST_ID and c.PID = d.PROJECT_ID and e.STAFF_ID = c.STAFF_ID and 
+		a.U_ID = f.uid and b.STORE_ID = g.STORE_ID <if test="pd.keywords!= null and 
+		pd.keywords != ''">关键词检索 and ( a.APPOINT_CODE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+		or f.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or b.WECHAT_PHONE 
+		LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or b.REMARK LIKE CONCAT(CONCAT('%', 
+		#{pd.keywords}),'%') ) </if> <if test='pd.STORE_ID!="1" and pd.STORE_ID!=null 
+		and pd.STORE_ID!=""'> AND b.STORE_ID = #{pd.STORE_ID} </if> <if test='pd.STOREID!=null 
+		and pd.STOREID!=""'> AND b.STORE_ID = #{pd.STOREID} </if> <if test="pd.ORDER_STATUS!=null 
+		and pd.ORDER_STATUS!=''"> and b.ORDER_STATUS = #{pd.ORDER_STATUS} </if> order 
+		by b.CREATE_TIME desc </select> -->
+
+
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from custom_appoint_view where 1=1
+		and ORDER_STATUS in
+		(2,3,4,5)
+		<if test="pd.keywords!= null and pd.keywords != ''">
+			and
+			(
+
+			APPOINT_CODE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			phone LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			WECHAT_PHONE LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			REMARK LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			)
+		</if>
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+			AND
+			STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+			AND
+			STORE_ID = #{pd.STOREID}
+		</if>
+		<if test="pd.lastStart!=null and pd.lastStart!=''">
+			and APPOINT_TIME &gt; #{pd.lastStart}
+		</if>
+		<if test="pd.lastEnd!=null and pd.lastEnd!=''">
+			and APPOINT_TIME &lt; #{pd.lastEnd}
+		</if>
+		<if
+			test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and APPOINT_TIME between #{pd.lastStart} and #{pd.lastEnd}
+		</if>
+		<if test="pd.ORDER_STATUS!=null and pd.ORDER_STATUS!=''">
+			and ORDER_STATUS = #{pd.ORDER_STATUS}
+		</if>
+		order by CREATE_TIME desc
+	</select>
+
+	<!-- 自己写的查看今天预约名单 -->
+	<select id="todaylistPage" parameterType="page" resultType="pd">
+		select
+		a.ORDER_ID,
+		a.U_ID,
+		a.APPOINT_TIME,
+		a.EXPIRE_TIME,
+		a.SERVICE_STAFF_ID,
+		a.APPOINT_CODE,
+		a.CUSTOMAPPOINT_ID,
+		b.ORDER_STATUS,
+		b.WECHAT_NAME,
+		b.WECHAT_PHONE,
+		b.SERVICECOST_ID,
+		b.ORDER_MONEY,
+		b.PAY_MONEY,
+		b.REMARK,
+		c.PID,
+		c.STAFF_ID,
+		d.PROJECT_ID,
+		d.PNAME,
+		e.STAFF_NAME,
+		f.name,
+		f.phone,
+		f.usercategory_id,
+		g.CATEGORY_NAME,
+		h.STORE_NAME
+		from
+		tb_custom_appoint a,tb_order b,service_cost c,service_project d,tb_staff e,tab_user
+		f,tb_usercategory g,tb_store h
+		where
+		a.ORDER_ID = b.ORDER_ID and
+		b.ORDER_STATUS in('2','3') and
+		b.SERVICECOST_ID = c.SERVICECOST_ID and
+		c.PID = d.PROJECT_ID and
+		e.STAFF_ID = c.STAFF_ID and
+		a.U_ID = f.uid and
+		f.usercategory_id = g.USERCATEGORY_ID and
+		b.STORE_ID = h.STORE_ID and
+		a.APPOINT_TIME between #{pd.BEGINTIME} and #{pd.ENDTIME}
+
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+			(
+			a.APPOINT_CODE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			f.phone = #{pd.keywords} or
+			f.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			b.WECHAT_PHONE LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			b.WECHAT_NAME LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%') or
+			b.REMARK LIKE
+			CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			)
+		</if>
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+			AND
+			b.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!=""'>
+			AND
+			b.STORE_ID = #{pd.STOREID}
+		</if>
+		<!-- <if test="pd.APPOINT_TIME!= null and pd.APPOINT_TIME != ''"> and APPOINT_TIME 
+			LIKE CONCAT(CONCAT('%', #{pd.APPOINT_TIME}),'%') </if> -->
+		order by APPOINT_TIME asc
+
+	</select>
+
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+	</select>
+
+
+	<!-- 查询该预约时段总数 -->
+	<select id="querySum" parameterType="pd" resultType="pd">
+		select
+		a.*,b.STAFF_ID
+		from
+		<include refid="tableName"></include>
+		a,tb_order b
+		where
+		a.ORDER_ID=b.ORDER_ID
+		and
+		a.APPOINT_TIME = #{APPOINT_TIME}
+		and
+		b.STAFF_ID = #{STAFF_ID}
+	</select>
+
+
+	<!-- 查询指定预约数 -->
+	<select id="findCount" parameterType="pd" resultType="pd">
+		select
+		count(*) zs
+		from
+		<include refid="tableName"></include>
+		where
+		ORDER_ID = #{ORDER_ID}
+	</select>
+
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where
+		CUSTOMAPPOINT_ID in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- fh313596790qq(青苔) -->
+</mapper>

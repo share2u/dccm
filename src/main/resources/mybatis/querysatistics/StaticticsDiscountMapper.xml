@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaticticsDiscountMapper">
+	<select id="selectDiscountGroups" resultType="pd">
+SELECT 
+		a.`GROUP_ID` groupId,c.`GROUP_NAME` groupName,a.`CREATE_TIME` createTime,COUNT(a.group_id) grantCount
+FROM 
+	tab_user_discount a LEFT JOIN (
+		SELECT 
+			b.`GROUP_ID`,b.`GROUP_NAME`
+		FROM 
+			tb_discount_group b 
+		GROUP BY b.`GROUP_ID`) AS c 
+		ON a.`group_id`=c.`GROUP_ID`
+WHERE 1=1
+	<if test="firstDate!=null and firstDate !=''" >
+		and (a.CREATE_TIME &gt; #{firstDate} or a.CREATE_TIME=#{firstDate})
+	</if>
+	<if test="lastDate!=null and lastDate !=''">
+		and a.CREATE_TIME &lt; date_add(#{lastDate},interval 1 day)
+	</if>
+GROUP BY 
+	a.group_id 
+ORDER BY 
+	a.`CREATE_TIME`
+	</select>
+	<select id="selectIsUsedDiscountByGroupId" resultType="pd">
+		SELECT 
+			a.`group_id` groupId,c.`GROUP_NAME` groupName,a.`discount_id` discountId,d.`DISCOUNT_NAME` discountName,a.isUsed,COUNT(1) useCount 
+		FROM 
+			tab_user_discount a  LEFT JOIN (
+		SELECT 
+			b.`GROUP_ID`,b.`GROUP_NAME`
+		FROM 
+			tb_discount_group b 
+		GROUP BY b.`GROUP_ID`) AS c ON a.`group_id`=c.`GROUP_ID` LEFT JOIN tb_discount d ON a.`discount_id`=d.`DISCOUNT_ID` 
+		WHERE 
+			a.`group_id`=#{groupId} 
+		GROUP BY 
+			a.`discount_id`,a.`isUsed`
+	</select>
+	
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaticticsOrderMapper">
+	<select id="orderCountsByStore" resultType="pd">
+		SELECT
+		a.STORE_ID storeId,b.`STORE_NAME` storeName,a.ORDER_STATUS
+		orderStatus,COUNT(1)
+		orderCount,CAST(SUM(a.PAY_MONEY) AS DECIMAL(15,2))
+		payMoney
+		FROM
+		TB_ORDER a LEFT JOIN tb_store b ON
+		a.`STORE_ID`=b.`STORE_ID`
+		where 1=1
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(CREATE_TIME &gt; #{firstDate} or
+			CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		GROUP BY
+		a.STORE_ID,a.ORDER_STATUS
+	</select>
+
+	<select id="orderCountsByStaff" resultType="pd">
+		SELECT
+		a.STORE_ID storeId,b.`STORE_NAME` storeName,a.ORDER_STATUS orderStatus,COUNT(1)
+		orderCount,CAST(SUM(a.PAY_MONEY) AS DECIMAL(15,2)) payMoney,c.STAFF_NAME,c.STAFF_ID
+		FROM
+		TB_ORDER a LEFT JOIN tb_store b ON a.`STORE_ID`=b.`STORE_ID`
+    LEFT JOIN tb_staff c ON a.`STAFF_ID`=c.`STAFF_ID`
+
+		where 1=1 and a.ORDER_STATUS in(5, 4)
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(CREATE_TIME &gt; #{firstDate} or CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		GROUP BY
+		a.STAFF_ID
+	</select>
+
+	<select id="orderPayMethodByStore" resultType="pd">
+		SELECT
+		b.`STORE_ID` storeId,
+		c.`STORE_NAME` storeName,
+		a.`ORDER_ID` orderId,
+		a.`PAY_METHOD` payMethod,
+		SUM(a.`PAY_MONEY`) orderMxMoney,
+		b.`ORDER_STATUS` orderStatus
+		FROM
+		tb_pay_detail a
+		LEFT JOIN tb_order b
+		ON a.`ORDER_ID` = b.`ORDER_ID` LEFT JOIN tb_store c ON
+		b.`STORE_ID`=c.`STORE_ID`
+		WHERE b.`ORDER_STATUS` IN(2,3,4,5,6)
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(b.CREATE_TIME &gt; #{firstDate} or
+			b.CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and b.CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		GROUP BY b.STORE_ID,a.`PAY_METHOD`
+	</select>
+	<select id="UserSourceProvinceSum" resultType="pd">
+		SELECT 
+			COUNT(1) sourceSum,
+			b.uid uId,
+			SUBSTRING_INDEX(b.`city`, ' ', 1) city 
+		FROM 
+			tb_order a LEFT JOIN tab_user b ON a.`UID`=b.`uid`
+		where 1=1
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(a.CREATE_TIME &gt; #{firstDate} or
+			a.CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and a.CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		GROUP BY 
+		SUBSTRING_INDEX(b.`city`, ' ', 1);
+	</select>
+
+	<select id="UserSourceCitySumByProvince" parameterType="pd" resultType="pd">
+		SELECT COUNT(1) sourceSum,b.uid uId, SUBSTRING_INDEX(SUBSTRING_INDEX(b.`city`, ' ', 2),' ',-1) city 
+		FROM 
+			tb_order a LEFT JOIN tab_user b ON a.`UID`=b.`uid` 
+		WHERE 
+			b.`city` LIKE CONCAT(#{province},'%') 
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(a.CREATE_TIME &gt; #{firstDate} or
+			a.CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and a.CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		GROUP BY b.`city`;
+	</select>
+
+	<select id="staticticsOrdersSource" resultType="pd">
+		SELECT COUNT(1) sourceSum,URL FROM tb_order 
+		where URL in('0','1','3') 
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(CREATE_TIME &gt; #{firstDate} or
+			CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		<if test="STORE_ID!=null and STORE_ID !=''">
+			and
+			(
+			STORE_ID = #{STORE_ID}
+			)
+		</if>
+		<if test="STAFF_ID!=null and STAFF_ID !=''">
+			and
+			(
+			STAFF_ID = #{STAFF_ID}
+			)
+		</if>
+		group by URL
+	</select>
+
+	<select id="orderCountsByService" resultType="pd">
+		SELECT
+		a.SERVICE_STAFF_ID,a.STORE_ID storeId,b.`STORE_NAME` storeName,a.ORDER_STATUS orderStatus,COUNT(1)
+		orderCount,CAST(SUM(a.PAY_MONEY) AS DECIMAL(15,2)) payMoney,c.STAFF_NAME,c.STAFF_ID
+		FROM
+		TB_ORDER a LEFT JOIN tb_store b ON a.`STORE_ID`=b.`STORE_ID`
+        LEFT JOIN tb_staff c ON a.`SERVICE_STAFF_ID`=c.`STAFF_ID`
+
+		where 1=1 
+		
+		<if test="firstDate!=null and firstDate !=''">
+			and
+			(CREATE_TIME &gt; #{firstDate} or CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{lastDate},interval 1
+			day)
+		</if>
+		
+		<if test='STORE_ID!=null and STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{STORE_ID}
+		</if>
+		
+		GROUP BY
+		a.SERVICE_STAFF_ID,a.ORDER_STATUS
+      </select>
+
+
+	<!--获取产生订单的用户个数  -->
+	<select id="selectUniqueUserOrder" resultType="Integer">
+		SELECT COUNT(0) orderUserSum FROM(SELECT uid FROM tb_order GROUP BY uid) AS tmp_count;
+	</select>
+	<!--查询系统中的总用户数  -->
+	<select id="selectRegistUserSum" resultType="Integer">
+		SELECT COUNT(uId) registUserSum FROM tab_user;
+	</select>
+	<select id="selectCompleteUserSum" resultType="Integer">
+		SELECT COUNT(uId) completeUserSum FROM tab_user WHERE phone !='';
+	</select>
+
+</mapper>

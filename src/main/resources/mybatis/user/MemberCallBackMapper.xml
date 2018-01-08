@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberCallBackMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_MEMBERCALLBACK
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,	
+		NAME,	
+		STORE_ID,	
+		STAFF_ID,	
+		PHONE,	
+		MEMBERCALLBACK_ID,
+		STATUS,
+		CREATE_TIME,
+		REMARK
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{NAME},	
+		#{STORE_ID},	
+		#{STAFF_ID},	
+		#{PHONE},	
+		#{MEMBERCALLBACK_ID},
+		#{STATUS},
+		#{CREATE_TIME},
+		#{REMARK}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 	
+		    STATUS =  #{STATUS},
+		    REMARK = #{REMARK}
+		where 
+		MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</update>
+	
+	<!-- 修改状态-->
+	<update id="updatestatus" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		STATUS = 1
+		where 
+		MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</update>
+	
+	<!-- 修改备注-->
+	<update id="updateremark" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		REMARK = #{REMARK}
+		where 
+		MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</select>
+	
+	
+	<!-- 自己写的通过ID获取数据 -->
+	<select id="findAllById" parameterType="pd" resultType="pd">
+		select
+		a.UID,	
+		a.NAME,	
+		a.STORE_ID,	
+		a.STAFF_ID,	
+		a.PHONE,	
+		a.MEMBERCALLBACK_ID,
+		a.STATUS,
+		a.CREATE_TIME,
+		a.REMARK,
+		b.STAFF_NAME,
+		C.STORE_NAME
+		from 
+		TB_MEMBERCALLBACK a,TB_STAFF b,TB_STORE c
+		where a.STAFF_ID = b.STAFF_ID
+		and a.STORE_ID = c.STORE_ID
+		and
+			MEMBERCALLBACK_ID = #{MEMBERCALLBACK_ID}
+	</select>
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 列表(自己写的) -->
+	<select id="listStaffAndStorelistPage" parameterType="page" resultType="pd">
+		select
+		a.UID,	
+		a.NAME,	
+		a.STORE_ID,	
+		a.STAFF_ID,	
+		a.PHONE,	
+		a.MEMBERCALLBACK_ID,
+		a.STATUS,
+		a.CREATE_TIME,
+		a.REMARK,
+		b.STAFF_NAME,
+		C.STORE_NAME
+		from 
+		TB_MEMBERCALLBACK a,TB_STAFF b,TB_STORE c
+		where a.STAFF_ID = b.STAFF_ID
+		and a.STORE_ID = c.STORE_ID
+		
+		
+		
+
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+					a.PHONE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					a.NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+		<if test="pd.STATUS!=null and pd.STATUS !=''">
+			and a.STATUS=#{pd.STATUS}	
+			
+		</if>
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.STOREID!=null and pd.STOREID!="" and pd.STOREID!="1"'>
+		AND
+		a.STORE_ID = #{pd.STOREID}
+		</if>
+order by a.CREATE_TIME desc
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			MEMBERCALLBACK_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

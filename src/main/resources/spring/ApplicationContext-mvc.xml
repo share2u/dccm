@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<context:component-scan base-package="cn.ncut.controller" />
+	<context:component-scan base-package="cn.json" />
+	
+	<!--微信日志的开启  -->
+ 	<aop:aspectj-autoproxy proxy-target-class="true"/>
+   
+	<!-- 对静态资源文件的访问 restful -->
+	<mvc:resources mapping="/admin/**" location="/,/admin/" />
+	<mvc:resources mapping="/static/**" location="/,/static/" />
+	<mvc:resources mapping="/plugins/**" location="/,/plugins/" />
+	<mvc:resources mapping="/uploadFiles/**" location="/,/uploadFiles/" />
+
+	<!-- 访问拦截 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/userpay/confirmAndPayOrder.do"/>   
+            <mvc:mapping path="/userpay/createOrder.do"/>
+            <mvc:mapping path="/prestoremx/goAdd.do"/> 
+            <mvc:mapping path="/prestoremx/save.do"/>          
+            <bean class="cn.ncut.interceptor.TokenInterceptor"/><!--class文件路径改成你自己写得拦截器路径！！ -->
+        </mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/**" />
+			<mvc:exclude-mapping path="/weChat**/**" />
+			<bean class="cn.ncut.interceptor.LoginHandlerInterceptor" />
+		</mvc:interceptor> 		
+		 <mvc:interceptor>
+			<!-- 	拦截微信自定义菜单中的"充值","个人中心","投诉与建议","历史列表"
+				"投诉与建议","历史列表"暂时未考虑 
+				
+				path对应的就是菜单的路径
+				-->
+			<mvc:mapping path="/weChat/**"/>
+			<bean class="cn.ncut.interceptor.WeChatNavigateIntercepter"/>
+		</mvc:interceptor>
+		<!-- 配置Token拦截器，防止用户重复提交数据 -->
+        
+	</mvc:interceptors>
+
+	<!-- 配置SpringMVC的视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="exceptionResolver" class="cn.ncut.resolver.MyExceptionResolver"></bean>
+
+	<!-- 上传拦截，如最大上传值及最小上传值 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>104857600</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+		<property name="defaultEncoding">
+			<value>utf-8</value>
+		</property>
+	</bean>
+	
+	<!-- 修改订单状态 -->
+	<bean id="modifyOrderStatusToCloseOrOverTimeJob" class="cn.ncut.job.ModifyOrderStatusToCloseOrOverTimeJob"></bean>
+	<bean id="publishDiscountToValidOrInvalidJob" class="cn.ncut.job.PublishDiscountToValidOrInvalidJob"></bean>
+	<bean id="ChangeServiceCostTimeJob" class="cn.ncut.job.ChangeServiceCostTimeJob"></bean>
+	<bean id="modifyPayHistoryStatusJob" class="cn.ncut.job.ModifyPayHistoryStatusJob"></bean>
+	
+	<!--配置调度具体执行的方法 -->
+	<bean id="modifyOrderStatusToCloseOrOverTimeJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="modifyOrderStatusToCloseOrOverTimeJob" />
+		<property name="targetMethod" value="modifyOrderStatus" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="publishDiscountToValidOrInvalidJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="publishDiscountToValidOrInvalidJob" />
+		<property name="targetMethod" value="modifyDiscountStatus" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="ChangeServiceCostTimeJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="ChangeServiceCostTimeJob" />
+		<property name="targetMethod" value="changeProjectPrice" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="modifyPayHistoryStatusJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="modifyPayHistoryStatusJob" />
+		<property name="targetMethod" value="modifyPayHistoryStatus" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+
+	<!--配置调度执行的触发的时间 -->
+	<bean id="modifyOrderStatusToCloseOrOverTimeJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="modifyOrderStatusToCloseOrOverTimeJobDetail" />
+		<property name="cronExpression">
+			<!-- 每十分钟执行一次 -->
+			<value>0 0/10 * * * ?</value>
+		</property>
+	</bean>
+	<bean id="publishDiscountToValidOrInvalidJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="publishDiscountToValidOrInvalidJobDetail" />
+		<property name="cronExpression">
+			<!-- 每天00:10:00执行 -->
+			<value>0 10 0 * * ?</value>
+		</property>
+	</bean>
+	<bean id="ChangeServiceCostTimeJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="ChangeServiceCostTimeJobDetail" />
+		<property name="cronExpression">
+			<!-- 每天00:01:00执行 -->
+			<value>0 01 0 * * ?</value>
+		</property>
+	</bean>
+	<bean id="modifyPayHistoryStatusJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="modifyPayHistoryStatusJobDetail" />
+		<property name="cronExpression">
+			<!-- 45分钟执行一次 -->
+			<value>0 0/45 * * * ?</value>
+		</property>
+	</bean>
+	
+
+	<!-- quartz的调度工厂 调度工厂只能有一个，多个调度任务在list中添加  -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="jobDetails">
+			<list>
+				<ref bean="modifyOrderStatusToCloseOrOverTimeJobDetail" />
+				<ref bean="publishDiscountToValidOrInvalidJobDetail"/>
+				<ref bean="ChangeServiceCostTimeJobDetail"/>
+				<ref bean="modifyPayHistoryStatusJobDetail"/>
+			</list>
+		</property>
+		<property name="triggers">
+			<list>
+				<ref bean="modifyOrderStatusToCloseOrOverTimeJobTrigger" />
+				<ref bean="publishDiscountToValidOrInvalidJobTrigger"/>
+				<ref bean="ChangeServiceCostTimeJobTrigger"/>
+				<ref bean="modifyPayHistoryStatusJobTrigger"/>
+			</list>
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StoredDetailMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_STORED_DETAIL
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		
+		UID,	
+		STORED_CATEGORY_ID,	
+		STORE_ID,	
+		STAFF_ID,	
+		WECHATPAY_MONEY,
+		ALIPAY_MONEY,
+		BANKPAY_MONEY,
+		CASHPAY_MONEY,	
+		CREATE_TIME,	
+		REMARK,	
+		STATUS,	
+		STOREDDETAIL_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		
+		#{UID},	
+		#{STORED_CATEGORY_ID},	
+		#{STORE_ID},	
+		#{STAFF_ID},
+		#{WECHATPAY_MONEY},
+		#{ALIPAY_MONEY},
+		#{BANKPAY_MONEY},
+		#{CASHPAY_MONEY},		
+		
+		#{CREATE_TIME},	
+		#{REMARK},	
+		#{STATUS},	
+		#{STOREDDETAIL_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+		UID,	
+		STORED_CATEGORY_ID,	
+		STORE_ID,	
+		STAFF_ID,	
+		WECHATPAY_MONEY,
+		ALIPAY_MONEY,
+		BANKPAY_MONEY,
+		CASHPAY_MONEY,	
+		CREATE_TIME,	
+		REMARK,	
+		STATUS,
+		TYPE,
+		MONEY,
+		POINTS,
+		STOREDDETAIL_ID
+		) values (
+	#{UID},	
+		#{STORED_CATEGORY_ID},	
+		#{STORE_ID},	
+		#{STAFF_ID},
+		#{WECHATPAY_MONEY},
+		#{ALIPAY_MONEY},
+		#{BANKPAY_MONEY},
+		#{CASHPAY_MONEY},		
+		
+		#{CREATE_TIME},	
+		#{REMARK},	
+		#{STATUS},
+		#{TYPE},
+		#{MONEY},
+		#{POINTS},
+		#{STOREDDETAIL_ID}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STOREDDETAIL_ID = #{STOREDDETAIL_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		STOREDDETAIL_ID = STOREDDETAIL_ID
+		where 
+		STOREDDETAIL_ID = #{STOREDDETAIL_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			STOREDDETAIL_ID = #{STOREDDETAIL_ID}
+	</select>
+	
+	<!-- //查询该用户有哪些储值明细-->
+	<select id="findStorededMxByUidlistPage" parameterType="page" resultType="pd">
+		select 
+			a.TYPE,a.MONEY,a.POINTS,a.CREATE_TIME,a.REMARK,
+			b.STAFF_NAME,
+			c.name,c.username,c.phone,
+			d.STORE_NAME
+		from 
+			tb_stored_detail a left join tb_store d on a.STORE_ID=d.STORE_ID 
+			LEFT JOIN tb_staff b on a.STAFF_ID=b.STAFF_ID ,
+			tab_user c			
+		where 	
+			a.UID=c.UID			
+		and 
+			a.UID=#{pd.UID}
+		and
+		a.STATUS=0
+		order by a.CREATE_TIME desc
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		and
+		STATUS = 0
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">	
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>	
+	</select>
+	
+	
+	<!-- 储值信息(全部) -->
+	<select id="storeddetaillistPage" parameterType="page" resultType="pd">
+		select a.*,b.name,b.username,b.phone,c.STORED_MONEY,d.STAFF_NAME,e.STORE_NAME
+			from 
+		<include refid="tableName"></include> a
+		LEFT OUTER JOIN tab_user b 
+			on
+		 a.UID = b.uid
+		LEFT OUTER JOIN tb_stored_category c 
+			on
+		 a.STORED_CATEGORY_ID = c.STOREDCATEGORY_ID
+		LEFT OUTER JOIN tb_staff d 
+			on
+		 a.STAFF_ID = d.STAFF_ID
+	   LEFT OUTER JOIN tb_store e 
+		   on
+		 a.STORE_ID = e.STORE_ID		
+	   where a.STATUS=0 and a.TYPE in('0','1','3') 
+	   <if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (a.CREATE_TIME &gt; #{pd.firstDate} or a.CREATE_TIME=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and a.CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if> 	
+	
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and 
+			  (
+				 b.name LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 b.phone LIKE CONCAT('%',#{pd.keywords},'%')
+				 or
+				 b.username LIKE CONCAT('%',#{pd.keywords},'%')
+			)
+
+	   </if>
+	   	<if test="pd.storeIds != null and pd.storeIds.size > 0">
+			and a.STORE_ID in
+			<foreach collection="pd.storeIds" index="index" open="("
+				close=")" separator=",">
+				#{pd.storeIds[${index}]}
+			</foreach>
+		</if>
+		<if test="pd.store!= null and pd.store != ''">
+			and a.STORE_ID = #{pd.store}
+		</if>	
+		<if test="pd.staffName != null and pd.staffName != ''">
+			and a.STAFF_ID = #{pd.staffName}
+		</if>
+		order by a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			STOREDDETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<select id="selectstoreddetail" parameterType="pd" resultType="pd">
+		select a.*,b.name,b.username,b.phone,c.STORED_MONEY,d.STAFF_NAME,e.STORE_NAME
+			from 
+		<include refid="tableName"></include> a
+		LEFT OUTER JOIN tab_user b 
+			on
+		 a.UID = b.uid
+		LEFT OUTER JOIN tb_stored_category c 
+			on
+		 a.STORED_CATEGORY_ID = c.STOREDCATEGORY_ID
+		LEFT OUTER JOIN tb_staff d 
+			on
+		 a.STAFF_ID = d.STAFF_ID
+	   LEFT OUTER JOIN tb_store e 
+		   on
+		 a.STORE_ID = e.STORE_ID		
+	   where a.STATUS=0 and a.TYPE in('0','1','3') 
+	   <if test="firstDate!=null and firstDate !=''" >
+			and (a.CREATE_TIME &gt; #{firstDate} or a.CREATE_TIME=#{firstDate})
+		</if>
+		<if test="lastDate!=null and lastDate !=''">
+			and a.CREATE_TIME &lt; date_add(#{lastDate},interval 1 day)
+		</if> 	
+	
+		<if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+			and 
+			  (
+				 b.name LIKE CONCAT('%',#{keywords},'%')
+				 or
+				 b.phone LIKE CONCAT('%',#{keywords},'%')
+				 or
+				 b.username LIKE CONCAT('%',#{keywords},'%')
+			)
+
+	   </if>
+	   	<if test="storeIds != null and storeIds.size > 0">
+			and a.STORE_ID in
+			<foreach collection="storeIds" index="index" open="("
+				close=")" separator=",">
+				#{storeIds[${index}]}
+			</foreach>
+		</if>
+		<if test="store!= null and store != ''">
+			and a.STORE_ID = #{store}
+		</if>	
+		<if test="staffName != null and staffName != ''">
+			and a.STAFF_ID = #{staffName}
+		</if>
+		order by a.CREATE_TIME DESC
+	</select>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

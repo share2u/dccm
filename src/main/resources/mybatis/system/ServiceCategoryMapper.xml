@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServiceCategoryMapper">
+	
+	<resultMap id="ServiceCategoryMap" type="ServiceCategory">
+		<id column="SERVICECATEGORY_ID" property="SERVICECATEGORY_ID"/>
+		<result column="CATEGORY_NAME" property="CATEGORY_NAME"/>
+		<result column="F_CATEGORY_ID" property="F_CATEGORY_ID"/>
+		<result column="DESCRIPTION" property="DESCRIPTION"/>
+		<result column="STATUS" property="STATUS"/>
+	</resultMap>
+	
+	
+	<!--表名 -->
+	<sql id="tableName">
+		service_category
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		CATEGORY_NAME,	
+		F_CATEGORY_ID,	
+		DESCRIPTION,	
+		STATUS,	
+		SERVICECATEGORY_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{CATEGORY_NAME},	
+		#{F_CATEGORY_ID},	
+		#{DESCRIPTION},	
+		#{STATUS},	
+		#{SERVICECATEGORY_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into service_category(CATEGORY_NAME,F_CATEGORY_ID,DESCRIPTION,STATUS) value(
+		#{CATEGORY_NAME},	
+		#{F_CATEGORY_ID},	
+		#{DESCRIPTION},	
+		#{STATUS}
+		)
+	
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SERVICECATEGORY_ID = #{SERVICECATEGORY_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			CATEGORY_NAME = #{CATEGORY_NAME},
+			F_CATEGORY_ID = #{F_CATEGORY_ID},
+			DESCRIPTION = #{DESCRIPTION},
+			STATUS = #{STATUS},
+		SERVICECATEGORY_ID = SERVICECATEGORY_ID
+		where 
+		SERVICECATEGORY_ID = #{SERVICECATEGORY_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			SERVICECATEGORY_ID = #{SERVICECATEGORY_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+		
+					CATEGORY_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 
+					
+			
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SERVICECATEGORY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- =======================以下是自己写的=========================== -->
+	<!-- 列表(全部) -->
+	<select id="queryAllCategory" parameterType="pd" resultMap="ServiceCategoryMap">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where STATUS=1
+	</select>
+	
+	<!--通过ID获取其子一级分类 -->
+	<select id="queryAllCategoryByPid" parameterType="Integer" resultMap="ServiceCategoryMap">
+		select  
+			<include refid="Field"></include>
+		from 
+			<include refid="tableName"></include>
+		where F_CATEGORY_ID = #{categoryId} 
+	</select>
+	
+	
+	<!--通过ID获取该分类 -->
+	<select id="findByZJId" parameterType="Integer" resultType="pd">
+		select  
+			<include refid="Field"></include>
+		from 
+			<include refid="tableName"></include>
+		where SERVICECATEGORY_ID = #{id} 
+	</select>
+</mapper>

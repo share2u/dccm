@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DiscountMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tb_discount
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		DISCOUNT_NAME,	
+		DISCOUNT_AMOUNT,
+		NUMBER,	
+		A_NUMBER,	
+		STARTTIME,	
+		ENDTIME,	
+		CREATETIME,	
+		STAFF_ID,	
+		PROJECT_IDS,	
+		STATUS,	
+		DISCOUNT_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{DISCOUNT_NAME},	
+		#{DISCOUNT_AMOUNT},
+		#{NUMBER},	
+		#{A_NUMBER},	
+		#{STARTTIME},	
+		#{ENDTIME},	
+		#{CREATETIME},	
+		#{STAFF_ID},	
+		#{PROJECT_IDS},	
+		#{STATUS},	
+		#{DISCOUNT_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			DISCOUNT_ID = #{DISCOUNT_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			DISCOUNT_NAME = #{DISCOUNT_NAME},
+			DISCOUNT_AMOUNT = #{DISCOUNT_AMOUNT},
+			NUMBER = #{NUMBER},
+			A_NUMBER = #{A_NUMBER},
+			STARTTIME = #{STARTTIME},
+			ENDTIME = #{ENDTIME},
+			CREATETIME = #{CREATETIME},
+			STAFF_ID = #{STAFF_ID},
+			PROJECT_IDS = #{PROJECT_IDS},
+			STATUS = #{STATUS},
+		DISCOUNT_ID = DISCOUNT_ID
+		where 
+		DISCOUNT_ID = #{DISCOUNT_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			DISCOUNT_ID = #{DISCOUNT_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select a.*,b.STAFF_NAME	
+		from 
+		tb_discount a,
+		TB_STAFF b
+		where
+	    a.STAFF_ID=b.STAFF_ID
+		
+		<if test="pd.STATUS!=null and pd.STATUS !=''">
+			and a.STATUS=#{pd.STATUS}
+		</if>
+		
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				a.DISCOUNT_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				
+				)
+		</if>
+		order by a.CREATETIME desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		order by CREATETIME desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			DISCOUNT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

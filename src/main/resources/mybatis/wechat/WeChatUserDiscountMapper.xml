@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatUserDiscount">
+	<resultMap type="WeChatUserDiscount" id="WeChatUserDiscountResultMap">
+		<id property="id" column="id"/>
+		<result property="isScan" column="isScan"/>
+		<result property="isUsed" column="isUsed"/>
+		<association property="discount" javaType="WeChatDiscount">
+			<id property="discountId" column="discountId"/>
+			<result property="discountName" column="discountName"/>
+			<result property="discountAmount" column="discountAmount"/>
+			<result property="projectIds" column="projectIds"/>
+			<result property="startTime" column="startTime"/>
+			<result property="endTime" column="endTime"/>
+			<result property="status" column="status"/>
+		</association>
+	</resultMap>
+
+	<!-- 
+		通过用户编号查询某用户拥有的未使用的优惠券(未检测优惠券的状态,即是否有效)
+	-->
+	<select id="getUserUnusedDiscountsByUserId" parameterType="java.lang.Integer" resultMap="WeChatUserDiscountResultMap">
+		select 
+			userDiscount.id as id,
+			userDiscount.isScan as isScan,
+			userDiscount.isUsed as isUsed,
+			discount.DISCOUNT_ID as discountId,
+			discount.DISCOUNT_NAME as discountName,
+			discount.DISCOUNT_AMOUNT as discountAmount,
+			discount.PROJECT_IDS as projectIds,
+			discount.STARTTIME as startTime,
+			discount.ENDTIME as endTime,
+			discount.STATUS as status
+		from tb_discount discount,tab_user_discount userDiscount
+		where
+			userDiscount.discount_id = discount.DISCOUNT_ID
+			and
+			userDiscount.isUsed = 0
+			and
+			userDiscount.uid = #{uId}
+	</select>
+	
+	<!-- 获取未使用并且用户未看过的优惠券(未检测优惠券的状态,即是否有效) -->
+	<select id="getUserUnusedAndUnscannedDiscountsByUserId" parameterType="java.lang.Integer" resultMap="WeChatUserDiscountResultMap">
+		select 
+			userDiscount.id as id,
+			userDiscount.isScan as isScan,
+			userDiscount.isUsed as isUsed,
+			discount.DISCOUNT_ID as discountId,
+			discount.DISCOUNT_NAME as discountName,
+			discount.DISCOUNT_AMOUNT as discountAmount,
+			discount.PROJECT_IDS as projectIds,
+			discount.STARTTIME as startTime,
+			discount.ENDTIME as endTime,
+			discount.STATUS as status
+		from tb_discount discount,tab_user_discount userDiscount
+		where
+			userDiscount.discount_id = discount.DISCOUNT_ID
+			and
+			userDiscount.isUsed = 0
+			and
+			userDiscount.isScan = 0
+			and
+			userDiscount.uid = #{uId}
+	</select>
+	
+	<!-- 更新数据库用户优惠券是否看过 -->
+	<update id="updateUserDiscountToScanned" parameterType="java.lang.Integer">
+		update
+			tab_user_discount userDiscount
+		set 
+			userDiscount.isScan = 1
+		where 
+			userDiscount.uid = #{uId}
+	</update>
+	
+	<!-- 通过主键查询记录 -->
+	<select id="getUserDiscountByDiscountId" parameterType="java.lang.String" resultMap="WeChatUserDiscountResultMap">
+		select 
+			userDiscount.id as id,
+			userDiscount.isScan as isScan,
+			userDiscount.isUsed as isUsed,
+			discount.DISCOUNT_ID as discountId,
+			discount.DISCOUNT_NAME as discountName,
+			discount.DISCOUNT_AMOUNT as discountAmount,
+			discount.PROJECT_IDS as projectIds,
+			discount.STARTTIME as startTime,
+			discount.ENDTIME as endTime,
+			discount.STATUS as status
+		from tb_discount discount,tab_user_discount userDiscount
+		where
+			userDiscount.discount_id = discount.DISCOUNT_ID
+			and
+			userDiscount.id = #{id}
+	</select>
+	
+	<!-- 更新优惠券的状态 -->
+	<update id="updateUserDiscountStatus" parameterType="WeChatUserDiscount">
+		update
+			tab_user_discount userDiscount
+		set
+			userDiscount.isUsed = #{isUsed}
+		where
+			userDiscount.id = #{id}
+	</update>
+</mapper>

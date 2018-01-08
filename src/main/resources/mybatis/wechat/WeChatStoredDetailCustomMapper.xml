@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatStoredDetailCustomMapper">
+	<!-- 保存用户储值卡变动明细信息 -->
+	<insert id="saveStoredDetailCustom" parameterType="WeChatStoredDetailCustom">
+		insert into
+			tb_stored_detail(
+				STOREDDETAIL_ID,
+				UID,
+				STORE_ID,
+				STAFF_ID,
+				CREATE_TIME,
+				MONEY,
+				POINTS,
+				TYPE,
+				STATUS
+			)
+		values(
+			#{storedDetailId},
+			#{uId},
+			#{storeId},
+			#{staffId},
+			#{createTime},
+			#{money},
+			#{points},
+			#{type},
+			#{status}
+		)		
+	</insert>
+</mapper>

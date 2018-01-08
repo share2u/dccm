@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 预存明细 -->
+<mapper namespace="WeChatPreStoreMxMapper">
+	<select id="getUserPreStoreMxByUserId" parameterType="java.lang.Integer" resultType="WeChatPreStoreMx">
+		select
+			PRESTOREMX_ID as preStoreMxId,
+			PRESTORE_ID as preStoreId,
+			UID as uId,
+			PHONE as phone,
+			USERNAME as userName,
+			REMITNO as remitNo,
+			BANK as bank,
+			ADDRESS as address,
+			PRESTOREMONEY as preStoreMoney,
+			STAFF_ID as staffId,
+			CREATE_TIME as createTime,
+			TYPE as type
+		from
+			tb_prestoremx
+		where
+			UID = #{uId}
+		order by CREATE_TIME desc
+	</select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserDiscountGroupMapper">
+	
+	<!-- 插入用户-优惠券组合 记录-->
+	<insert id="addDiscountGroupToUser" parameterType="pd">
+		insert into 
+			tab_user_discount_group
+			(
+				uid,
+				discount_group_id,
+				create_time,
+				staff_id
+			) 
+			values
+			(
+				#{UID},
+				#{GROUP_ID},
+				#{CREATE_TIME},
+				#{STAFF_ID}
+			)
+	</insert>
+	
+	<!--查看哪些用户有了这个优惠券组合-->
+	<select id="queryUserByGroupidlistPage" parameterType="page" resultType="pd">
+		select 
+			a.*,
+			b.username,b.name,
+			c.STAFF_NAME 
+		from 
+			tab_user_discount_group a,
+			tab_user b,
+			tb_staff c
+		where 
+			a.uid=b.uid 
+		and
+			a.staff_id=c.staff_id
+		and 
+			a.discount_group_id=#{pd.GROUP_ID}
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				b.username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				or
+				b.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				or
+				b.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')	
+				)
+		</if>
+		<!-- <if test="pd.lastStart!=null and pd.lastStart !='' and pd.lastEnd!=null and pd.lastEnd !=''">
+			and a.create_time between #{pd.lastStart} and #{pd.lastEnd}
+		</if> -->
+			<if test="pd.lastStart!=null and pd.lastStart!=''"><!-- 关注时间检索 -->
+			and a.create_time &gt; #{pd.lastStart} 
+		</if>
+		<if test="pd.lastEnd!=null and pd.lastEnd!=''"><!-- 关注时间检索 -->
+			and a.create_time &lt; #{pd.lastEnd} 
+		</if>
+		order by a.create_time desc
+	</select>
+	
+	
+	<select id="queryDiscountGroupByUid" parameterType="Integer" resultType="UserDiscountGroup">
+		select DISTINCT a.*,b.GROUP_NAME from tab_user_discount_group a,tb_discount_group b where a.discount_group_id=b.GROUP_ID and a.uid=#{uid}
+	</select>
+	
+	<!--删除该优惠券组 -->
+	<delete id="deleteDiscounGroupByid" parameterType="String">
+	delete from tab_user_discount_group where discount_group_id = #{groupid}
+	</delete>
+</mapper>

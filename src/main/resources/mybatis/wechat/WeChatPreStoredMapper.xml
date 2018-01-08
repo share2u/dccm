@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatPreStoredMapper">
+	<!-- modified by scott -->
+	<!--表名 -->
+	<sql id="tableName">
+		TB_PRESTORE
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,
+		PHONE,	
+		USERNAME,
+		SUM_MONEY,	
+		PRESTORE_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{PHONE},
+		#{USERNAME},
+		#{SUM_MONEY},	
+		#{PRESTORE_ID}
+	</sql>
+	
+	<select id="getTotalPreStored" parameterType="Integer"
+		resultType="Double">
+		SELECT
+		SUM_MONEY
+		FROM
+		tb_prestore
+		WHERE
+		UID=#{uId}
+	</select>
+	
+	<!-- 修改 -->
+	<update id="updateUserPreStoreByUid" parameterType="WeChatPreStore">
+		update
+		<include refid="tableName"></include>
+		set 			
+			PHONE = #{PHONE},
+			USERNAME = #{USERNAME}
+		where 
+			PRESTORE_ID = #{PRESTORE_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="getUserPreStoreByUid" parameterType="java.lang.Integer" resultType="WeChatPreStore">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			UID = #{UID}
+	</select>
+</mapper>

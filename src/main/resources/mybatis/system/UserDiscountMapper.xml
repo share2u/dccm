@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserDiscountMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tab_user_discount
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,	
+		UID,	
+		DISCOUNT_ID,	
+		CREATE_TIME,	
+		ISSCAN,	
+		ISUSED,	
+		START_TIME,	
+		END_TIME,	
+		STAFF_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{UID},	
+		#{DISCOUNT_ID},	
+		#{CREATE_TIME},	
+		#{ISSCAN},	
+		#{ISUSED},	
+		#{START_TIME},	
+		#{END_TIME},	
+		#{STAFF_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 修改 优惠券的使用状态 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			isUsed = #{isUsed}
+		where 
+		id = #{id}
+	</update>
+	
+	
+	 <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		
+	</select> 
+	
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	
+	<!-- 以下是自己写的-->
+	<!-- 插入用户优惠券表-->
+	<insert id="addDiscountToUser" parameterType="pd">
+		insert into tab_user_discount(uid,discount_id,group_id,create_time,start_time,end_time,staff_id) values(#{UID},#{DISCOUNT_ID},#{GROUP_ID},#{CREATE_TIME},#{START_TIME},#{END_TIME},#{STAFF_ID})
+	</insert>
+	
+	<!--查看哪些用户有了这个优惠券-->
+	<select id="queryUserByDid" parameterType="String" resultType="pd">
+		select a.*,b.*  from tab_user_discount a,tab_user b where a.uid=b.uid and a.discount_id=#{id}
+	</select>
+	
+	<!--查询该用户有什么优惠券,按组合分组-->
+	<select id="queryDiscountByUidAndGroupid" parameterType="UserDiscountGroup" resultType="UserDiscount">
+		select 
+			a.discount_id,a.isUsed,a.start_time,a.end_time,
+			b.DISCOUNT_NAME as discount_name,b.DISCOUNT_AMOUNT as discount_amount,
+			b.DISCOUNT_AMOUNT as discount_amount,
+			count(a.discount_id) as count 
+		from 
+			tab_user_discount a,
+			tb_discount b 
+		where 
+			a.discount_id=b.DISCOUNT_ID
+		and 
+			a.isUsed=0
+		and
+			b.STATUS=1
+		and
+		    uid=#{uid} and group_id=#{discount_group_id} 
+		group by discount_id
+	</select>
+	
+	<!-- 根据uid和discount_id查询优惠券集合 -->
+	<select id="findByUidAndDiscountId" parameterType="pd" resultType="pd">
+		select * from tab_user_discount where UID=#{UID}  and DISCOUNT_ID=#{DISCOUNT_ID} and ISUSED=0
+	</select>
+	
+	
+	
+	<!-- 根据用户查询优惠券 -->
+	<select id="findByUIdlistPage" parameterType="page" resultType="pd">
+		select
+		a.ID,	
+		a.UID,	
+		a.DISCOUNT_ID,	
+		a.CREATE_TIME,	
+		a.ISSCAN,	
+		a.ISUSED,	
+		a.START_TIME,	
+		a.END_TIME,	
+		a.STAFF_ID,
+		b.STAFF_NAME,
+		c.name,
+		d.DISCOUNT_NAME
+		from 
+		tab_user_discount a,tb_staff b,tab_user c,tb_discount d
+		where 
+		a.UID = #{pd.UID}
+		and a.STAFF_ID = b.STAFF_ID
+		and a.UID = c.uid
+		and a.DISCOUNT_ID = d.DISCOUNT_ID
+		<if test="pd.startTime!=null and pd.startTime!=''"><!-- 登录时间检索 -->
+			and a.CREATE_TIME &gt; #{pd.startTime} 
+		</if>
+		<if test="pd.endTime!=null and pd.endTime!=''"><!-- 登录时间检索 -->
+			and a.CREATE_TIME &lt; #{pd.endTime} 
+		</if>
+	</select>
+</mapper>

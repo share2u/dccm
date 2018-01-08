@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatUserMapper">
+	<!--表名 -->
+	<sql id="TableName">
+		TAB_USER
+	</sql>
+	
+	<!--TAB_USER 字段名 -->
+	<sql id="Field">
+		UID,
+		OPENID,
+		NAME,
+		USERNAME,
+		USERIMG,
+		SEX,
+		AGE,
+		PHONE,
+		IDCODE,
+		CITY,
+		ADDRESS,
+		FIRST_DATE,
+		SOURCE,
+		USERCATEGORY_ID,
+		ILLNESS,
+		SECTION,
+		EMAIL,
+		PROPORTION,
+		ATTENTION_TIME
+	</sql>
+	
+	<!-- WeChatUser类属性 -->
+	<sql id="FieldValue">
+		#{uId},
+		#{openId},
+		#{name},
+		#{userName},
+		#{userImg},
+		#{sex},
+		#{birthday},
+		#{phone},
+		#{idCode},
+		#{city},
+		#{address},
+		#{firstDate},
+		#{source},
+		#{userCategory},
+		#{illness},
+		#{section},
+		#{email},
+		#{proportion},
+		#{attentionTime}
+	</sql>
+	
+	<!-- resultMap 映射设置 -->
+	<resultMap type="WeChatUser" id="weChatUserResultMap">
+		<id column="UID" property="uId" />
+		<result column="OPENID" property="openId" />
+		<result column="NAME" property="name" />
+		<result column="USERNAME" property="userName" />
+		<result column="USERIMG" property="userImg" />
+		<result column="SEX" property="sex" />
+		<result column="AGE" property="birthday" />
+		<result column="PHONE" property="phone" />
+		<result column="IDCODE" property="idCode" />
+		<result column="CITY" property="city" />
+		<result column="ADDRESS" property="address" />
+		<result column="FIRST_DATE" property="firstDate"/>
+		<result column="SOURCE" property="source" />
+		<result column="USERCATEGORY_ID" property="userCategory" />
+		<result column="ILLNESS" property="illness"/>
+		<result column="SECTION" property="section"/>
+		<result column="EMAIL" property="email"/>
+		<result column="PROPORTION" property="proportion" />
+	</resultMap>
+
+	<!-- 通过OpenId获取用户 -->
+	<select id="getUserByOpenId" parameterType="String" resultMap="weChatUserResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="TableName"></include>
+		where OPENID = #{openId} limit 1;
+	</select>
+	
+	<!-- 通过UID获取用户 -->
+	<select id="getWeChatUserByuId" parameterType="java.lang.Integer"
+		resultMap="weChatUserResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="TableName"></include>
+		where UID = #{uId}
+	</select>
+	
+	<!-- 插入数据 -->
+	<insert id="insertWeChatUser" parameterType="WeChatUser">
+		<selectKey keyProperty="uId" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into
+		<include refid="TableName"></include>
+		(
+		<include refid="Field"></include>
+		)values(
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+	<!-- 
+		更新用户信息
+			用户名称,性别,年龄,手机号,证件信息,邮箱,城市
+	 -->
+	<update id="updateWeChatUser" parameterType="WeChatUser">
+		update TAB_USER 
+		set
+			NAME = #{name},
+			PHONE = #{phone},
+			SEX = #{sex},
+			AGE = #{birthday},
+			CITY = #{city},
+			ADDRESS = #{address},
+			IDCODE = #{idCode},
+			EMAIL = #{email}
+		where UID = #{uId}
+	</update>
+	
+	<select id="checkMobileIsDuplicate" parameterType="WeChatUser" resultType="WeChatUser">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="TableName"></include>
+		where 
+			UID &lt;&gt; #{uId}
+			and
+			PHONE = #{phone}
+	</select>
+</mapper>

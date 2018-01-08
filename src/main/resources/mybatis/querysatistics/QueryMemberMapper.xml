@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QueryMemberMapper">
+
+
+
+	<!-- 列表 -->
+	<select id="queryMemberlistPage" parameterType="page" resultType="QueryUser">
+		select
+		*
+		from query_user
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					userName LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					or
+					phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+	</select>
+
+	<select id="storedDetaillistPage" parameterType="page" resultType="pd">
+		select
+		   a.*,b.name,b.userName,C.STAFF_NAME,d.STORE_NAME
+		from tb_stored_detail a
+		LEFT JOIN query_user b on a.UID=b.uId
+		LEFT JOIN tb_staff C on a.STAFF_ID=C.STAFF_ID
+		LEFT JOIN tb_store d  on a.STORE_ID=d.STORE_ID
+		where a.UID = #{pd.UID}
+		<if test="pd.STATUS!=null and pd.STATUS !=''">
+			and a.STATUS=#{pd.STATUS}
+		</if> 
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (CREATE_TIME &gt; #{pd.firstDate} or CREATE_TIME=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if> 
+	<!--	<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and  a.CREATE_TIME=#{pd.firstDate}
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and a.CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if> -->
+		
+		order by CREATE_TIME DESC
+	</select>
+	
+		<!-- 列表 -->
+	<select id="prestoredDetaillistPage" parameterType="page" resultType="pd">
+		select
+		   a.*,b.name,c.STAFF_NAME
+		from tb_prestoremx a
+		LEFT JOIN tab_user b on a.UID=b.uid
+		LEFT JOIN tb_staff c on a.STAFF_ID=c.STAFF_ID
+		where a.UID = #{pd.UID}
+		<if test="pd.TYPE!=null and pd.TYPE !=''">
+			and a.TYPE=#{pd.TYPE}
+		</if>
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (CREATE_TIME &gt; #{pd.firstDate} or CREATE_TIME=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if> 
+		
+		order by CREATE_TIME DESC
+	</select>
+	
+	<select id="discountDetaillistPage" parameterType="page" resultType="pd">
+	    select
+		   a.*,b.name,b.username,c.STAFF_NAME,d.DISCOUNT_NAME
+		from tab_user_discount a
+		LEFT JOIN tab_user b on a.UID=b.uid
+		LEFT JOIN tb_staff c on a.STAFF_ID=c.STAFF_ID
+		LEFT JOIN tb_discount d on a.discount_id=d.DISCOUNT_ID
+		where a.UID = #{pd.UID}
+		<if test="pd.isUsed!=null and pd.isUsed !=''">
+			and a.isUsed=#{pd.isUsed}
+		</if>
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and (create_time &gt; #{pd.firstDate} or create_time=#{pd.firstDate})
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and create_time &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if>
+		
+		order by create_time DESC
+	</select>
+	
+		<select id="creditDetaillistPage" parameterType="page" resultType="pd">
+	    select
+		   a.*,b.name,b.username,c.PNAME
+		from tb_order a
+		LEFT JOIN tab_user b on a.UID=b.uid
+		LEFT JOIN service_project c on a.SERVICECOST_ID=c.PROJECT_ID
+		where a.UID = #{pd.UID}  and a.ORDER_STATUS = 4
+		<if test="pd.isUsed!=null and pd.isUsed !=''">
+			and a.isUsed=#{pd.isUsed}
+		</if>
+		<if test="pd.firstDate!=null and pd.firstDate !=''" >
+			and  CREATE_TIME=#{pd.firstDate}
+		</if>
+		<if test="pd.lastDate!=null and pd.lastDate !=''">
+			and CREATE_TIME &lt; date_add(#{pd.lastDate},interval 1 day)
+		</if>
+		order by CREATE_TIME DESC
+	</select>
+	
+	
+	<select id="selectUser" parameterType="pd" resultType="QueryUser">
+		SELECT 
+		 name,userName,sex,phone,city,proportion,categoryName,categoryProportion,remainMoney,
+		 remainPoints,sumMoney,credit
+		FROM 
+			query_user
+		where 1=1
+		<if test="uIds != null and uIds.size > 0">
+			and uId in
+			<foreach collection="uIds" index="index" open="("
+				close=")" separator=",">
+				#{uIds[${index}]}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectUsersBy" parameterType="pd" resultType="pd">
+		select uid uId  from tab_user 
+		where 	
+		username LIKE CONCAT('%', #{keywords},'%') 
+		 or 
+		name LIKE CONCAT(CONCAT('%', #{keywords}),'%') 
+		or
+		phone LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+	</select>
+	
+	
+	<select id="selectstoredAll" parameterType="pd" resultType="pd">
+		select
+		   a.*,b.name,b.userName,C.STAFF_NAME,d.STORE_NAME
+		from tb_stored_detail a
+		LEFT JOIN query_user b on a.UID=b.uId
+		LEFT JOIN tb_staff C on a.STAFF_ID=C.STAFF_ID
+		LEFT JOIN tb_store d  on a.STORE_ID=d.STORE_ID
+		where a.UID = #{UID}
+	   <if test="STATUS!=null and STATUS !=''">
+			and a.STATUS=#{STATUS}
+		</if>  
+		<if test="firstDate!=null and firstDate !='' and lastDate!=null and lastDate !=''">
+			and CREATE_TIME between #{firstDate} and date_add(#{lastDate},interval 1 day)
+		</if>
+		order by CREATE_TIME DESC
+	</select>
+</mapper>

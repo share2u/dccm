@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 根据手机号查询归属地 -->
+<mapper namespace="WeChatMobileInfoMapper">
+	<!-- 根据手机号查询归属地 -->
+	<select id="getMobileInfoByMobileNum" parameterType="java.lang.String" resultType="WeChatMobileInfo">
+		select 
+			mobileInfo.id as id,
+			mobileInfo.mobile_num as mobileNum,
+			mobileInfo.mobile_area as mobileArea,
+			mobileInfo.mobile_type as mobileType,
+			mobileInfo.area_code as areaCode,
+			mobileInfo.post_code as postCode
+		from
+			tb_mobileinfo mobileInfo
+		where
+			mobileInfo.mobile_num like '%${value}%'
+	</select>
+</mapper>

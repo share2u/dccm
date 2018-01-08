@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatOrderCheckQueryMapper">
+	<select id="getAllPayHistoryOrdersByStatus" parameterType="java.lang.Integer" resultType="WeChatPayHistory">
+		select
+			PAY_HISTORY_ID as payHistoryId,
+			OPENID as openId,
+			PARENT_ORDER_ID as parentOrderId,
+			CHILD_ORDER_ID as childOrderId,
+			STATUS as status,
+			PAY_MONEY as payMoney,
+			PAY_TIME as payTime,
+			PAY_METHOD as payMethod,
+			DISCOUNT_ID as discountId
+		from
+			TB_PAY_HISTORY payHistory
+		where
+			status = #{status}
+	</select>
+</mapper>

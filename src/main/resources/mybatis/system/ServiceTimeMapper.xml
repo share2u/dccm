@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServiceTimeMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		TB_SERVICETIME
+	</sql>
+
+	<sql id="staffTableName">
+		TB_STAFF
+	</sql>
+
+	<sql id="storeTableName">
+		TB_STORE
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		STAFF_ID,
+		STORE_ID,
+		THE_DATE,
+		SERVICETIME_ID
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{STAFF_ID},
+		#{STORE_ID},
+		#{THE_DATE},
+		#{SERVICETIME_ID}
+	</sql>
+
+	<!-- 新增 -->
+	<!-- <insert id="save" parameterType="pd"> insert into <include refid="tableName"></include> 
+		( STAFF_ID, STORE_ID, THE_DATE, ) values ( #{STAFF_ID}, #{STORE_ID}, #{THE_DATE}, 
+		) </insert> -->
+
+	<!-- 删除修改过了2016年12月29日20:36:08lph-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		STAFF_ID = (select
+		b.STAFF_ID
+		FROM (
+		select
+		a.STAFF_ID
+		FROM
+		<include refid="tableName"></include>
+		a
+		WHERE
+		SERVICETIME_ID=#{SERVICETIME_ID})b)
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		STAFF_ID = #{STAFF_ID},
+		STORE_ID = #{STORE_ID},
+		THE_DATE = #{THE_DATE},
+		SERVICETIME_ID = SERVICETIME_ID
+		where
+		SERVICETIME_ID = #{SERVICETIME_ID}
+	</update>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		a.*,
+		b.STAFF_NAME
+		from
+		<include refid="tableName"></include>
+		a,
+		<include refid="staffTableName"></include>
+		b
+		where
+		SERVICETIME_ID = #{SERVICETIME_ID}
+		AND
+		a.STAFF_ID = b.STAFF_ID
+	</select>
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select a.* , b.STAFF_NAME ,c.STORE_NAME
+		from
+		<include refid="tableName"></include>
+		a,
+		<include refid="staffTableName"></include>
+		b ,
+		<include refid="storeTableName"></include>
+		c
+		WHERE
+		a.STAFF_ID = b.STAFF_ID
+		AND
+		b.STORE_ID = c.STORE_ID
+		<if test='pd.STORE_ID!="1" and pd.STORE_ID!=null and pd.STORE_ID!=""'>
+		AND
+		a.STORE_ID = #{pd.STORE_ID}
+		</if>
+		<if test='pd.keywords!=null and pd.keywords!=""'>
+		AND
+		b.STAFF_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+		group by
+		STAFF_ID
+	</select>
+
+	<!-- 列表(全部) -->
+	<!-- <select id="listAll" parameterType="pd" resultType="pd"> select <include 
+		refid="Field"></include> from <include refid="tableName"></include> </select> -->
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where
+		SERVICETIME_ID in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- 自己写的 -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select a.* , b.STAFF_NAME ,c.STORE_NAME
+		from
+		<include refid="tableName"></include>
+		a,
+		<include refid="staffTableName"></include>
+		b ,
+		<include refid="storeTableName"></include>
+		c
+		WHERE
+		a.STAFF_ID = b.STAFF_ID
+		AND
+		b.STORE_ID = c.STORE_ID
+
+	</select>
+
+	<select id="listStaffNameAndIdById" parameterType="String"
+		resultType="pd">
+		select STAFF_ID,STAFF_NAME
+		from
+		<include refid="staffTableName"></include>
+		WHERE
+		STORE_ID = #{sTORE_ID}
+	</select>
+
+	<select id="findByStaffAndWeek" parameterType="pd" resultType="pd">
+		select * from
+		<include refid="tableName"></include>
+		where
+		STAFF_ID=#{STAFF_ID}
+		AND
+		WEEK_OF_YEAR=#{WEEK_OF_YEAR}
+		AND
+		WEEKANDYEAR_OF_TIME=#{WEEKANDYEAR_OF_TIME}
+	</select>
+
+	<delete id="deleteByStaffAndWeek" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		STAFF_ID = #{STAFF_ID}
+		and
+		WEEK_OF_YEAR = #{WEEK_OF_YEAR}
+	</delete>
+
+	<!-- 增加一周的记录 -->
+	<insert id="addEveryDay" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		STAFF_ID,
+		STORE_ID,
+		THE_DATE,
+		WEEK_OF_YEAR,
+		WEEKANDYEAR_OF_TIME,
+		ZERO,
+		ONE,
+		TWO,
+		THREE,
+		FOUR,
+		FIVE,
+		SIX,
+		SEVEN,
+		EIGHT,
+		NINE,
+		TEN,
+		ELEVEN,
+		TWELVE,
+		THIRTEEN,
+		FOURTEEN,
+		FIFTEEN,
+		SIXTEEN,
+		SEVENTEEN,
+		EIGHTEEN,
+		NINETEEN,
+		TWENTY,
+		TWENTYONE,
+		TWENTYTWO,
+		TWENTYTHREE
+		) values (
+		#{STAFF_ID},
+		#{STORE_ID},
+		#{THE_DATE},
+		#{WEEK_OF_YEAR},
+		#{WEEKANDYEAR_OF_TIME},
+		#{zero},
+		#{one},
+		#{two},
+		#{three},
+		#{four},
+		#{five},
+		#{six},
+		#{seven},
+		#{eight},
+		#{nine},
+		#{ten},
+		#{eleven},
+		#{twelve},
+		#{thirteen},
+		#{fourteen},
+		#{fifteen},
+		#{sixteen},
+		#{seventeen},
+		#{eighteen},
+		#{nineteen},
+		#{twenty},
+		#{twentyone},
+		#{twentytwo},
+		#{twentythree}
+		)
+	</insert>
+
+
+	<select id="findByYearAndWeekOfYearStaff" parameterType="pd" resultType="pd">
+		select * from
+		<include refid="tableName"></include>
+		where
+		STAFF_ID=#{STAFF_ID}
+		AND
+		WEEK_OF_YEAR=#{WEEK_OF_YEAR}
+		AND
+		WEEKANDYEAR_OF_TIME=#{WEEKANDYEAR_OF_TIME}
+	</select>
+
+
+</mapper>

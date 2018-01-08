@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"  
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<settings> 
+        <setting name="cacheEnabled" value="true" /><!-- 全局映射器启用缓存 -->   
+        <setting name="useGeneratedKeys" value="true" /> 
+        <setting name="defaultExecutorType" value="REUSE" /> 
+    </settings>
+
+	<typeAliases>
+	
+		<typeAlias type="cn.ncut.entity.system.User" alias="User"/>
+		<typeAlias type="cn.ncut.entity.system.Role" alias="Role"/>
+		<typeAlias type="cn.ncut.entity.system.Menu" alias="Menu"/>
+		<typeAlias type="cn.ncut.entity.system.City" alias="City"/>
+		<typeAlias type="cn.ncut.entity.system.Store" alias="Store"/>
+		<typeAlias type="cn.ncut.entity.system.ServiceCategory" alias="ServiceCategory"/>
+		<typeAlias type="cn.ncut.entity.system.Dictionaries" alias="Dictionaries"/>
+		<typeAlias type="cn.ncut.entity.system.Department" alias="Department"/>
+		<typeAlias type="cn.ncut.entity.system.Discount" alias="Discount"/>
+		<typeAlias type="cn.ncut.entity.system.DiscountGroup" alias="DiscountGroup"/>
+		<typeAlias type="cn.ncut.entity.system.UserDiscount" alias="UserDiscount"/>
+		<typeAlias type="cn.ncut.entity.system.UserDiscountGroup" alias="UserDiscountGroup"/>
+		<typeAlias type="cn.ncut.entity.Sequence" alias="Sequence"/>
+		<typeAlias type="cn.ncut.entity.system.Staff" alias="Staff"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatUser" alias="WeChatUser"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatStore" alias="WeChatStore"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatStaff" alias="WeChatStaff"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatServiceProject" alias="WeChatServiceProject"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatOrder" alias="WeChatOrder"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatAppoint" alias="WeChatAppoint"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatPayDetail" alias="WeChatPayDetail"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatCustomComment" alias="WeChatCustomComment"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatDiscount" alias="WeChatDiscount"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatUserDiscount" alias="WeChatUserDiscount"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatMemberCallback" alias="WeChatMemberCallback"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatMobileInfo" alias="WeChatMobileInfo"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatServiceCost" alias="WeChatServiceCost"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatStored" alias="WeChatStored"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatStoredDetail" alias="WeChatStoredDetail"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatUserStoredCard" alias="WeChatUserStoredCard"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatPayHistory" alias="WeChatPayHistory"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatStoredDetailCustom" alias="WeChatStoredDetailCustom"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatPreStoreMx" alias="WeChatPreStoreMx"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatRefund" alias="WeChatRefund"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatDiscountGroup" alias="WeChatDiscountGroup"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatPreStore" alias="WeChatPreStore"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatPayPerformance" alias="WeChatPayPerformance"/>
+		<typeAlias type="cn.ncut.entity.wechat.pojo.WeChatDelayOfNetwork" alias="WeChatDelayOfNetwork"/>
+		<typeAlias type="cn.ncut.entity.system.QueryOrder" alias="QueryOrder"/>
+		<typeAlias type="cn.ncut.entity.system.QueryServiceCost" alias="QueryServiceCost"/>
+		<typeAlias type="cn.ncut.entity.system.QueryUserDiscount" alias="QueryUserDiscount"/>
+		<typeAlias type="cn.ncut.entity.system.QueryUser" alias="QueryUser"/>
+		
+		<!-- 这里添加生成的实体类 -->
+		
+		<typeAlias type="cn.ncut.util.PageData" alias="pd"/>
+		<!-- 分页 -->
+		<typeAlias type="cn.ncut.entity.Page" alias="Page"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="cn.ncut.plugin.PagePlugin">
+			<property name="dialect" value="mysql"/>
+			<property name="pageSqlId" value=".*listPage.*"/>
+		</plugin>
+	</plugins>
+	
+</configuration>

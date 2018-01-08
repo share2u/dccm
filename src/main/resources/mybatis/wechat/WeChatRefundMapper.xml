@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeChatRefundMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		TB_REFUND
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		UID,
+		TIME,
+		PRECARD_ADD,
+		PRECARD_POINTS_ADD,
+		PAY_MONEY,
+		SERVICE_ID,
+		REFUND_ID,
+		ORDER_ID
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},
+		#{TIME},
+		#{PRECARD_ADD},
+		#{PRECARD_POINTS_ADD},
+		#{PAY_MONEY},
+		#{SERVICE_ID},
+		#{REFUND_ID},
+		#{ORDER_ID}
+	</sql>
+
+	<!-- 根据订单编号查询该单退款详情 -->
+	<select id="getWeChatRefundByOrderId" parameterType="java.lang.String" resultType="WeChatRefund">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		ORDER_ID = #{ORDER_ID}
+	</select>
+</mapper>
