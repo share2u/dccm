@@ -1,0 +1,68 @@
+@CHARSET "UTF-8";
+
+
+ol, ul {
+    list-style: outside none none;
+}
+.wraper-list-doctor{
+	
+	
+	
+}
+.wraper-list-doctor ul {
+    margin: 0;
+    
+}
+.wraper-list-doctor ul li {
+     border: 1px solid #dedede;
+    float: left;
+	margin:0 10% 0 10%;
+    position: relative;
+	list-style-type:none;
+	display:inline; 
+    transition: all 0.2s ease 0s;
+    width: 79%;
+    z-index: 91;
+}
+.wraper-list-doctor ul li .tips-zz {
+    background: rgba(0, 0, 0, 0) url("../image/tips-zz.png") no-repeat scroll center center;
+    float: left;
+    height: 44px;
+    margin-top: -5px;
+    width: 44px;
+    z-index: 92;
+}
+.wraper-list-doctor ul li .header-doctor {
+    height: 360px;
+    margin: 0px auto;
+    overflow: hidden;
+    width: 240px;
+}
+.wraper-list-doctor ul li .header-doctor img {
+}
+.wraper-list-doctor ul li .doctor-watch span, .wraper-list-doctor ul li .doctor-watch .doctor-watching {
+    display: inline-block;
+    vertical-align: middle;
+}
+.wraper-list-doctor ul li .doctor-name, .wraper-list-doctor ul li .doctor-dep, .wraper-list-doctor ul li .doctor-hospital, .wraper-list-doctor ul li .doctor-watch span, .wraper-list-doctor ul li .doctor-watch .doctor-watching {
+    color: #555555;
+    font-size: 12px;
+    text-align: left;
+}
+.wraper-list-doctor ul li .doctor-name, .wraper-list-doctor ul li .doctor-dep, .wraper-list-doctor ul li .doctor-hospital, .wraper-list-doctor ul li .doctor-watch {
+    padding: 1px 0;
+}
+.wraper-list-doctor ul li .doctor-watch {
+    margin: 0 auto;
+    width: 120px;
+}
+.wraper-list-doctor ul li .doctor-name span {
+    color:#000000;
+    font-size: 16px;
+    margin-right: 6px;
+}
+.doctor-watch .doctor-watching {
+    background: rgba(0, 0, 0, 0) url("../image/doctor-star-icon.png") no-repeat scroll 0 center;
+    height: 14px;
+    width: 80px;
+}
