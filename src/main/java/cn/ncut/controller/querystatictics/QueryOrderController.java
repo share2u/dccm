@@ -243,7 +243,7 @@ public class QueryOrderController extends BaseController {
 
 	/**
 	 * 根据门店编号医生姓名，客服姓名等
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -266,7 +266,7 @@ public class QueryOrderController extends BaseController {
 
 	/**
 	 * 导出到excel
-	 * 
+	 *
 	 * @param
 	 * @throws Exception
 	 */
@@ -424,6 +424,7 @@ public class QueryOrderController extends BaseController {
 		titles.add("患者姓名"); // 2
 		titles.add("患者手机号"); // 2
 		titles.add("门店"); // 3
+		titles.add("科室"); // 3
 		titles.add("服务项目"); // 4
 		titles.add("医生"); // 5
 		titles.add("创建时间"); // 6
@@ -465,124 +466,134 @@ public class QueryOrderController extends BaseController {
 				vpd.put("var8", "退款");
 			}else{
 				vpd.put("var8", varOList.get(i).getServiceCost()
-						.getServiceProject().getpName()); 
+						.getF2serviceCategory().getCATEGORY_NAME());
 			}
-			vpd.put("var9", varOList.get(i).getStaff().getSTAFF_NAME()); // 5
-			vpd.put("var10", varOList.get(i).getCreateTime()); // 5
+			if (varOList.get(i).getServiceCostId() == -2){
+				vpd.put("var9", "药品"); // 4
+			}else if (varOList.get(i).getServiceCostId() == -3){
+				vpd.put("var9", "消耗品"); // 4
+			}else if (varOList.get(i).getServiceCostId() == -1) {
+				vpd.put("var9", "退款");
+			}else{
+				vpd.put("var9", varOList.get(i).getServiceCost()
+						.getServiceProject().getpName());
+			}
+			vpd.put("var10", varOList.get(i).getStaff().getSTAFF_NAME()); // 5
+			vpd.put("var11", varOList.get(i).getCreateTime()); // 5
 			if (varOList.get(i).getServiceCostId() == -1)  {
-				vpd.put("var11", "退款");
+				vpd.put("var12", "退款");
 			}else if( varOList.get(i).getServiceCostId() == -2){
-				vpd.put("var11", "药品");
+				vpd.put("var12", "药品");
 			}else if( varOList.get(i).getServiceCostId() == -3){
-				vpd.put("var11", "消耗品");
+				vpd.put("var12", "消耗品");
 			}else if (varOList.get(i).getServiceCostId() != -1) {
 				switch (varOList.get(i).getServiceCost().getIsFirst()) {
 				case 0:
-					vpd.put("var11", "初诊");
+					vpd.put("var12", "初诊");
 					break;
 				case 1:
-					vpd.put("var11", "复诊");
+					vpd.put("var12", "复诊");
 					break;
 				case 2:
-					vpd.put("var11", "课程");
+					vpd.put("var12", "课程");
 					break;
 				default:
-					vpd.put("var11", "未知");
+					vpd.put("var12", "未知");
 					break;
 				}
 			}
 			switch (varOList.get(i).getOrderStatus()) {
 			case 0:
-				vpd.put("var12", "待支付"); // 5
+				vpd.put("var13", "待支付"); // 5
 				break;
 			case 1:
-				vpd.put("var12", "已关闭"); // 5
+				vpd.put("var13", "已关闭"); // 5
 				break;
 			case 2:
-				vpd.put("var12", "已预约"); // 5
+				vpd.put("var13", "已预约"); // 5
 				break;
 			case 3:
-				vpd.put("var12", "已过期"); // 5
+				vpd.put("var13", "已过期"); // 5
 				break;
 			case 4:
-				vpd.put("var12", "待评价"); // 5
+				vpd.put("var13", "待评价"); // 5
 				break;
 			case 5:
-				vpd.put("var12", "已完成"); // 5
+				vpd.put("var13", "已完成"); // 5
 				break;
 			case 6:
-				vpd.put("var12", "已退款"); // 5
+				vpd.put("var13", "已退款"); // 5
 				break;
 			default:
-				vpd.put("var12", "未知"); // 5
+				vpd.put("var13", "未知"); // 5
 				break;
 			}
-			vpd.put("var13", varOList.get(i).getRecommendTime()); // 5
-			vpd.put("var14", varOList.get(i).getOrderMoney()); // 5
-			vpd.put("var15", varOList.get(i).getProportion()); // 5
+			vpd.put("var14", varOList.get(i).getRecommendTime()); // 5
+			vpd.put("var15", varOList.get(i).getOrderMoney()); // 5
+			vpd.put("var16", varOList.get(i).getProportion()); // 5
 			if ("" != varOList.get(i).getDisCountId()
 					&& null != varOList.get(i).getDisCountId()) {
-				vpd.put("var16", varOList.get(i).getDisCountId()); // 5
+				vpd.put("var17", varOList.get(i).getDisCountId()); // 5
 			} else {
-				vpd.put("var16", "0.00"); // 5
+				vpd.put("var17", "0.00"); // 5
 			}
-			vpd.put("var17", varOList.get(i).getPayMoney()); // 5
-			vpd.put("var18", String.valueOf(0.00)); // 5
+			vpd.put("var18", varOList.get(i).getPayMoney()); // 5
 			vpd.put("var19", String.valueOf(0.00)); // 5
 			vpd.put("var20", String.valueOf(0.00)); // 5
 			vpd.put("var21", String.valueOf(0.00)); // 5
 			vpd.put("var22", String.valueOf(0.00)); // 5
 			vpd.put("var23", String.valueOf(0.00)); // 5
 			vpd.put("var24", String.valueOf(0.00)); // 5
+			vpd.put("var25", String.valueOf(0.00)); // 5
 			// 支付方式的输出，把每个方式都写上0，然后有哪种方式的话再改变
 			Set<WeChatPayDetail> payDetails = varOList.get(i).getPayDetails();
 
 			for (WeChatPayDetail weChatPayDetail : payDetails) {
 				switch (weChatPayDetail.getPayMethod()) {
 				case 0:
-					vpd.put("var18", weChatPayDetail.getPayMoney());
-					break;
-				case 1:
 					vpd.put("var19", weChatPayDetail.getPayMoney());
 					break;
-				case 2:
+				case 1:
 					vpd.put("var20", weChatPayDetail.getPayMoney());
 					break;
-				case 3:
+				case 2:
 					vpd.put("var21", weChatPayDetail.getPayMoney());
 					break;
-				case 4:
+				case 3:
 					vpd.put("var22", weChatPayDetail.getPayMoney());
 					break;
-				case 5:
+				case 4:
 					vpd.put("var23", weChatPayDetail.getPayMoney());
 					break;
-				case 6:
+				case 5:
 					vpd.put("var24", weChatPayDetail.getPayMoney());
+					break;
+				case 6:
+					vpd.put("var25", weChatPayDetail.getPayMoney());
 					break;
 				}
 			}
 			switch (varOList.get(i).getUrl()) {
 			case "0":
-				vpd.put("var25", "线上付款");
+				vpd.put("var26", "线上付款");
 				break;
 			case "1":
-				vpd.put("var25", "面对面付款");
+				vpd.put("var26", "面对面付款");
 				break;
 			case "2":
-				vpd.put("var25", "退款手续费");
+				vpd.put("var26", "退款手续费");
 				break;
 			default:
-				vpd.put("var25", "未知");
+				vpd.put("var26", "未知");
 				break;
 			}
 			if (null != varOList.get(i).getRefund()) {
-				vpd.put("var26", String.valueOf(varOList.get(i).getRefund())); // 5
+				vpd.put("var27", String.valueOf(varOList.get(i).getRefund())); // 5
 			} else {
-				vpd.put("var26", "无退款"); // 5
+				vpd.put("var27", "无退款"); // 5
 			}
-			vpd.put("var27", varOList.get(i).getServiceStaff().getSTAFF_NAME()); // 5
-			vpd.put("var28", varOList.get(i).getRemark()); // 5
+			vpd.put("var28", varOList.get(i).getServiceStaff().getSTAFF_NAME()); // 5
+			vpd.put("var29", varOList.get(i).getRemark()); // 5
 			varList.add(vpd);
 		}
 		dataMap.put("varList", varList);

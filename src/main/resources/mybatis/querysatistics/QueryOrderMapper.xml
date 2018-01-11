@@ -258,7 +258,7 @@
 		<if test="yuyuelastDate!=null and yuyuelastDate !=''">
 			and RECOMMEND_TIME &lt; date_add(#{yuyuelastDate},interval 1 day)
 		</if>
-		order by CREATE_TIME DESC
+		order by CREATE_TIME
 	</select>
 
 
