@@ -12,6 +12,10 @@ public class QueryServiceCost {
 	private String storeId;
 	// 分类
 	private int categoryId;
+	//第二大分类
+	private ServiceCategory f2serviceCategory;
+	//第一大分类
+	private ServiceCategory f1serviceCategory;
 	// 项目id
 	private int pId;
 	private String staffId;
@@ -22,8 +26,24 @@ public class QueryServiceCost {
 	// 是否是初诊 0 初诊;1复诊
 	private int isFirst;
 	private int status;
-	
+
 	private WeChatServiceProject serviceProject;
+
+	public ServiceCategory getF2serviceCategory() {
+		return f2serviceCategory;
+	}
+
+	public void setF2serviceCategory(ServiceCategory f2serviceCategory) {
+		this.f2serviceCategory = f2serviceCategory;
+	}
+
+	public ServiceCategory getF1serviceCategory() {
+		return f1serviceCategory;
+	}
+
+	public void setF1serviceCategory(ServiceCategory f1serviceCategory) {
+		this.f1serviceCategory = f1serviceCategory;
+	}
 
 	public int getServiceCostId() {
 		return serviceCostId;
@@ -112,5 +132,5 @@ public class QueryServiceCost {
 	public void setServiceProject(WeChatServiceProject serviceProject) {
 		this.serviceProject = serviceProject;
 	}
-	
+
 }
