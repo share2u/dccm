@@ -76,7 +76,7 @@
 
 										</select>
 										</td>
-										
+
 
 									</tr>
 									<tr>
@@ -85,7 +85,7 @@
 											 <input style="width: 100%;"
 											placeholder="微信手机号" name="userPhone" id="userPhone"
 											value="${pd.userPhone}" type="text">
-										
+
 										</td>
 										<td>预约类型:<select onchange=""
 											class="chosen-select form-control" name="isFirst"
@@ -203,6 +203,7 @@
 											<th class="center" style="width:80px;">微信手机号</th>
 											<th class="center" style="width:50px;">患者姓名</th>
 											<th class="center" style="width:130px;">门店</th>
+											<th class="center" style="width:80px;">科室</th>
 											<th class="center" style="width:80px;">服务项目</th>
 											<th class="center" style="width:60px;">医生</th>
 											<th class="center" style="width:100px;">创建时间</th>
@@ -233,7 +234,7 @@
 																data-toggle="tooltip"
 																title='手机号：${order.user.phone};'>${order.user.name}/${order.user.userName}
 
-															
+
 															</td>
 															<td class='center'>
 																	${order.user.phone}
@@ -243,21 +244,26 @@
 																title='手机号：${order.weChatPhone};'>${order.weChatName}
 															</td>
 															<td class='center'>${order.store.STORE_NAME}</td>
+
 															<c:choose>
 																<c:when test="${order.serviceCostId == -3}">
+																	<td class='center'>消耗品</td>
 																	<td class='center'>消耗品</td>
 																</c:when>
 																<c:when test="${order.serviceCostId == -2}">
 																	<td class='center'>药品</td>
+																	<td class='center'>药品</td>
 																</c:when>
 																<c:when test="${order.serviceCostId == -1}">
 																	<td class='center'>退费</td>
+																	<td class='center'>退费</td>
 																</c:when>
 																<c:otherwise>
+																	<td class='center'>${order.serviceCost.f2serviceCategory.CATEGORY_NAME}</td>
 																	<td class='center'>${order.serviceCost.serviceProject.pName}</td>
 																</c:otherwise>
 															</c:choose>
-															
+
 															<td class='center'>${order.staff.STAFF_NAME}</td>
 															<td class='center'>${order.createTime}</td>
 															<td class='center'><c:if
@@ -456,8 +462,8 @@ $(top.hangge());
 function searchs(){
 	top.jzts();
 	$("#orderForm").submit();
-	
-	
+
+
 }
 
 //模块选择触发门店
@@ -469,7 +475,7 @@ function modelChange(){
 				url:"<%=basePath%>queryStaff/findStoreByModelId.do",
 				data:{"SERVICEMODULE_ID":SERVICEMODULE_ID},
 				dataType:"json",
-				async: false, 
+				async: false,
 				success:function(data){
 					$('#store').empty();
 					$('#store').append("<option value=''></option>");
@@ -486,14 +492,14 @@ function modelChange(){
 			});
 
 			storeChange();
-			
+
 		}else{
-			return;		
+			return;
 		}
 }
 //门店选择触发员工姓名,服务项目，客服，医生
 function storeChange(){
-		
+
 			var storeId = $("#store option:selected").val();
 			if(null !=storeId){
 					$.ajax({
@@ -505,7 +511,7 @@ function storeChange(){
 					dataType : "json",
 					success : function(data) {
 						$('#doctorName').empty();
-						
+
 						$('#doctorName').append("<option value=''></option>");
 						for ( var i = 0; i < data[0].length; i++) {
 							var id = '${pd.doctorName}';
@@ -516,7 +522,7 @@ function storeChange(){
 							}
 						}
 						$('#doctorName').chosen("destroy").chosen();
-						
+
 						$('#staffName').empty();
 						$('#staffName').append("<option value=''></option>");
 						for ( var i = 0; i < data[1].length; i++) {
@@ -536,9 +542,9 @@ function storeChange(){
 
 	}
 	$(function() {
-		
-		
-	
+
+
+
 		//日期框
 		$('.date-picker').datepicker({
 			autoclose : true,
@@ -598,8 +604,8 @@ function storeChange(){
 											'checked', false);
 							});
 				});
-		
-		$("[data-toggle='tooltip']").tooltip();	
+
+		$("[data-toggle='tooltip']").tooltip();
 				//为了解决第二次查询，门店，的选择框丢失
 		modelChange();
 		$('#collapseexample').on('show.bs.collapse', function () {
@@ -625,10 +631,10 @@ function storeChange(){
 						}
 				    }
 				});
-		
+
 			})
 	});
-	
+
 	//导出excel
 		function toExcel(){
 		var url ='<%=basePath%>queryOrder/excel.do';

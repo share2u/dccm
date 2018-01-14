@@ -42,13 +42,13 @@ public class QueryOrder {
 	private String disCountId;
 	// 积分
 	private int credit;
-	
+
 	private String weChatName;
-	
+
 	private String weChatPhone;
-	
+
 	private Double refund;
-	
+
 	private WeChatUser user;
 	private Store store;
 	private QueryServiceCost serviceCost;
@@ -169,7 +169,7 @@ public class QueryOrder {
 	public void setWeChatPhone(String weChatPhone) {
 		this.weChatPhone = weChatPhone;
 	}
-	
+
 	public WeChatUser getUser() {
 		return user;
 	}
@@ -206,12 +206,12 @@ public class QueryOrder {
 	public void setPayDetails(Set<WeChatPayDetail> payDetails) {
 		this.payDetails = payDetails;
 	}
-	
+
 	public Double getRefund() {
 		return refund;
 	}
 	public void setRefund(Double refund) {
 		this.refund = refund;
 	}
-	
+
 }

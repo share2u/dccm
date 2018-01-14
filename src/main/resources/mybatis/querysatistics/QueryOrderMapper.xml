@@ -6,14 +6,25 @@
 		<id property="serviceCostId" column="serviceCostId" />
 		<result property="price" column="price" />
 		<result property="isFirst" column="isFirst"/>
+		<association property="f2serviceCategory" javaType="ServiceCategory" column="categoryId"
+					 select="selectF2serviceCategoryByCategoryId"/>
 		<association property="serviceProject" javaType="WeChatServiceProject"
 			column="pId" select="selectServiceProjectByServiceCostId" />
 
 	</resultMap>
 
+	<select id="selectF2serviceCategoryByCategoryId" parameterType="Integer"
+		resultType ="ServiceCategory">
+		SELECT
+		CATEGORY_NAME
+		FROM
+		service_category
+		WHERE
+		DESCRIPTION = ( SELECT concat( LEFT ( DESCRIPTION, 3 ), '00000' ) f2category_description FROM service_category WHERE SERVICECATEGORY_ID = #{categoryId} )
+	</select>
 	<select id="selectServiceCostByServiceCostId" parameterType="String"
 		resultMap="QueryServiceCostMapper">
-		select PID pId,SERVICECOST_ID serviceCostId ,PRICE price,ISFIRST isFirst
+		select PID pId,CATEGORY_ID categoryId,SERVICECOST_ID serviceCostId ,PRICE price,ISFIRST isFirst
 		from SERVICE_COST where SERVICECOST_ID =#{serviceCostId}
 	</select>
 
@@ -247,7 +258,7 @@
 		<if test="yuyuelastDate!=null and yuyuelastDate !=''">
 			and RECOMMEND_TIME &lt; date_add(#{yuyuelastDate},interval 1 day)
 		</if>
-		order by CREATE_TIME DESC
+		order by CREATE_TIME
 	</select>
 
 
@@ -255,7 +266,7 @@
 		resultType="pd">
 		select SERVICECOST_ID serviceCostId FROM
 		SERVICE_COST,SERVICE_PROJECT where SERVICE_PROJECT.PROJECT_ID =
-		SERVICE_COST.PID 
+		SERVICE_COST.PID
 		 <if test="null != projectName and projectName !=''">
 			and SERVICE_PROJECT.PNAME like
 			CONCAT('%',#{projectName},'%')
@@ -263,7 +274,7 @@
 		 <if test="null != isFirst and isFirst !=''">
 			and SERVICE_COST.ISFIRST =#{isFirst}
 		 </if>
-		 
+
 	</select>
 	<select id="queryOrderMxBypMethod" parameterType="pd"
 		resultType="pd">
@@ -275,13 +286,13 @@
 	</select>
 	<select id="queryOrderSum" parameterType="pd"
 		resultType="pd">
-		SELECT 
+		SELECT
 			CAST(SUM(ORDER_MONEY) AS decimal(15,2)) orderMoneySum,
 			CAST(SUM(PAY_MONEY) AS decimal(15,2)) payMoneySum,
 			CAST(SUM(DISCOUNT_ID) AS decimal(15,2)) discountSum,
 			CAST(SUM(refund) AS decimal(15,2)) refundSum
 		FROM TB_ORDER
-		
+
 		 <if test="ordersSumIds != null and ordersSumIds.size > 0">
 		where	ORDER_ID in
 			<foreach collection="ordersSumIds" index="index" open="("
@@ -292,9 +303,9 @@
 	</select>
 	<select id="queryOrderMxSum" parameterType="pd"
 		resultType="pd">
-		SELECT 
-			CAST(SUM(PAY_MONEY) AS decimal(15,2)) payMxMoneySum,PAY_METHOD payMethod 
-		FROM 
+		SELECT
+			CAST(SUM(PAY_MONEY) AS decimal(15,2)) payMxMoneySum,PAY_METHOD payMethod
+		FROM
 			TB_PAY_DETAIL
 		 <if test="ordersSumIds != null and ordersSumIds.size > 0">
 			where ORDER_ID in

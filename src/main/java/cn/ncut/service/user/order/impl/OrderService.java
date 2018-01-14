@@ -26,7 +26,7 @@ import cn.ncut.util.wechat.CommonUtil;
 
 /**
  * 说明： 订单 创建人： 创建时间：2016-12-30
- * 
+ *
  * @version
  */
 @Service("orderService")
@@ -37,7 +37,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 新增
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -47,7 +47,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 删除
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -57,7 +57,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 修改
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -67,7 +67,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 更改状态为4
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -77,7 +77,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 更改状态为3
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -91,7 +91,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 更改预约时间
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -101,7 +101,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 更改订单备注
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -111,7 +111,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 列表
-	 * 
+	 *
 	 * @param page
 	 * @throws Exception
 	 */
@@ -123,7 +123,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 列表(全部)
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -134,7 +134,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 通过id获取数据
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -144,7 +144,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ArrayDATA_IDS
 	 * @throws Exception
 	 */
@@ -187,7 +187,7 @@ public class OrderService implements OrderManager {
 
 	/**
 	 * 退款时修改订单状态并插入退款金额
-	 * 
+	 *
 	 * @param pd
 	 * @throws Exception
 	 */
@@ -197,8 +197,9 @@ public class OrderService implements OrderManager {
 
 	@Override
 	public List<QueryOrder> quaryAllOrder(Page page) throws Exception {
-		return (List<QueryOrder>) dao.findForList(
+		List<QueryOrder> orders= (List<QueryOrder>) dao.findForList(
 				"QueryOrderMapper.queryOrderlistPage", page);
+		return orders;
 	}
 
 	@SuppressWarnings("unchecked")
