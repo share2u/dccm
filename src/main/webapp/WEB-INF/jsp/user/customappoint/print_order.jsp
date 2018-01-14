@@ -319,11 +319,12 @@
 
 										</tr> --%>
 										<tr>
-											<td></td>
-											<td></td>
-											<td noWrap style="width:150px;text-align: right"><b>应付金额：</b>
+											<td noWrap style="width:150px;"><b>应付金额：</b>
 											</td>
-											<td noWrap style="width:150px;text-align: right">${pd.ORDER_MONEY}</td>
+											<td noWrap style="width:150px;">${pd.ORDER_MONEY}</td>
+											<td noWrap style="width:150px;text-align: right"><b>实付金额：</b>
+											</td>
+											<td noWrap style="width:150px;text-align: right">${pd.PAY_MONEY}</td>
 										</tr>
 										<tr>
 											<td></td>
