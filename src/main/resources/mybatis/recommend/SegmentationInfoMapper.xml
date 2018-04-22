@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SegmentationInfoMapper">
+<!--表名 -->
+	<sql id="tableName">
+		segmentation_info
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		segmentation_info_id,
+	    create_time,
+	    k,
+	    segmentation_result,
+	    avg_proportion,
+	    avg_attentiontime,
+	    avg_avgordercount,
+	    avg_avgordersum,
+	    avg_ordercount,
+	    avg_ordersum,
+	    avg_storedcount,
+	    avg_remain,
+	    avg_refundcount,
+	    avg_refundmoney
+	</sql>
+		<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{segmentation_info_id},	
+		#{create_time},	
+		#{k},	
+		#{segmentation_result},	
+		#{avg_proportion},
+		#{avg_attentiontime},
+		#{avg_avgordercount},
+		#{avg_avgordersum},
+		#{avg_ordercount},
+		#{avg_ordersum},
+		#{avg_storedcount},
+		#{avg_remain},
+		#{avg_refundcount},
+		#{avg_refundmoney}
+	</sql>
+	<insert id="insertSegmentationInfo" parameterType="pd" useGeneratedKeys="true" keyProperty="segmentation_info_id">
+	
+		insert into
+		<include refid="tableName"></include>
+		(avg_proportion,avg_attentiontime,avg_avgordercount,avg_avgordersum,avg_ordercount,avg_ordersum,
+		avg_storedcount,avg_remain,avg_refundcount,avg_refundmoney
+		) values (#{avg_proportion},#{avg_attentiontime},#{avg_avgordercount},#{avg_avgordersum},#{avg_ordercount},#{avg_ordersum},#{avg_storedcount},#{avg_remain},#{avg_refundcount},#{avg_refundmoney}
+		)
+	</insert>
+	<select id="selectSegmentationInfoById" parameterType="pd" resultType="pd">
+		SELECT *
+		FROM 
+		<include refid="tableName"></include>
+		where segmentation_info_id =#{segmentation_info_id}
+		
+	</select>
+	<update id="updateSegmentationInfoById" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		    k = #{k},
+		    segmentation_result = #{segmentation_result},
+		    create_time = #{create_time}
+		where 
+		segmentation_info_id = #{segmentation_info_id}
+	</update>
+</mapper>

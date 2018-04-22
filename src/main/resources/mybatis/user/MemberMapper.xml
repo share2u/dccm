@@ -222,7 +222,8 @@
 		b.PARENT_ID,
 		a.address,
 		a.attention_time,
-		c.SUM_MONEY
+		c.SUM_MONEY,
+		e.REMARK as segmentation_result
 		from 
 		tab_user a LEFT OUTER JOIN tb_usercategory b 
 			on
@@ -230,6 +231,13 @@
 		 LEFT OUTER JOIN tb_prestore c 
 			on
 		 a.uid = c.UID 
+		  LEFT OUTER JOIN segmentation d 
+			on
+		 a.uid = d.uid 
+		  LEFT OUTER JOIN segmentation_result e 
+			on
+		 d.groupid = e.group_id
+		 and e.flag = 1 
 	    
 		
 		where 1=1
@@ -409,13 +417,13 @@
 		where 1=1
 		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
 			and
-				(
+				(   a.uid LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				     or
 					a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
 					 or 
 					a.name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
 					 or 
 					a.username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
-				
 				)
 		</if>
 	</select>
@@ -540,5 +548,41 @@
 		</if>
 	
 	</select>
-	
+	<select id="selectAll" parameterType="pd" resultType="pd">
+		select * from TAB_USER 
+		
+	</select>
+	<select id="selectCount" parameterType="String" resultType="Integer">
+		select
+		count(*)
+		from
+		tab_user
+		
+	</select>
+	<select id="selectMaxUid" parameterType="String" resultType="Integer">
+		select
+		max(uid)
+		from
+		tab_user
+		
+	</select>
+	<!-- 获取各年龄段的会员总数 -->
+	<select id="getUserAgeCount" parameterType="pd" resultType="Integer">
+	 
+			  SELECT COUNT(*) FROM  tab_user 
+		
+		WHERE (YEAR(NOW())-YEAR(age)-1) + ( DATE_FORMAT(age, '%m%d') &lt;= DATE_FORMAT(NOW(), '%m%d') ) &gt;= #{LOWAGE}
+    AND (YEAR(NOW())-YEAR(age)-1) + ( DATE_FORMAT(age, '%m%d') &lt;= DATE_FORMAT(NOW(), '%m%d') )&lt;= #{HIGHAGE}
+	</select>
+	<!-- 查询用户细分的用户 -->
+	<select id="selectUser" parameterType="pd" resultType="pd">
+		SELECT uid,usercategory_id, IFNULL(proportion,1.0) AS proportion,attention_time as attentiontime
+        FROM 
+		<include refid="tableName"></include>
+		
+	</select>
+	<select id="selectAllOldUser" parameterType="pd" resultType="pd">
+		select * from TAB_USER where TAB_USER.UID IN (SELECT DISTINCT UID FROM TB_ORDER)
+		
+	</select>
 </mapper>
