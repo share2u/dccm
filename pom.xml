@@ -5,7 +5,7 @@
 	<artifactId>dccm</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>MVNFHM</name>
+	<name>dccm</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -551,6 +551,30 @@
 			<version>1.1.3.1</version>
 		</dependency>
 		<!-- end -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.9.5</version>
+
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.2.3.RELEASE</version>
+
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	
 	
@@ -585,11 +609,7 @@
 		    <configuration>  
 		        <source>1.7</source>  
 		        <target>1.7</target>  
-		        <encoding>${project.build.sourceEncoding}</encoding>  
-		            <compilerArguments>  
-		                  <verbose />  
-		              <bootclasspath>D:/Java/jre7/lib/rt.jar;D:/Java/jre7/lib/jce.jar</bootclasspath>  
-		        </compilerArguments>  
+		        <encoding>${project.build.sourceEncoding}</encoding>  		             
 		    </configuration>  
 		</plugin>
 	
