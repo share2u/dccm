@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AprioriMapper">
+<!--表名 -->
+	<sql id="tableName">
+		apriori
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		id,
+	    servicecostid1,
+	    servicecostid2,
+	    conf
+	</sql>
+		<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{SERVICECOSTID1},	
+		#{SERVICECOSTID2},	
+		#{CONF}
+	</sql>
+		<!-- 新增-->
+	<insert id="insertapriori" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(servicecostid1,
+		servicecostid2,
+		conf
+		) values (
+		#{SERVICECOSTID1},	
+		#{SERVICECOSTID2},
+		#{CONF}
+)
+	</insert>
+	</mapper>
+	

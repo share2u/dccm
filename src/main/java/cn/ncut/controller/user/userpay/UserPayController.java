@@ -158,6 +158,47 @@ public class UserPayController extends BaseController {
 		response.setContentType("text/xml;charset=UTF-8");
 		response.getWriter().write(s);
 	}
+	// 根据uid异步出属于他的推荐项目
+			@RequestMapping(value = "/refreshRecommend")
+			public void refreshRecommend(HttpServletResponse response)
+					throws Exception {
+	           String servicecost_ids= "";
+				PageData pd = new PageData();
+				pd = this.getPageData();
+	        
+	          int uid = Integer.valueOf(pd.getString("UID"));
+				//查询是否进行协同过滤推荐
+	          servicecost_ids = servicecostService.selectIscollByUid(uid);
+				if(servicecost_ids.equals("0")){
+					
+					 servicecost_ids = servicecostService.selecttop10(pd);
+				}
+				//把字符串变成数组，然后遍历
+				//String finalstring = "";
+				List<PageData> servicepdlist = new ArrayList<PageData>();
+				String [] stringArr= servicecost_ids.split(","); 
+				for(int i =0;i<stringArr.length;i++){
+					PageData servicecostpd = new PageData();
+					servicecostpd.put("SERVICECOST_ID", stringArr[i]);
+					//查询servicecost_id对应的医生和项目名
+					PageData projectpd = servicecostService.selectPnameAndStaffName(servicecostpd);
+					servicepdlist.add(projectpd);
+					//finalstring = finalstring +projectpd.getString("STAFF_NAME")+" :"+projectpd.getString("PNAME")+"   ;";
+					
+				}
+				System.out.println(servicepdlist.size());
+				//finalstring = finalstring.substring(0,finalstring.length() - 1);
+				/*// 在服务标准表中查询所属门店的当前选中医生的所有项目
+				List<PageData> pdlist = servicecostService.findServiceAndCostByStaff_id(pd);
+				String s = new ObjectMapper().writeValueAsString(pdlist);*/
+
+				//response.setContentType("text/xml;charset=UTF-8");
+				//response.getWriter().write(finalstring);
+	            String s = new ObjectMapper().writeValueAsString(servicepdlist);
+				
+				response.setContentType("text/xml;charset=UTF-8");
+				response.getWriter().write(s);
+			}
 
 	//根据服务项目生成服务价钱
 		@RequestMapping(value="/refreshCostByProjectid")

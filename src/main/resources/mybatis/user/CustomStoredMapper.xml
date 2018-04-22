@@ -256,4 +256,17 @@
 		values(#{STOREDDETAIL_ID},#{UID},#{STORE_ID},#{STAFF_ID},#{CREATE_TIME},#{MONEY},#{TYPE},#{POINTS}) 
 	
 	</insert>
+	
+	
+		<select id="selectStoredCountAndRemainByUid" parameterType="pd" resultType="pd">
+		select 
+		IFNULL(remain_money+remain_points,0.00) as remain,count(storeddetail_id) as storedcount
+		
+		from 
+		<include refid="tableName"></include>,tb_stored_detail
+		where 
+			tb_custom_stored.UID = #{uid} 
+		and tb_custom_stored.uid = tb_stored_detail.uid 
+		and tb_stored_detail.type in (0,1)
+	</select>
 </mapper>

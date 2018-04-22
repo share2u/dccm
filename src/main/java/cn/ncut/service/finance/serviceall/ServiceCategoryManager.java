@@ -70,5 +70,10 @@ public interface ServiceCategoryManager{
 
    //	通过id查询此分类
 	public PageData findById(int parseInt) throws Exception;
+	//以下是课题新加的
+	//查询所有项目的父类别的个数
+	public int findFatherCategoryCount(PageData pd) throws Exception;
+		
+	public List<PageData> findFatherCategory(PageData pd) throws Exception;
 }
 

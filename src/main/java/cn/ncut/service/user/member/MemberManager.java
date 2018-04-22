@@ -190,6 +190,17 @@ public interface MemberManager{
 	public List<PageData> selectUsersBy(PageData pd)throws Exception;
 
 	public List<PageData> selectstoredAll(PageData pd)throws Exception;
+	
+	public List<PageData> selectAll(PageData pd) throws Exception;
+	
+	public int selectCount(PageData pd) throws Exception;
+
+	int selectMaxUid(PageData pd) throws Exception;
+	public int getUserAgeCount(PageData pd)throws Exception;
+
+	PageData findByuid(int uid) throws Exception;
+	
+	public List<PageData> selectAllOldUser(PageData pd) throws Exception;
 
 }
 

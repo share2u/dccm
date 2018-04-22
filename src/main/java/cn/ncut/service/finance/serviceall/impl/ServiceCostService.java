@@ -131,5 +131,51 @@ public class ServiceCostService implements ServiceCostManager{
 	public void batchUpdateStatusToInvalid(List<PageData> list) throws Exception{
 		dao.batchUpdate("ServiceCostMapper.batchUpdateStatusToInvalid", list);
 	}
+	/**
+	 * 查询servicecostid的最大值
+	 */
+	public int findmaxid(PageData pd)throws Exception{
+		return (int)dao.findForObject("ServiceCostMapper.findmaxid", pd);
+	}
+	/**
+	 * 自己写的 根据uid查询是否进行协同过滤
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectIscollByUid(Integer UID)throws Exception{
+		return  (String)dao.findForObject("RecommendMapper.selectIscollByUid", UID);
+		
+	}
+	/**
+	 * 自己写的 根据uid查询个性化推荐
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectservicecost_ids(PageData pd)throws Exception{
+		return  (String)dao.findForObject("RecommendMapper.selectservicecost_ids", pd);
+		
+	}
+	/**
+	 * 自己写的 根据uid查询top10
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public String selecttop10(PageData pd)throws Exception{
+		return  (String)dao.findForObject("RecommendMapper.selecttop10", pd);
+		
+	}
+	/**
+	 * 自己写的 根据servicecost_id查询项目名和医生
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData selectPnameAndStaffName(PageData pd)throws Exception{
+		return  (PageData)dao.findForObject("ServiceCostMapper.selectPnameAndStaffName", pd);
+		
+	}
 }
 

@@ -115,7 +115,7 @@
 		</foreach>
 	</delete>
 	
-	<!-- =======================以下是自己写的=========================== -->
+		<!-- =======================以下是自己写的=========================== -->
 	<!-- 列表(全部) -->
 	<select id="queryAllCategory" parameterType="pd" resultMap="ServiceCategoryMap">
 		select
@@ -142,5 +142,23 @@
 		from 
 			<include refid="tableName"></include>
 		where SERVICECATEGORY_ID = #{id} 
+	</select>
+	
+	<!--查找所有项目类别的父分类的个数 -->
+	<select id="findFatherCategoryCount" parameterType="Integer" resultType="Integer">
+		select  
+			count(distinct F_CATEGORY_ID) 
+		from 
+			<include refid="tableName"></include>
+        
+	</select>
+	
+	<!--查找所有项目类别的父类别 -->
+	<select id="findFatherCategory" parameterType="Integer" resultType="pd">
+		select  
+			distinct F_CATEGORY_ID
+		from 
+			<include refid="tableName"></include>
+         order by F_CATEGORY_ID ASC
 	</select>
 </mapper>

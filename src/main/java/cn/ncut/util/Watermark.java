@@ -10,9 +10,6 @@ import java.io.FileOutputStream;
 
 import javax.imageio.ImageIO;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-
 /**
  * 
 *
@@ -99,8 +96,8 @@ public class Watermark {
 	            //水印文件结束
 	            g.dispose();
 	            FileOutputStream out = new FileOutputStream(targetImg);
-	            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-	            encoder.encode(image);
+//	            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+//	            encoder.encode(image);
 	            out.close();
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -143,8 +140,8 @@ public class Watermark {
 	            g.drawString(pressText, x, y);
 	            g.dispose();
 	            FileOutputStream out = new FileOutputStream(targetImg);
-	            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-	            encoder.encode(image);
+//	            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+//	            encoder.encode(image);
 	            out.close();
 	        } catch (Exception e) {
 	            System.out.println(e);

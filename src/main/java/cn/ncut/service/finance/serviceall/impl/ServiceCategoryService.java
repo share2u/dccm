@@ -119,6 +119,19 @@ public class ServiceCategoryService implements ServiceCategoryManager{
 		// TODO Auto-generated method stub
 		return (PageData) dao.findForObject("ServiceCategoryMapper.findByZJId", id);
 	}
-
+	//以下是课题加的
+		/**
+		 * 查询所有项目类别的父类别的个数
+		 */
+	public int findFatherCategoryCount(PageData pd) throws Exception{
+			return (int) dao.findForObject("ServiceCategoryMapper.findFatherCategoryCount", pd);
+		}
+		
+		/**
+		 * 查询项目类别的父类别
+		 */
+	public List<PageData> findFatherCategory(PageData pd) throws Exception{
+			return (List<PageData>) dao.findForList("ServiceCategoryMapper.findFatherCategory", pd);
+		}
 }
 
