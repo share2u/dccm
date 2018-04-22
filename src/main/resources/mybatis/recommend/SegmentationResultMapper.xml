@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SegmentationResultMapper">
+<!--表名 -->
+	<sql id="tableName">
+		segmentation_result
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		segmentation_result_id,
+		segmentation_result,
+	    group_id,
+	    avg_proportion,
+	    avg_attentiontime,
+	    avg_avgordercount,
+	    avg_avgordersum,
+	    avg_ordercount,
+	    avg_ordersum,
+	    avg_storedcount,
+	    avg_remain,
+	    avg_refundcount,
+	    avg_refundmoney,
+	    result,
+	    number,
+	    flag,
+	    remark
+	</sql>
+		<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{segmentation_result_id},	
+		#{segmentation_result},	
+		#{group_id},		
+		#{avg_proportion},
+		#{avg_attentiontime},
+		#{avg_avgordercount},
+		#{avg_avgordersum},
+		#{avg_ordercount},
+		#{avg_ordersum},
+		#{avg_storedcount},
+		#{avg_remain},
+		#{avg_refundcount},
+		#{avg_refundmoney},
+		#{result},
+		#{number},
+		#{flag},
+		#{remark}
+	</sql>
+	<insert id="insertSegmentationResult" parameterType="pd" useGeneratedKeys="true" keyProperty="segmentation_result_id">
+		insert into
+		<include refid="tableName"></include>
+		(segmentation_result,
+		group_id,
+		avg_proportion,
+		avg_attentiontime,
+		avg_avgordercount,
+		avg_avgordersum,
+		avg_ordercount,
+		avg_ordersum,
+		avg_storedcount,
+		avg_remain,
+		avg_refundcount,
+		avg_refundmoney,
+		result,
+		number,
+		flag
+		) values (
+		#{segmentation_result},
+		#{group_id},
+		#{avg_proportion},
+		#{avg_attentiontime},
+		#{avg_avgordercount},
+		#{avg_avgordersum},
+		#{avg_ordercount},
+		#{avg_ordersum},
+		#{avg_storedcount},
+		#{avg_remain},
+		#{avg_refundcount},
+		#{avg_refundmoney},
+		#{result},
+		#{number},
+		#{flag}
+		)
+	</insert>
+	<update id="updateSegmentationResultByresult" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		    flag = 0
+		
+		where 
+		segmentation_result != #{segmentation_result}
+	</update>
+	<select id="listsegmentationresult" parameterType="page" resultType="pd">
+		select 
+		segmentation_result.avg_proportion,
+		segmentation_result.avg_attentiontime,
+		segmentation_result.avg_avgordercount,
+		segmentation_result.avg_avgordersum,
+		segmentation_result.avg_ordercount,
+		segmentation_result.avg_ordersum,
+		segmentation_result.avg_storedcount,
+		segmentation_result.avg_remain,
+		segmentation_result.avg_refundcount,
+		segmentation_result.avg_refundmoney,
+		segmentation_result.segmentation_result_id,
+		segmentation_result.group_id,segmentation_result.result,segmentation_result.remark,
+		segmentation_result.number,
+		segmentation_info.create_time
+		from 
+		<include refid="tableName"></include>,segmentation_info
+		where 1=1
+		and 
+		segmentation_result.flag = 1
+		and
+		segmentation_result.segmentation_result = segmentation_info.segmentation_result
+	
+	</select>
+	<select id="selectSegmentationResultById" parameterType="pd" resultType="pd">
+		select 
+		segmentation_result.segmentation_result_id,segmentation_result.result,segmentation_result.remark
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		and 
+		segmentation_result.segmentation_result_id = #{segmentation_result_id}
+		
+	</select>
+	<update id="updateSegmentationRemarkById" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		    remark = #{remark}
+		where 
+		segmentation_result_id = #{segmentation_result_id}
+	</update>
+	</mapper>

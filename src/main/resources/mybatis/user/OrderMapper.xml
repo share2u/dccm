@@ -392,5 +392,19 @@
 		AND 
 			UID = #{UID}
 	</select>
+		<!-- 查询用户细分的订单情况 -->
+	<select id="selectOrderCountAndSumByUid" parameterType="pd" resultType="pd">
+		SELECT uid,COUNT(order_id) AS ordercount, REPLACE(IFNULL(FORMAT(SUM(pay_money),2),0.00), ',', '') AS ordersum
+		from
+		<include refid="tableName"></include>
+		where uid=#{uid}
+	</select>
+	<!-- 查询用户首次订单时间 -->
+	<select id="selectFirstOrderByUid" parameterType="pd" resultType="pd">
+		SELECT ifnull(min(create_time),0) as mincreatetime
+		from
+		<include refid="tableName"></include>
+		where uid=#{uid}
+	</select>
 	
 </mapper>

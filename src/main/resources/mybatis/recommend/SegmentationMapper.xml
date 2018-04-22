@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SegmentationMapper">
+<!--表名 -->
+	<sql id="tableName">
+		segmentation
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		uid,
+	    usercategoryid,
+	    proportion,
+	    attentiontime,
+	    avgordercount,
+	    avgordersum,
+	    ordercount,
+	    ordersum,
+	    storedcount,
+	    remain,
+	    refundcount,
+	    refundmoney,
+	    groupid
+	</sql>
+		<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{uid},	
+		#{usercategoryid},	
+		#{proportion},	
+		#{attentiontime},	
+		#{avgordercount},
+		#{avgordersum},
+		#{ordercount},
+		#{ordersum},
+		#{storedcount},
+		#{remain},
+		#{refundcount},
+		#{refundmoney},
+		#{groupid}
+	</sql>
+	<!-- 新增-->
+	<insert id="insertSegmentation" parameterType="pd">
+	replace into <include refid="tableName"></include>
+	(
+	<include refid="Field"></include>
+	) 
+	values(
+	<include refid="FieldValue"></include>
+	) 
+	</insert>
+		<update id="updateSegmentation" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		    usercategoryid = #{usercategoryid},
+			proportion = #{proportion},
+			attentiontime = #{attentiontime},
+			avgordercount = #{avgordercount},
+			avgordersum = #{avgordersum},
+			ordercount = #{ordercount},
+			ordersum = #{ordersum},
+			storedcount = #{storedcount},
+			remain = #{remain},
+			refundcount = #{refundcount},
+			refundmoney = #{refundmoney}
+		
+		where 
+		uid = #{uid}
+	</update>
+	<update id="updateSegmentationGroupid" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		    groupid = #{groupid}
+		
+		where 
+		uid = #{uid}
+	</update>
+	<select id="selectMaxMinAvg" parameterType="pd" resultType="pd">
+		SELECT MAX(proportion) AS max_proportion,MIN(proportion) AS min_proportion,AVG(proportion) AS avg_proportion,SUM(proportion) as sum_proportion,
+		MAX(usercategoryid) AS max_usercategoryid,MIN(usercategoryid) AS min_usercategoryid,AVG(usercategoryid) AS avg_usercategoryid,SUM(usercategoryid) as sum_usercategoryid,
+		MAX(attentiontime) AS max_attentiontime,MIN(attentiontime) AS min_attentiontime,AVG(attentiontime) AS avg_attentiontime,SUM(attentiontime) as sum_attentiontime,
+				MAX(avgordercount) AS max_avgordercount,MIN(avgordercount) AS min_avgordercount,AVG(avgordercount) AS avg_avgordercount,SUM(avgordercount) as sum_avgordercount,MAX(avgordersum) AS max_avgordersum,MIN(avgordersum) AS min_avgordersum,AVG(avgordersum) AS avg_avgordersum,SUM(avgordersum) as sum_avgordersum,MAX(ordercount) AS max_ordercount,MIN(ordercount) AS min_ordercount,AVG(ordercount) AS avg_ordercount,SUM(ordercount) as sum_ordercount,MAX(ordersum) AS max_ordersum,MIN(ordersum) AS min_ordersum,AVG(ordersum) AS avg_ordersum,SUM(ordersum) as sum_ordersum,MAX(storedcount) AS max_storedcount,MIN(storedcount) AS min_storedcount,AVG(storedcount) AS avg_storedcount,SUM(storedcount) as sum_storedcount,MAX(remain) AS max_remain,MIN(remain) AS min_remain,AVG(remain) AS avg_remain,SUM(remain) as sum_remain,MAX(refundcount) AS max_refundcount,MIN(refundcount) AS min_refundcount,AVG(refundcount) AS avg_refundcount,SUM(refundcount) as sum_refundcount,MAX(refundmoney) AS max_refundmoney,MIN(refundmoney) AS min_refundmoney,AVG(refundmoney) AS avg_refundmoney,SUM(refundmoney) as sum_refundmoney	
+		FROM 
+		<include refid="tableName"></include>
+		
+	</select>
+	<select id="selectByUid" parameterType="pd" resultType="pd">
+		SELECT *
+		FROM 
+		<include refid="tableName"></include>
+		where uid =#{uid}
+		
+	</select>
+	<select id="listsegmentationlistPage" parameterType="page" resultType="pd">
+		select 
+		uid,usercategoryid,proportion,attentiontime,avgordercount,avgordersum,ordercount,ordersum,storedcount,remain,
+		refundcount,refundmoney,groupid
+		from 
+		<include refid="tableName"></include>
+		
+		where 1=1
+		<if test="pd.groupid!=null and pd.groupid!=''"><!-- 关注时间检索 -->
+			and groupid =  #{pd.groupid} 
+		</if>
+	
+		
+	</select>
+	</mapper>

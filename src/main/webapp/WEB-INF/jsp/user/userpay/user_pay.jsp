@@ -91,7 +91,7 @@
 									<c:forEach items="${userList}" var="user" varStatus="vs">
 										<tr>
 											<td class='center'>
-												<input type='radio' name='uid' value="${user.uid}" class="ace"/><span class="lbl"></span>
+												<input type='radio' name='uid' value="${user.uid}" class="ace" onclick="torecommend(this.value);"/><span class="lbl"></span>
 											</td>
 											<td class='center' style="width: 30px;">${vs.index+1}</td>
 											<td class='center'>${user.name}</td>
@@ -136,7 +136,27 @@
 						</form>	
 						
 						<!--检索 end-->
+						<!-- 推荐 -->
 						<div style="clear:both;"></div>
+						<div id="recommenddiv" style="width:100%;text-align: left;">
+						<span style="float:left;">为您推荐：</span>
+						<table id="recommend-table" class="table table-striped table-bordered table-hover" style="margin-top:5px;">	
+							<thead>
+								<tr>
+									<th class="center" style="width:35px;">
+									<label class="pos-rel"><span class="lbl"></span></label>
+									</th>
+									<th class="center">医生</th>
+									<th class="center">项目名称</th>
+									<th class="center">价格</th>
+								</tr>
+							</thead>
+							<tbody id="recommend_tbody">
+								
+							</tbody>
+							</table>
+							下单次数：<input type="text" name="order_num" id="order_num2" value="1"  min="1" maxlength="255" placeholder="这里输入次数" title="次数">
+						</div> 
 						
 						<!--选择医生次数-->
 						<div id="selectdoctor" style="width:100%;text-align: left;">
@@ -378,7 +398,66 @@
 				}
 			});
 		}
+			//进行推荐
+		function torecommend(uid){
+		$("#recommend_tbody").html("");
 		
+		$.ajax({
+		url:'userpay/refreshRecommend.do',
+				data:{UID:uid},
+				method:'POST',
+				dataType:'json',
+				success:function(data){
+				
+				serviceproject_json = data;
+				for(var t=0; t<data.length; t++){
+				console.log(data.length);
+						//构造推荐项目表
+						var tr = document.createElement("tr");
+						tr.id = "servicecost"+data[t].SERVICECOST_ID;
+						var td1 = document.createElement("td");
+						td1.className = "center";
+						var radio = document.createElement("input");
+						radio.setAttribute("type","radio");
+						radio.setAttribute("name","project");
+						radio.setAttribute("money",data[t].PRICE);
+						radio.setAttribute("onclick",'myFunction()');
+						radio.className="ace";
+						radio.value=data[t].SERVICECOST_ID;//project的值
+						
+						
+						var span = document.createElement("span");
+						span.className="lbl";
+						td1.appendChild(radio);
+						td1.appendChild(span);
+						var td2 = document.createElement("td");
+						td2.className="center";
+						td2.appendChild(document.createTextNode(data[t].STAFF_NAME));
+						
+						var td3 = document.createElement("td");
+						td3.className="center";
+						td3.appendChild(document.createTextNode(data[t].PNAME));
+						
+						var td4 = document.createElement("td");
+						td4.className="center";
+						td4.appendChild(document.createTextNode(data[t].PRICE));
+						
+						tr.appendChild(td1);
+						tr.appendChild(td2);
+						tr.appendChild(td3);
+						tr.appendChild(td4);
+						$("#recommend_tbody").append(tr);
+					}
+					
+					$(top.hangge());//关闭加载状态
+					
+					},
+					error: function(data){
+					alert("error");
+					}
+				
+		});
+		}
 		function findWeekServiceByDate(e) {
 			var the_date = $("#THE_DATE").val();
 			var staff_id = $("#STAFF_ID").val();
@@ -484,7 +563,8 @@
 	 	function sell(){
 	 		var uid = $('input[name="uid"]:checked').val(); 
 			var projectcost_id = $('input[name="project"]:checked').val();
-			var order_num = $("#order_num").val(); 
+			//var order_num = $("#order_num").val(); 
+			var order_num = $('input[name="order_num"]').val(); 
 			if(uid==undefined){
 				alert("请选择用户！");
 				return;
@@ -541,6 +621,10 @@
 				diag.close();
 			 };
 			 diag.show();
+		}
+		function myFunction() {
+		$('#selectdoctor').css('display','none');
+		$('#projectcost').css('display','none');
 		}
 	</script>
 </body>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RecommendMapper">
+<!--表名 -->
+	<sql id="tableName">
+		recommend
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		uid,
+	    group1,
+	    group2,
+	    iscoll,
+	    servicecost_ids,
+	    top10
+	</sql>
+		<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{UID},	
+		#{GROUP1},	
+		#{GROUP2},	
+		#{ISCOLL},	
+		#{SERVICECOST_IDS},
+		#{TOP10}
+	</sql>
+	<!-- 新增-->
+	<insert id="insertinit" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(uid,
+		group1
+		) values (
+		#{UID},	
+		#{GROUP1}
+)
+	</insert>
+	<select id="selectcategorybuy" parameterType="String" resultType="pd">
+	SELECT tb_custom_appoint.`U_ID`,service_category.`F_CATEGORY_ID`,tab_user.`sex`,
+	COUNT(F_CATEGORY_ID) AS POINTS 
+	FROM tb_custom_appoint, tab_user,
+	tb_order,service_cost,service_category 
+	WHERE service_category.`SERVICECATEGORY_ID` = service_cost.`CATEGORY_ID` 
+	AND tb_custom_appoint.`ORDER_ID` = tb_order.`ORDER_ID` 
+	AND tb_order.`SERVICECOST_ID`=service_cost.`SERVICECOST_ID` 
+	AND tab_user.`uid` = tb_custom_appoint.`U_ID`
+	<!-- AND tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00' -->
+	GROUP BY U_ID,service_category.`F_CATEGORY_ID`
+	</select>
+	<!--根据group1查询uid -->
+	<select id="selectUidByGroup1" parameterType="pd" resultType="pd">
+    select uid from recommend
+    where group1=#{GROUP1}
+		
+	</select>
+	<!--根据group2查询uid -->
+	<select id="selectUidByGroup2" parameterType="pd" resultType="pd">
+	select uid from recommend
+    where group2=#{GROUP2}
+		
+	</select>
+	<!--查询group2的个数 -->
+	<select id="selectGroup2Count" parameterType="pd" resultType="Integer">
+	select count(distinct group2) from recommend
+   
+		
+	</select>
+	<!--根据group2查询uid的总数 -->
+	<select id="selectCountUidByGroup2" parameterType="pd" resultType="Integer">
+	select count(distinct uid) from recommend
+    where group2=#{GROUP2}
+		
+	</select>
+	<!-- 修改 -->
+	<update id="updategroup2" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		group2 = #{GROUP2}
+		where 
+		uid = #{UID}
+	</update>
+	
+	
+	<!--根据group2查询uid -->
+	<select id="selectServicecostByGroup2" parameterType="pd" resultType="pd">
+    SELECT recommend.uid,tb_order.SERVICECOST_ID,
+    COUNT(SERVICECOST_ID) AS points FROM 
+    tb_custom_appoint,tb_order,recommend 
+    WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID
+     AND tb_custom_appoint.U_ID = recommend.uid 
+  <!--    and tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00' -->
+     AND recommend.group2=#{GROUP2} GROUP BY uid,SERVICECOST_ID
+     
+   
+		
+	</select>
+	<!--查询用户都购买了哪些医生的项目-->
+	<select id="selectStaffByUid" parameterType="pd" resultType="pd">
+	SELECT DISTINCT tb_order.STAFF_ID
+	FROM tb_custom_appoint,tb_order WHERE 
+	tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID 
+	AND tb_order.uid=#{UID}
+		
+	</select>
+	<!--查询该用户在该医生下都购买了什么复诊项目-->
+	<select id="selectServicecostByUidAndStaffid" parameterType="pd" resultType="pd">
+	SELECT DISTINCT tb_order.SERVICECOST_ID,service_project.PNAME 
+	FROM tb_custom_appoint,tb_order,service_project,service_cost 
+	WHERE tb_order.SERVICECOST_ID = service_cost.SERVICECOST_ID
+	AND service_cost.PID = service_project.PROJECT_ID
+	AND  tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID
+	AND service_project.PNAME LIKE '%复诊挂号%'  
+	AND tb_order.UID=#{UID} 
+	AND tb_order.STAFF_ID=#{STAFF_ID}
+					 
+		
+	</select>
+	<select id="selectServicecostidByPname" parameterType="pd" resultType="pd">
+	SELECT service_project.pname,service_cost.servicecost_id 
+	FROM service_project,service_cost 
+	WHERE service_project.PROJECT_ID = service_cost.PID 
+	AND service_project.PNAME = #{PAME}
+	and service_cost.STAFF_ID= #{STAFF_ID}
+					 
+		
+	</select>
+	<select id="selectPnameByServicecostid" parameterType="pd" resultType="pd">
+	select PNAME,service_cost.servicecost_id,service_cost.STAFF_ID 
+	FROM service_project,service_cost 
+	where service_cost.pid= service_project.project_id 
+	and service_cost.servicecost_id= #{SERVICECOST_ID}
+					 
+		
+	</select>
+	<select id="selectservicecostidBypname" parameterType="pd" resultType="pd">
+	SELECT service_project.pname,service_cost.servicecost_id 
+	FROM service_project,service_cost 
+	WHERE service_project.PROJECT_ID = service_cost.PID 
+	AND service_project.PNAME = #{PNAME}
+	and service_cost.STAFF_ID= #{STAFF_ID}
+	</select>
+	<select id="selectchuzhen" parameterType="pd" resultType="pd">
+	SELECT tb_order.SERVICECOST_ID 
+	FROM tb_order,tb_custom_appoint 
+	WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID 
+	AND tb_order.SERVICECOST_ID = #{SERVICECOST_ID} 
+	AND tb_order.UID = #{UID}
+	</select>
+	<update id="insertCF" parameterType="pd">
+		update recommend set servicecost_ids = #{SERVICECOST_IDS}, iscoll = 1
+		where uid = #{UID}
+
+	</update>
+	<update id="updateGroup1ByUid" parameterType="pd">
+		update recommend set group1 = #{GROUP1}
+		where uid = #{UID}
+
+	</update>
+	<select id="selectUid" parameterType="pd" resultType="Integer">
+	SELECT count(*) from recommend where uid = #{UID}
+	</select>
+	<select id="selectTop10Bygroup1" parameterType="pd" resultType="pd">
+	SELECT b.servicecost_id,COUNT(*) cnt FROM tb_order b WHERE b.uid IN (SELECT uid FROM recommend a WHERE a.group1=#{GROUP1}) and b.CREATE_TIME &lt;'2017-09-01 00:00:00' GROUP BY servicecost_id ORDER BY cnt DESC LIMIT 10;
+	</select>
+	<update id="updateTop10ByGroup1" parameterType="pd">
+		update recommend set top10 = #{TOP10}
+		where group1 = #{GROUP1}
+
+	</update>
+	<select id="selectBuyUid" parameterType="pd" resultType="pd">
+	SELECT DISTINCT U_ID  FROM tb_custom_appoint,tb_order,service_cost WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID AND tb_order.SERVICECOST_ID=service_cost.SERVICECOST_ID 
+	</select>
+	<select id="selectTrans" parameterType="pd" resultType="pd">
+	SELECT service_cost.SERVICECOST_ID,COUNT(*) AS POINTS FROM tb_custom_appoint,tb_order,service_cost WHERE tb_custom_appoint.`ORDER_ID` = tb_order.`ORDER_ID` AND tb_order.`SERVICECOST_ID`=service_cost.`SERVICECOST_ID` 
+	AND U_ID = #{U_ID}
+	 GROUP BY service_cost.`SERVICECOST_ID`
+	</select>
+	<select id="transcount" parameterType="pd" resultType="Integer">
+	SELECT COUNT(DISTINCT U_ID)  FROM tb_custom_appoint,tb_order,service_cost WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID AND tb_order.SERVICECOST_ID=service_cost.SERVICECOST_ID 
+	</select>
+	<select id="selectIscollByUid" parameterType="Integer" resultType="String">
+		select 
+		ifnull(servicecost_ids,0) as servicecost_ids from recommend where UID = #{UID}
+	</select>
+	<select id="selectservicecost_ids" parameterType="pd" resultType="String">
+		select 
+		servicecost_ids from recommend where UID = #{UID}
+	</select>
+	<select id="selecttop10" parameterType="pd" resultType="String">
+		select 
+		top10 from recommend where UID = #{UID}
+	</select>
+	<select id="countOldMember" parameterType="pd" resultType="Integer">
+		  SELECT COUNT(DISTINCT u_id) FROM tb_custom_appoint
+	</select>
+	<select id="selectRecommendByUid" parameterType="pd" resultType="pd">
+	select ifnull(servicecost_ids,0) as servicecost_ids from recommend where uid = #{uid}
+	</select>
+	<select id="selectTop10ByUid" parameterType="pd" resultType="pd">
+	select ifnull(top10,0) as servicecost_ids from recommend where uid = #{uid}
+	</select>
+	
+	<select id="selectAfterBuyByUid" parameterType="Integer" resultType="String">
+	SELECT distinct(servicecost_id) FROM tb_order WHERE uid = #{uid} and CREATE_TIME &gt;'2017-09-01 00:00:00'
+	</select>
+	
+	<select id="listOldUser" parameterType="pd" resultType="pd">
+		  SELECT uid FROM recommend where servicecost_ids is not null
+	</select>
+	
+	<!--查询该用户购买过什么项目，根据医生分组-->
+	<select id="selectServicecostByUidGroupByStaffid" parameterType="pd" resultType="pd">
+	SELECT DISTINCT tb_order.SERVICECOST_ID,service_project.PNAME,tb_store.STORE_NAME,tb_staff.STAFF_NAME
+	FROM tb_custom_appoint,tb_order,service_project,service_cost,tb_staff,tb_store 
+	WHERE tb_order.SERVICECOST_ID = service_cost.SERVICECOST_ID
+	AND service_cost.PID = service_project.PROJECT_ID
+	AND  tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID
+	AND tb_order.STAFF_ID = tb_staff.STAFF_ID
+	AND tb_store.STORE_ID = tb_staff.STORE_ID
+	AND tb_order.UID=#{UID} 
+	group by tb_order.STAFF_ID
+	
+					 
+		
+	</select>
+</mapper>

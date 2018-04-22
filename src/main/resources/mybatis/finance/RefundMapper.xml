@@ -167,7 +167,15 @@
 		</foreach>
 	</delete>
 
-
+<select id="selectRefundCountAndRefundMoneyByUid" parameterType="pd" resultType="pd">
+		SELECT
+		COUNT(tb_refund.refund_id) AS refundcount,IFNULL(refund_prestore_money+refund_remain_money,0.00) AS refundmoney
+		from
+		<include refid="tableName"></include>,tb_refund_money
+		
+		WHERE tb_refund.UID = #{uid}
+		AND tb_refund.uid = tb_refund_money.uid
+	</select>
 
 
 </mapper>

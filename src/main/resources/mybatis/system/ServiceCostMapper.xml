@@ -263,4 +263,19 @@
 	</update>
 	
 	<!-- fh313596790qq(青苔) -->
+	<!-- 列表(全部) -->
+	<select id="findmaxid" parameterType="pd" resultType="Integer">
+		select max(SERVICECOST_ID)
+		from 
+		<include refid="tableName"></include>
+	</select>
+	<!-- 列表(全部) -->
+	<select id="selectPnameAndStaffName" parameterType="pd" resultType="pd">
+		select a.STAFF_ID,a.PID,a.PRICE,a.SERVICECOST_ID,b.STAFF_NAME,c.PNAME,d.STORE_NAME from service_cost a,tb_staff b,service_project c,tb_store d
+		where a.STAFF_ID = b.staff_id
+		and b.store_id = d.store_id
+		and a.PID = c.PROJECT_ID
+		and a.SERVICECOST_ID = #{SERVICECOST_ID}
+		
+	</select>
 </mapper>

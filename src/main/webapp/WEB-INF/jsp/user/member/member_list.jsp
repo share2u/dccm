@@ -89,6 +89,7 @@
 									<th class="center">科室病种</th>
 									<th class="center">客户来源</th>
 									<th class="center">备注</th>
+									<th class="center">用户细分结果</th>
 									
 									<!-- <th class="center">病种科室</th> -->
 									<th class="center">操作</th>
@@ -133,6 +134,7 @@
 												<c:if test="${var.source==0}">微信端</c:if>
 											</td>
 											<td class='center'>${var.remark}</td>
+											<td class='center'>${var.segmentation_result}</td>
 
 											<%-- <td class='center'>
 												<c:if test="${var.illness==1}">病种1</c:if>
