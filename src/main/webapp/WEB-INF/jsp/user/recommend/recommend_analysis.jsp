@@ -229,8 +229,7 @@
 				method:'POST',
 				dataType:'json',
 				success:function(data){
-				console.log(data);
-				//alert(data[1]);
+				
 				serviceproject_json = data[0];//推荐的项目列表
 				project_json = data[1];//购买的项目列表
 				for(var t=0; t<data[0].length; t++){
@@ -262,7 +261,7 @@
 						$("#recommend_tbody").append(tr);
 					}
 					for(var t=0; t<data[1].length; t++){
-				  alert(data[1].length);
+				 
 						//构造曾经购买过的项目表
 						var tr = document.createElement("tr");
 						tr.id = "project"+data[1][t].SERVICECOST_ID;
