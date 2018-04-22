@@ -98,7 +98,10 @@ private double kmeansField15;
 @KmeansField  
 private double kmeansField16;
 
-
+/*
+聚类特征值17 */  
+@KmeansField  
+private double kmeansField17;
 
 @Override
 public String toString() {
@@ -114,6 +117,14 @@ public String toString() {
 			+ kmeansField12 + ", kmeansField13=" + kmeansField13
 			+ ", kmeansField14=" + kmeansField14 + ", kmeansField15="
 			+ kmeansField15 + ", kmeansField16=" + kmeansField16 + "]";
+}
+
+public double getKmeansField17() {
+	return kmeansField17;
+}
+
+public void setKmeansField17(double kmeansField17) {
+	this.kmeansField17 = kmeansField17;
 }
 
 public double getKmeansField5() {
@@ -267,21 +278,7 @@ public void setKmeansField4(double kmeansField4) {
 	this.kmeansField4 = kmeansField4;
 }
 
-/*public double getKmeansField5() {
-	return kmeansField5;
-}
 
-public void setKmeansField5(double kmeansField5) {
-	this.kmeansField5 = kmeansField5;
-}
-
-public double getKmeansField6() {
-	return kmeansField6;
-}
-
-public void setKmeansField6(double kmeansField6) {
-	this.kmeansField6 = kmeansField6;
-} */ 
 
  }
   

@@ -108,9 +108,9 @@ public class Prepararion {
 			player.setKmeansField14(user_category[j][13]);
 			player.setKmeansField15(user_category[j][14]);
 			player.setKmeansField16(user_category[j][15]);//项目类型
-			
+			player.setKmeansField17(user_category[j][16]);//项目类型
 			//player.setSex(sex);//性别
-			if(player.getKmeansField1()!=0.0||player.getKmeansField2()!=0.0||player.getKmeansField3()!=0.0||player.getKmeansField4()!=0.0||player.getKmeansField5()!=0.0||player.getKmeansField6()!=0.0||player.getKmeansField7()!=0.0||player.getKmeansField8()!=0.0||player.getKmeansField9()!=0.0||player.getKmeansField10()!=0.0||player.getKmeansField11()!=0.0||player.getKmeansField12()!=0.0||player.getKmeansField13()!=0.0||player.getKmeansField14()!=0.0||player.getKmeansField15()!=0.0||player.getKmeansField16()!=0.0){
+			if(player.getKmeansField1()!=0.0||player.getKmeansField2()!=0.0||player.getKmeansField3()!=0.0||player.getKmeansField4()!=0.0||player.getKmeansField5()!=0.0||player.getKmeansField6()!=0.0||player.getKmeansField7()!=0.0||player.getKmeansField8()!=0.0||player.getKmeansField9()!=0.0||player.getKmeansField10()!=0.0||player.getKmeansField11()!=0.0||player.getKmeansField12()!=0.0||player.getKmeansField13()!=0.0||player.getKmeansField14()!=0.0||player.getKmeansField15()!=0.0||player.getKmeansField16()!=0.0||player.getKmeansField17()!=0.0){
 				playerlist.add(player);	//购买过商品的用户
 			}
 			//System.out.println(playerlist.size());
