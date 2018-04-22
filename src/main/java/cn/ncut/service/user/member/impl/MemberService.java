@@ -231,7 +231,45 @@ public class MemberService implements MemberManager{
 		// TODO Auto-generated method stub
 		return (List<PageData>)dao.findForList("QueryMemberMapper.selectstoredAll", pd);
 	}
+	//以下是课题自己写的
+		//查询用户个数
+		@Override
+		public int selectCount(PageData pd) throws Exception {
+			
+			return (int)dao.findForObject("MemberMapper.selectCount", pd);
+		}
+		//查询最大客户编号
+		@Override
+		public int selectMaxUid(PageData pd) throws Exception {
+			
+			return (int)dao.findForObject("MemberMapper.selectMaxUid", pd);
+		}
+		
+		/**获取各年龄段的用户总数
+		 * @param pd
+		 * @throws Exception
+		 */
+		public int getUserAgeCount(PageData pd)throws Exception{
+			return (int)dao.findForObject("MemberMapper.getUserAgeCount", pd);
+		}
 
+		@Override
+		public List<PageData> selectAll(PageData pd) throws Exception {
+			// TODO Auto-generated method stub
+			return (List<PageData>)dao.findForList("MemberMapper.selectAll",pd);
+		}
+
+		@Override
+		public PageData findByuid(int uid) throws Exception {
+			// TODO Auto-generated method stub
+			return (PageData)dao.findForObject("MemberMapper.findByuid2", uid);
+		}
+
+		@Override
+		public List<PageData> selectAllOldUser(PageData pd) throws Exception {
+			// TODO Auto-generated method stub
+			return (List<PageData>)dao.findForList("MemberMapper.selectAllOldUser",pd);
+		}
 
 	
 
