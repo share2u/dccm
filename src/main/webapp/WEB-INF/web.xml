@@ -83,10 +83,10 @@
 	</servlet-mapping>
 	
 	<!-- tomcat等 启动之前执行 -->
-	<filter>
+<!-- 	<filter>
 		<filter-name>startFilter</filter-name>
 		<filter-class>cn.ncut.filter.startFilter</filter-class>
-	</filter>
+	</filter> -->
 	
 	<!-- Shiro filter start -->
 	<filter>
