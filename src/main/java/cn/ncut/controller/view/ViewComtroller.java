@@ -30,8 +30,14 @@ public class ViewComtroller extends BaseController {
     public ModelAndView view(@PathVariable("name") String name) {
         ObjectMapper objectMapper = new ObjectMapper();
         ModelAndView mav = this.getModelAndView();
+        Integer id = 1;
+        if("order".equals(name)){
+            id = 1;
+        }else{
+            id = 2;
+        }
         //根据仪表盘name获取仪表盘详情
-        String url = "http://localhost:8080/view/chart/options/1";
+        String url = "http://www.liangliangempire.cn/view/chart/options/"+id;
         String s = null;
         try {
             s = HttpUtil.get(url);
@@ -43,6 +49,7 @@ public class ViewComtroller extends BaseController {
         } catch (Exception e) {
             System.out.println(e);
         }
+        mav.addObject("id",id);
         mav.addObject("name", name);
         mav.setViewName("view/dashboard");
         return mav;

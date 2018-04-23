@@ -55,7 +55,7 @@
         myChart.setOption(arrayOption[i]);
     }
     function newView(){
-        window.open('http://localhost:8080/view/chart/dashborad/create/'+1);
+        window.open('http://www.liangliangempire.cn/view/chart/dashborad/create/'+${id});
       /*  top.jzts();
         var diag = new top.Dialog();
         diag.Drag=true;
@@ -76,7 +76,7 @@
     }
     function dele(optionId){
         $.ajax({
-            url:"http://localhost:8080/view/chart/option/dele",
+            url:"http://wwww.liangliangempire.cn/view/chart/option/dele",
             data:{"optionId":optionId},
             type:"POST",
             success:function(msg){
