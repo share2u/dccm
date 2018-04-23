@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ClusterMapper">
+	<!--表名 -->
+	<sql id="tableName">
+		h_order_label
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		uid,	
+		ordermoney_allsum,	paymoney_allsum,refund_allsum,
+		cishupay,	ordermoneyappoint_sum,paymoneyappoint_sum,refundappoint_sum,
+		cishuappoint,	ordermoney_sum,
+		paymoneyexpire_sum,	
+		refund_sum,	
+		cishu,	
+		alreadypay_ordermoney,	alreadypay_paymoney,
+		already_cishu,	
+		ordermoneyrefund_sum,	paymoneyrefund_sum,refundrefund_sum,
+		cishu_refund,
+		multiplybuy,		
+		ordermoney_max,
+		paymoney_max,
+		refund_max,
+		label,
+		level,date
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{uid},	
+		#{ordermoney_allsum},#{paymoney_allsum},	#{refund_allsum},	
+		#{cishupay},#{ordermoneyappoint_sum},#{paymoneyappoint_sum},#{refundappoint_sum},	
+		#{cishuappoint},#{ordermoney_sum},	
+		#{paymoneyexpire_sum},	
+		#{refund_sum},	
+		#{cishu},	
+		#{alreadypay_ordermoney},	#{alreadypay_paymoney}
+		#{alreadypay_cishu},
+		#{ordermoneyrefund_sum},#{paymoneyrefund_sum},#{refundrefund_sum},		
+		#{cishu_refund},
+		#{multiplybuy},
+		#{ordermoney_max},
+		#{paymoney_max},
+		#{refund_max},
+		#{label},
+		#{level},#{date}
+	</sql>
+	
+	<!--平均表格 列表 -->
+		<select id="listAvg" parameterType="page" resultType="pd">
+		select label,level,count(uid) yangben,AVG(ordermoney_allsum) ordermoney,AVG(refund_allsum) refundmoney,AVG(cishu) cishu,AVG(cishu_refund) cishu_refund,AVG(refund_max) refund_max,
+		AVG(ordermoney_max)ordermoney_max 
+		from 
+		<include refid="tableName"></include>
+		where date like(#{pd.date})
+		GROUP BY label
+	</select>
+	
+		<!-- 通过label获取数据 -->
+	<select id="findById" parameterType="page" resultType="pd">
+			
+		SELECT level,label FROM(
+		SELECT label,level,count(uid)uid FROM h_order_label
+		 WHERE date like(#{pd.date}) GROUP BY label) a
+		WHERE label = #{pd.label} 
+	</select>
+	
+		<!-- 修改 客户的等级-->
+	<update id="updatelevel" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 	
+			level = #{level}	
+		where 
+		label = #{label} and date like(#{date})
+	</update>
+		
+	
+		<!-- 通过label=0时，所有客户数据 -->
+	<select id="findByLabellistPage" parameterType="page" resultType="pd">
+			
+		SELECT a.*,b.phone,b.name FROM h_order_label a left join tab_user b
+		ON a.uid=b.uid
+		WHERE label = #{pd.label} and date like(#{pd.date})
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+		AND
+			(
+		
+				phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				 OR 
+				username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+		
+			)
+	</if>
+	</select>
+	
+	
+	<!-- 聚类算法结果 -->
+	<select id="findresult" parameterType="page" resultType="pd">
+		select * from h_cluster
+		
+	</select>
+	
+		<!-- 统计VIP客户的数目 -->
+	<select id="findVIP" parameterType="page" resultType="pd">
+		
+		SELECT COUNT(uid) c,date FROM h_order_label where level='vip' GROUP BY date
+	</select>
+	
+	
+	<!-- ===================================================================== -->
+	<select id="LiushilistPage" parameterType="page" resultType="pd">
+			
+		SELECT a.*,b.phone,b.name,b.username FROM h_liushi a left join tab_user b
+		ON a.uid=b.uid
+		 WHERE date=#{pd.date} 
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+		AND
+			(	
+				phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				 OR 
+				username LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 	
+			)
+	   </if>
+		<if test="pd.label!= null and pd.label != ''"><!-- 关键词检索 -->
+		AND label=#{pd.label}
+		</if>
+	</select>
+	
+		<!-- 分类算法结果 -->
+	<select id="findclassifierresult" parameterType="page" resultType="pd">
+		select name,accuracy,recall,fscore from h_classifier
+		
+	</select>
+	
+		<!-- 统计流失客户的数目 -->
+	<select id="findLiushi" parameterType="page" resultType="pd">
+		
+		SELECT COUNT(uid) c,date FROM h_liushi where label='1' GROUP BY date
+	</select>
+</mapper>
