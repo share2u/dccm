@@ -3,8 +3,7 @@ package cn.ncut.recommend.classify;
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import cn.ncut.service.recommend.RecommendManager;
@@ -17,8 +16,7 @@ import cn.ncut.util.AgeUtils;
 import cn.ncut.util.PageData;
 @Component("classifyUsers")
 @Configuration
-@EnableAsync
-@EnableScheduling
+
 public class ClassifyUsers {
 	@Resource(name = "recommendService")
 	private RecommendManager recommendService;
@@ -30,7 +28,7 @@ public class ClassifyUsers {
 	/**
 	 * @param args
 	 */
-	@Scheduled(cron = " 00 45 16 * * ?  ")
+	
 	public void Classify() throws Exception{
 		
 		//给用户进行分类，并计算每个组最常购买的十件商品
