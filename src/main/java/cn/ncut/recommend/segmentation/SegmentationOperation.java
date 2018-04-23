@@ -21,14 +21,12 @@ import cn.ncut.util.PageData;
 import cn.ncut.util.UuidUtil;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+
+
 
 @Component("operationSegmentation")
 @Configuration
-@EnableAsync
-@EnableScheduling
+
 public class SegmentationOperation {
 	@Resource(name = "recommendService")
 	private RecommendManager recommendService;
@@ -36,7 +34,7 @@ public class SegmentationOperation {
 	private SegmentationPreparation segmentationPreparation;
 	@Resource(name = "memberService")
 	private MemberManager memberService;
-	@Scheduled(cron = " 00 15 16 * * ?  ")
+	
 	public void KmeansOperation() throws Exception{
 		//对用户购买的商品类别进行聚类
         int k = 5;

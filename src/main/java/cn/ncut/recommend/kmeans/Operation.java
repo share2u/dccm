@@ -17,14 +17,11 @@ import cn.ncut.service.recommend.RecommendManager;
 import cn.ncut.service.user.member.MemberManager;
 import cn.ncut.util.PageData;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+
 
 @Component("operation")
 @Configuration
-@EnableAsync
-@EnableScheduling
+
 public class Operation {
 	@Resource(name = "recommendService")
 	private RecommendManager recommendService;
