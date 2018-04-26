@@ -73,10 +73,14 @@ public ModelAndView list(Page page) throws Exception {
 		pd.put("lastEnd", lastEnd+" 23:59:59");
 	}*/
 	page.setPd(pd);
-	List<PageData> varList = ClusterService.list(page); // 列出Member列表
+	List<PageData> varList = ClusterService.list(page); 
+	List<PageData> VIPgroups = ClusterService.findVIP(page);
+	List<PageData> Allgroups = ClusterService.findAll(page);
 	mv.setViewName("datamining/segment_list");
 	mv.addObject("varList", varList);
 	mv.addObject("pd", pd);
+	mv.addObject("VIPgroups", new ObjectMapper().writeValueAsString(VIPgroups));
+	mv.addObject("Allgroups", new ObjectMapper().writeValueAsString(Allgroups));
 	mv.addObject("QX", Jurisdiction.getHC()); // 按钮权限
 	return mv;
  }
@@ -175,11 +179,11 @@ public ModelAndView list(Page page) throws Exception {
 		
 		page.setPd(pd);
 		List<PageData> cluster = ClusterService.listcluster(page); 
-		List<PageData> VIPgroups = ClusterService.findVIP(page);
+		//List<PageData> VIPgroups = ClusterService.findVIP(page);
 		mv.setViewName("datamining/clusterstatic2");
 		//mv.addObject("cluster", cluster);
 		mv.addObject("cluster", new ObjectMapper().writeValueAsString(cluster));
-		mv.addObject("VIPgroups", new ObjectMapper().writeValueAsString(VIPgroups));
+		//mv.addObject("VIPgroups", new ObjectMapper().writeValueAsString(VIPgroups));
 		return mv;
 	 }
 }

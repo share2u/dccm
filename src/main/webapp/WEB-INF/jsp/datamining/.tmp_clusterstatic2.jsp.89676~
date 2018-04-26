@@ -42,9 +42,9 @@
 								<div id="cluster"
 									style="text-align:center; float:left;; width: 800px;height:450px;margin:50px 50px 50px 100px"></div>
 							    <div id="bb" style="height:150px;"></div>
-							<!--	<div id="VIPgroups"
+								<div id="VIPgroups"
 									style="text-align:center; float:left; width: 825px;height:450px;margin:50px 50px 50px 100px"></div>
-								-->
+								
 							</div>
 							<script type="text/javascript">
 								//聚类的标准
@@ -73,8 +73,7 @@
 					        }
 					    },
 					    xAxis: {
-					        data: ['聚类数目二','聚类数目三','聚类数目四','聚类数目五','聚类数目六','聚类数目七','聚类数目八',
-							'聚类数目九','聚类数目十'],
+					        data: ['聚类数目二','聚类数目三','聚类数目四','聚类数目五','聚类数目六','聚类数目七','聚类数目八'],
 					        axisLine: {
 					            lineStyle: {
 					                color: '#ccc'
@@ -149,9 +148,69 @@
 					        data: y1Data
 					    }]
 					};
+								//VIP客户数目变化
+							var myChart2 = echarts.init(document
+									.getElementById('VIPgroups'));
+							var VIPgroups = eval('${VIPgroups}');
+							var xData = new Array();
+							var yData = new Array();
+							//var idData = new Array();
+							for ( var x in VIPgroups) {
+								xData[x] = VIPgroups[x].date;
+								yData[x] = VIPgroups[x].c;
+								//idData[x] = cluster[x].groupId;
+							}
+							var option2 = {
+							      title: {
+								        text: 'VIP客户数目'
+								    },
+								xAxis: {
+							     
+							        data: xData
+							    },
+							    yAxis: {
+							    },
+								visualMap: {
+					            top: 10,
+					            right: 10,
+					            pieces: [{
+					                gt: 0,
+					                lte: 50,
+					                color: '#096'
+					            }, {
+					                gt: 50,
+					                lte: 100,
+					                color: '#ffde33'
+					            }, {
+					                gt: 100,
+					                lte: 150,
+					                color: '#ff9933'
+					            }, {
+					                gt: 150,
+					                lte: 200,
+					                color: '#cc0033'
+					            }, {
+					                gt: 200,
+					                lte: 250,
+					                color: '#660099'
+					            }, {
+					                gt: 250,
+					                color: '#7e0023'
+					            }],
+					            outOfRange: {
+					                color: '#999'
+					            }
+					        },
+		
+							    series: [{
+							        data: yData,
+							        type: 'line'
+							    }]
+							};
+
 			                    // 使用刚指定的配置项和数据显示图表。
 								myChart1.setOption(option1);
-								//myChart2.setOption(option2);
+								myChart2.setOption(option2);
 							function ObjStory1(name,type,stack,data,label) //声明对象
 									{
 									    this.name = name;
@@ -161,7 +220,11 @@
 									    this.data = data;
 										this.label = label;
 									}
-							
+							function ObjStory2(type,data) //声明对象
+								{   
+								    this.type= type;	    
+								    this.data = data;
+								}
 							</script>
 							<div style=" clear:both;"></div>
 						</div>

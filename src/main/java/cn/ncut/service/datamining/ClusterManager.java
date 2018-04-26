@@ -129,6 +129,8 @@ public interface ClusterManager {
 
 	public List<PageData> findLiushi(Page page)throws Exception;
 
+	public List<PageData> findAll(Page page)throws Exception;
+
 	
 
 
