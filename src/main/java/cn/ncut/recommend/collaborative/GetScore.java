@@ -31,6 +31,7 @@ public class GetScore {
 		}
 	}
 	for (int i = 0; i < usercount; i++) {//用户个数
+		
 		neighborSerial.clear();
 		double max = 0;
 		int j = 0;

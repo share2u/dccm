@@ -89,7 +89,7 @@
 											 <c:if test="${var.group_id==1}"><font color="#FF6A6A">${var.remark}</font></c:if>
 												<c:if test="${var.group_id==2}"><font color="#FFB90F">${var.remark}</font></c:if>
 												 <c:if test="${var.group_id==3}"><font color="#1C86EE">${var.remark}</font></c:if>
-												  <c:if test="${var.group_id==4}"><font color="#54FF9F">${var.remark}</font></c:if>
+												  <c:if test="${var.group_id==4}"><font color="#2E8B57">${var.remark}</font></c:if>
 												  <c:if test="${var.group_id==5}"><font color="#A020F0">${var.remark}</font></c:if>
 												 
 											</td>
@@ -520,7 +520,7 @@
                      trigger: 'item',
                      formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
-                     color:['#FF6A6A','#FFB90F','#1C86EE','#54FF9F','#A020F0'],  
+                     color:['#FF6A6A','#FFB90F','#1C86EE','#2E8B57','#A020F0'],  
                     legend: {
                          orient : 'vertical',
                          x : 'left',

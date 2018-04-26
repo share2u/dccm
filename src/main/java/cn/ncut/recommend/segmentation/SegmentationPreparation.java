@@ -50,6 +50,8 @@ public class SegmentationPreparation {
 		PageData pd = new PageData();
 		List<Player> playerlist = new ArrayList<Player>();
 		Player player = null;
+		 SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+	     System.out.println("时间："+sd.format(new Date())+"： ---开始进行数据采集---");
 		//1、查询用户类别、用户个人折扣
 		List<PageData> userlistpd = recommendService.selectUser(pd);//用户信息
 		for(PageData userpd:userlistpd){
@@ -131,8 +133,11 @@ public class SegmentationPreparation {
 			recommendService.insertSegmentation(userpd);
 			playerlist.add(player);
 		}
+		 System.out.println("时间："+sd.format(new Date())+"： ---开始进行数据log转换---");
 		List<Player> newplayerlist = standardization.log(playerlist);
+		System.out.println("时间："+sd.format(new Date())+"： ---开始进行数据标准化---");
 		newplayerlist = standardization.standardization(newplayerlist);//标准化
+		System.out.println("时间："+sd.format(new Date())+"： ---开始进行计算各细分变量权重---");
 		standardization.weight(newplayerlist);//设置权重
 		return playerlist;
 		

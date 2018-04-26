@@ -201,6 +201,7 @@ public interface MemberManager{
 	PageData findByuid(int uid) throws Exception;
 	
 	public List<PageData> selectAllOldUser(PageData pd) throws Exception;
+	public List<PageData> listMemberByUidlistPage(Page page) throws Exception;
 
 }
 

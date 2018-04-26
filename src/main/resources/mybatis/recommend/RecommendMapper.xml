@@ -43,7 +43,7 @@
 	AND tb_custom_appoint.`ORDER_ID` = tb_order.`ORDER_ID` 
 	AND tb_order.`SERVICECOST_ID`=service_cost.`SERVICECOST_ID` 
 	AND tab_user.`uid` = tb_custom_appoint.`U_ID`
-	<!-- AND tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00' -->
+	<!-- AND tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00'  -->
 	GROUP BY U_ID,service_category.`F_CATEGORY_ID`
 	</select>
 	<!--根据group1查询uid -->
@@ -88,7 +88,7 @@
     tb_custom_appoint,tb_order,recommend 
     WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID
      AND tb_custom_appoint.U_ID = recommend.uid 
-  <!--    and tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00' -->
+     <!-- and tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00'  -->
      AND recommend.group2=#{GROUP2} GROUP BY uid,SERVICECOST_ID
      
    
@@ -100,6 +100,7 @@
 	FROM tb_custom_appoint,tb_order WHERE 
 	tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID 
 	AND tb_order.uid=#{UID}
+	<!-- and tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00'  -->
 		
 	</select>
 	<!--查询该用户在该医生下都购买了什么复诊项目-->
@@ -112,6 +113,7 @@
 	AND service_project.PNAME LIKE '%复诊挂号%'  
 	AND tb_order.UID=#{UID} 
 	AND tb_order.STAFF_ID=#{STAFF_ID}
+	<!-- and tb_order.CREATE_TIME &lt;'2017-09-01 00:00:00'  -->
 					 
 		
 	</select>
@@ -119,7 +121,7 @@
 	SELECT service_project.pname,service_cost.servicecost_id 
 	FROM service_project,service_cost 
 	WHERE service_project.PROJECT_ID = service_cost.PID 
-	AND service_project.PNAME = #{PAME}
+	AND service_project.PNAME =#{PNAME}
 	and service_cost.STAFF_ID= #{STAFF_ID}
 					 
 		
@@ -151,6 +153,11 @@
 		where uid = #{UID}
 
 	</update>
+		<update id="updateCF" parameterType="pd">
+		update recommend set servicecost_ids = #{SERVICECOST_IDS}
+		where uid = #{UID}
+
+	</update>
 	<update id="updateGroup1ByUid" parameterType="pd">
 		update recommend set group1 = #{GROUP1}
 		where uid = #{UID}
@@ -178,13 +185,12 @@
 	<select id="transcount" parameterType="pd" resultType="Integer">
 	SELECT COUNT(DISTINCT U_ID)  FROM tb_custom_appoint,tb_order,service_cost WHERE tb_custom_appoint.ORDER_ID = tb_order.ORDER_ID AND tb_order.SERVICECOST_ID=service_cost.SERVICECOST_ID 
 	</select>
-	<select id="selectIscollByUid" parameterType="Integer" resultType="String">
-		select 
-		ifnull(servicecost_ids,0) as servicecost_ids from recommend where UID = #{UID}
+	<select id="selectIscollByUid" parameterType="Integer" resultType="Integer">
+		select iscoll from recommend where UID = #{UID}
 	</select>
 	<select id="selectservicecost_ids" parameterType="pd" resultType="String">
 		select 
-		servicecost_ids from recommend where UID = #{UID}
+		IF(LENGTH(trim(servicecost_ids))>0,servicecost_ids,0) as servicecost_ids from recommend where UID = #{UID}
 	</select>
 	<select id="selecttop10" parameterType="pd" resultType="String">
 		select 
@@ -196,18 +202,24 @@
 	<select id="selectRecommendByUid" parameterType="pd" resultType="pd">
 	select ifnull(servicecost_ids,0) as servicecost_ids from recommend where uid = #{uid}
 	</select>
+	<select id="selectRecommendByUid2" parameterType="pd" resultType="pd">
+	SELECT IF(LENGTH(trim(servicecost_ids))>0,servicecost_ids,0) as servicecost_ids from recommend where uid = #{uid}
+	</select>
 	<select id="selectTop10ByUid" parameterType="pd" resultType="pd">
 	select ifnull(top10,0) as servicecost_ids from recommend where uid = #{uid}
 	</select>
 	
 	<select id="selectAfterBuyByUid" parameterType="Integer" resultType="String">
-	SELECT distinct(servicecost_id) FROM tb_order WHERE uid = #{uid} and CREATE_TIME &gt;'2017-09-01 00:00:00'
+	SELECT servicecost_id FROM tb_order WHERE uid = #{uid} and CREATE_TIME &gt;'2017-09-01 00:00:00'
 	</select>
 	
 	<select id="listOldUser" parameterType="pd" resultType="pd">
-		  SELECT uid FROM recommend where servicecost_ids is not null
+		  SELECT uid FROM recommend where servicecost_ids is not null 
 	</select>
 	
+	<select id="selectAllMember" parameterType="pd" resultType="pd">
+		  SELECT uid FROM recommend  where servicecost_ids is not null or servicecost_ids!="" and group2=#{group2}
+	</select>
 	<!--查询该用户购买过什么项目，根据医生分组-->
 	<select id="selectServicecostByUidGroupByStaffid" parameterType="pd" resultType="pd">
 	SELECT DISTINCT tb_order.SERVICECOST_ID,service_project.PNAME,tb_store.STORE_NAME,tb_staff.STAFF_NAME
