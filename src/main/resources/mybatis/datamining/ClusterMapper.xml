@@ -107,8 +107,11 @@
 		
 		SELECT COUNT(uid) c,date FROM h_order_label where level='vip' GROUP BY date
 	</select>
-	
-	
+		<!-- 统计客户的数目 -->
+	<select id="findAll" parameterType="page" resultType="pd">
+		
+		SELECT COUNT(uid) c,date FROM h_order_label  GROUP BY date
+	</select>
 	<!-- ===================================================================== -->
 	<select id="LiushilistPage" parameterType="page" resultType="pd">
 			
