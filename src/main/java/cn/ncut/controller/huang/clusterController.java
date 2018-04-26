@@ -75,12 +75,12 @@ public ModelAndView list(Page page) throws Exception {
 	page.setPd(pd);
 	List<PageData> varList = ClusterService.list(page); 
 	List<PageData> VIPgroups = ClusterService.findVIP(page);
-	
+	List<PageData> Allgroups = ClusterService.findAll(page);
 	mv.setViewName("datamining/segment_list");
 	mv.addObject("varList", varList);
 	mv.addObject("pd", pd);
 	mv.addObject("VIPgroups", new ObjectMapper().writeValueAsString(VIPgroups));
-	
+	mv.addObject("Allgroups", new ObjectMapper().writeValueAsString(Allgroups));
 	mv.addObject("QX", Jurisdiction.getHC()); // 按钮权限
 	return mv;
  }
