@@ -135,4 +135,10 @@ public class ClusterService implements ClusterManager {
 		return (List<PageData>)dao.findForList("ClusterMapper.findLiushi", page);
 	}
 
+
+	@Override
+	public List<PageData> findAll(Page page) throws Exception {
+		return (List<PageData>)dao.findForList("ClusterMapper.findAll", page);
+	}
+
 }
