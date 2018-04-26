@@ -40,10 +40,10 @@
 							<div style="width:1000px;margin:0 auto;">
 								<div id="aa" style="height:50px;"></div>
 								<div id="classifier"
-									style="text-align:center; float:left; width: 450px;height:400px;"></div>
-							    <div id="liushigroups"
+									style="text-align:center; float:none;; width: 650px;height:400px;margin:50px 80px 50px 100px"></div>
+							<!--    <div id="liushigroups"
 									style="text-align:center; float:right; width:450px;height:427px;"></div>
-								
+								-->
 							</div>
 							<script type="text/javascript">
 								//fen类的标准
@@ -123,69 +123,9 @@
 						    ]
 						};
 					
-								//VIP客户数目变化
-							var myChart2 = echarts.init(document
-									.getElementById('liushigroups'));
-							var liushigroups = eval('${liushigroups}');
-							var xData = new Array();
-							var yData = new Array();
-							//var idData = new Array();
-							for ( var x in liushigroups) {
-								xData[x] = liushigroups[x].date;
-								yData[x] = liushigroups[x].c;
-								//idData[x] = cluster[x].groupId;
-							}
-							var option2 = {
-							      title: {
-								        text: '流失客户数目'
-								    },
-								xAxis: {
-							     
-							        data: xData
-							    },
-							    yAxis: {
-							    },
-								visualMap: {
-							            top: 10,
-							            right: 10,
-							            pieces: [{
-							                gt: 0,
-							                lte: 5,
-							                color: '#096'
-							            }, {
-							                gt: 5,
-							                lte: 10,
-							                color: '#ffde33'
-							            }, {
-							                gt: 10,
-							                lte: 15,
-							                color: '#ff9933'
-							            }, {
-							                gt: 15,
-							                lte: 20,
-							                color: '#cc0033'
-							            }, {
-							                gt: 20,
-							                lte: 25,
-							                color: '#660099'
-							            }, {
-							                gt: 25,
-							                color: '#7e0023'
-							            }],
-							            outOfRange: {
-							                color: '#999'
-							            }
-							        },
-				
-							    series: [{
-							        data: yData,
-							        type: 'line'
-							    }]
-							};
-
 			                    // 使用刚指定的配置项和数据显示图表。
 								myChart1.setOption(option1);
-								myChart2.setOption(option2);
+							//	myChart2.setOption(option2);
 							function ObjStory1(name,type,stack,data,label) //声明对象
 									{
 									    this.name = name;
@@ -195,11 +135,7 @@
 									    this.data = data;
 										this.label = label;
 									}
-							function ObjStory2(type,data) //声明对象
-								{   
-								    this.type= type;	    
-								    this.data = data;
-								}
+							
 							</script>
 							<div style=" clear:both;"></div>
 						</div>

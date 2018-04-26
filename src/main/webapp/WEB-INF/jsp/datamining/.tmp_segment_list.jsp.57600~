@@ -1,4 +1,4 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -13,8 +13,6 @@
 
 <head>
 <base href="<%=basePath%>">
-<!-- 引入 ECharts 文件 -->
-<script src="js/echarts.js"></script>
 <!-- 下拉框 -->
 <link rel="stylesheet" href="static/ace/css/chosen.css" />
 <!-- jsp文件头和头部 -->
@@ -204,7 +202,6 @@
 							</tr>
 						</table>
 						</div>
-				
 						</form>
 					
 						</div>
@@ -214,21 +211,15 @@
 				</div>
 				<!-- /.page-content -->
 			</div>
-	
 		</div>
 		<!-- /.main-content -->
-	<div style="width:1000px;margin:0 auto;">
-	  <div id="bb" style="height:150px;"></div>
-		<div id="VIPgroups"
-			style="text-align:center; float:left; width: 825px;height:450px;margin:50px 50px 50px 100px"></div>		
-	</div>
+
 		<!-- 返回顶部 -->
 		<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
 			<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
 		</a>
 
 	</div>
-	
 	<!-- /.main-container -->
 
 	<!-- basic scripts -->
@@ -298,75 +289,7 @@
 			});
 		});
 		
-	//VIP客户数目变化
-							var myChart2 = echarts.init(document
-									.getElementById('VIPgroups'));
-							var VIPgroups = eval('${VIPgroups}');
-							var xData = new Array();
-							var yData = new Array();
-							//var idData = new Array();
-							for ( var x in VIPgroups) {
-								xData[x] = VIPgroups[x].date;
-								yData[x] = VIPgroups[x].c;
-								//idData[x] = cluster[x].groupId;
-							}
-							var option2 = {
-							      title: {
-								        text: 'VIP客户数目'
-								    },
-								xAxis: {
-							     
-							        data: xData
-							    },
-							    yAxis: {
-							    },
-								visualMap: {
-					            top: 10,
-					            right: 10,
-					            pieces: [{
-					                gt: 0,
-					                lte: 50,
-					                color: '#096'
-					            }, {
-					                gt: 50,
-					                lte: 100,
-					                color: '#ffde33'
-					            }, {
-					                gt: 100,
-					                lte: 150,
-					                color: '#ff9933'
-					            }, {
-					                gt: 150,
-					                lte: 200,
-					                color: '#cc0033'
-					            }, {
-					                gt: 200,
-					                lte: 250,
-					                color: '#660099'
-					            }, {
-					                gt: 250,
-					                color: '#7e0023'
-					            }],
-					            outOfRange: {
-					                color: '#999'
-					            }
-					        },
-		
-							    series: [{
-							        data: yData,
-							        type: 'line'
-							    }]
-							};
-
-			                    // 使用刚指定的配置项和数据显示图表。
-								
-								myChart2.setOption(option2);
-							
-							function ObjStory2(type,data) //声明对象
-								{   
-								    this.type= type;	    
-								    this.data = data;
-								}
+	
 
 		
 		function updatelevel(Id){
