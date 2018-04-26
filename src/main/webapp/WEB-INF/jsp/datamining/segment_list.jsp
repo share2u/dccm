@@ -217,10 +217,10 @@
 	
 		</div>
 		<!-- /.main-content -->
-	<div style="width:1000px;margin:0 auto;">
+	<div style="width:1200px;margin:0 auto;">
 	  <div id="bb" style="height:150px;"></div>
 		<div id="VIPgroups"
-			style="text-align:center; float:left; width: 825px;height:450px;margin:50px 50px 50px 100px"></div>		
+			style="text-align:center; float:left; width: 905px;height:450px;margin:50px 50px 50px 100px"></div>		
 	</div>
 		<!-- 返回顶部 -->
 		<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
@@ -299,76 +299,171 @@
 		});
 		
 	//VIP客户数目变化
-							var myChart2 = echarts.init(document
+//							var myChart2 = echarts.init(document
+//									.getElementById('VIPgroups'));
+//							var VIPgroups = eval('${VIPgroups}');
+//							var xData = new Array();
+//							var yData = new Array();
+//							//var idData = new Array();
+//							for ( var x in VIPgroups) {
+//								xData[x] = VIPgroups[x].date;
+//								yData[x] = VIPgroups[x].c;
+//								//idData[x] = cluster[x].groupId;
+//							}
+//							var option2 = {
+//							      title: {
+//								        text: 'VIP客户数目'
+//								    },
+//								xAxis: {
+//							     
+//							        data: xData
+//							    },
+//							    yAxis: {
+//							    },
+//								visualMap: {
+//					            top: 10,
+//					            right: 10,
+//					            pieces: [{
+//					                gt: 0,
+//					                lte: 50,
+//					                color: '#096'
+//					            }, {
+//					                gt: 50,
+//					                lte: 100,
+//					                color: '#ffde33'
+//					            }, {
+//					                gt: 100,
+//					                lte: 150,
+//					                color: '#ff9933'
+//					            }, {
+//					                gt: 150,
+//					                lte: 200,
+//					                color: '#cc0033'
+//					            }, {
+//					                gt: 200,
+//					                lte: 250,
+//					                color: '#660099'
+//					            }, {
+//					                gt: 250,
+//					                color: '#7e0023'
+//					            }],
+//					            outOfRange: {
+//					                color: '#999'
+//					            }
+//					        },
+//		
+//							    series: [{
+//							        data: yData,
+//							        type: 'line'
+//							    }]
+//							};
+//
+//			                    // 使用刚指定的配置项和数据显示图表。
+//								
+//								myChart2.setOption(option2);
+//							
+//							function ObjStory2(type,data) //声明对象
+//								{   
+//								    this.type= type;	    
+//								    this.data = data;
+//								}
+
+		var myChart2 = echarts.init(document
 									.getElementById('VIPgroups'));
 							var VIPgroups = eval('${VIPgroups}');
+							var Allgroups = eval('${Allgroups}');
 							var xData = new Array();
 							var yData = new Array();
+							var y2Data = new Array();
 							//var idData = new Array();
 							for ( var x in VIPgroups) {
 								xData[x] = VIPgroups[x].date;
-								yData[x] = VIPgroups[x].c;
-								//idData[x] = cluster[x].groupId;
+								yData[x] = VIPgroups[x].c;				
+							}	
+								for ( var x in Allgroups) {					
+								y2Data[x] = Allgroups[x].c;						
 							}
-							var option2 = {
-							      title: {
-								        text: 'VIP客户数目'
-								    },
-								xAxis: {
-							     
-							        data: xData
-							    },
-							    yAxis: {
-							    },
-								visualMap: {
-					            top: 10,
-					            right: 10,
-					            pieces: [{
-					                gt: 0,
-					                lte: 50,
-					                color: '#096'
-					            }, {
-					                gt: 50,
-					                lte: 100,
-					                color: '#ffde33'
-					            }, {
-					                gt: 100,
-					                lte: 150,
-					                color: '#ff9933'
-					            }, {
-					                gt: 150,
-					                lte: 200,
-					                color: '#cc0033'
-					            }, {
-					                gt: 200,
-					                lte: 250,
-					                color: '#660099'
-					            }, {
-					                gt: 250,
-					                color: '#7e0023'
-					            }],
-					            outOfRange: {
-					                color: '#999'
-					            }
-					        },
-		
-							    series: [{
-							        data: yData,
-							        type: 'line'
-							    }]
-							};
-
-			                    // 使用刚指定的配置项和数据显示图表。
-								
-								myChart2.setOption(option2);
+var option2 = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            crossStyle: {
+                color: '#999'
+            }
+        }
+    },
+    toolbox: {
+        feature: {
+            dataView: {show: true, readOnly: false},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },
+    legend: {
+        data:['vip','总人数','平均温度']
+    },
+    xAxis: [
+        {
+            type: 'category',
+            data: xData ,
+            axisPointer: {
+                type: 'shadow'
+            }
+        }
+    ],
+    yAxis: [
+        {
+            type: 'value',
+            name: '总人数',
+            min: 3000,
+            max: 4000,
+            interval: 250,
+            axisLabel: {
+                formatter: '{value} '
+            }
+        },
+        {
+            type: 'value',
+            name: 'vip人数',
+            min: 100,
+            max: 300,
+            interval: 50,
+            axisLabel: {
+                formatter: '{value} '
+            }
+        }
+    ],
+    series: [
+        {
+            name:'总人数',
+            type:'bar',
+            data:y2Data, 
+			barWidth: 18,//barCategoryGap: '10%',
+			//barMaxWidth: 100,
+			//barMinHeight: 100,
+		},
+     
+        {
+            name:'vip',
+            type:'line',
+            yAxisIndex: 1,
+            data:yData
+        }, 
+  
+    ]
+};
+	myChart2.setOption(option2);
 							
-							function ObjStory2(type,data) //声明对象
+							function ObjStory2(type,data,name) //声明对象
 								{   
 								    this.type= type;	    
 								    this.data = data;
+									this.name = name;
 								}
-
-		
+								
+								
 		function updatelevel(Id){
 			top.jzts();
 			 var diag = new top.Dialog();
