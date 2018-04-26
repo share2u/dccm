@@ -52,10 +52,10 @@
 						<form action="recommend/showUser.do" method="post" name="Form1" id="Form1">
 						
 						<div>
-							<span style="margin-top:8px;float:left;">请输入用户姓名/昵称/手机号查询用户：</span>
+							<span style="margin-top:8px;float:left;">请输入用户uid：</span>
 							<div class="nav-search" style="width:80%; float:left;text-align:left;">
 								<span class="input-icon">
-									<input type="text" placeholder="uid/用户姓名/昵称/手机号" class="nav-search-input" id="nav-search-input" autocomplete="off" name="keywords" value="${pd.keywords}" placeholder="这里输入关键词"/>
+									<input type="text" placeholder="请输出用户uid" class="nav-search-input" id="nav-search-input" autocomplete="off" name="keywords" value="${pd.keywords}" placeholder="这里输入关键词"/>
 									<i class="ace-icon fa fa-search nav-search-icon"></i>
 								</span>
 								<a class="btn btn-light btn-xs" onclick="tosearch1();"  title="检索"><i id="nav-search-icon" class="ace-icon fa fa-search bigger-110 nav-search-icon blue"></i></a>
@@ -122,8 +122,8 @@
 						<!--检索用户 end-->
 						<!-- 查询用户购买的项目 -->
 						<div style="clear:both;"></div>
-						<div id="projectdiv" style="width:100%;text-align: left;">
-						<span style="float:left;">该用户购买过的项目：</span>
+						<div id="projectdiv" style="width:100%;display:none;text-align: left;">
+						<span style="display:block;text-align:center;font-size: 16px;color: red;">该用户购买过的项目：</span>
 						<table id="project-table" class="table table-striped table-bordered table-hover" style="margin-top:5px;">	
 							<thead>
 								<tr>
@@ -141,12 +141,14 @@
 							</tbody>
 							</table>
 						</div> 
-						
+						<div id="projectdiv2">
+						<span style="float:left;font-size: 16px;color: red;">当前用户没有购买过服务项目！</span>
+						</div>
 						
 						<!-- 推荐 -->
 						<div style="clear:both;"></div>
 						<div id="recommenddiv" style="width:100%;text-align: left;">
-						<span style="float:left;">为该用户推荐的项目：</span>
+						<span style="display:block;text-align:center;font-size: 16px;color: red;">为该用户推荐的项目：</span>
 						<table id="recommend-table" class="table table-striped table-bordered table-hover" style="margin-top:5px;">	
 							<thead>
 								<tr>
@@ -260,8 +262,10 @@
 						tr.appendChild(td4);
 						$("#recommend_tbody").append(tr);
 					}
+					if(data[1].length>0){
 					for(var t=0; t<data[1].length; t++){
-				 
+					 $("#projectdiv2").css('display','none');
+				      $("#projectdiv").css('display','block');
 						//构造曾经购买过的项目表
 						var tr = document.createElement("tr");
 						tr.id = "project"+data[1][t].SERVICECOST_ID;
@@ -290,6 +294,11 @@
 						tr.appendChild(td3);
 						tr.appendChild(td4);
 						$("#project_tbody").append(tr);
+					}
+					}else if(data[1].length==0){
+					$("#projectdiv").css('display','none');
+					$("#projectdiv2").css('display','block');
+					//$("#projectdiv2").html("当前用户没有购买过项目！");
 					}
 					$(top.hangge());//关闭加载状态
 					

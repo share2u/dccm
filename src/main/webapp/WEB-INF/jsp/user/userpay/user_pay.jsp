@@ -146,6 +146,7 @@
 									<th class="center" style="width:35px;">
 									<label class="pos-rel"><span class="lbl"></span></label>
 									</th>
+									<th class="center">门店名称</th>
 									<th class="center">医生</th>
 									<th class="center">项目名称</th>
 									<th class="center">价格</th>
@@ -432,20 +433,24 @@
 						td1.appendChild(span);
 						var td2 = document.createElement("td");
 						td2.className="center";
-						td2.appendChild(document.createTextNode(data[t].STAFF_NAME));
-						
+						td2.appendChild(document.createTextNode(data[t].STORE_NAME));
 						var td3 = document.createElement("td");
 						td3.className="center";
-						td3.appendChild(document.createTextNode(data[t].PNAME));
+						td3.appendChild(document.createTextNode(data[t].STAFF_NAME));
 						
 						var td4 = document.createElement("td");
 						td4.className="center";
-						td4.appendChild(document.createTextNode(data[t].PRICE));
+						td4.appendChild(document.createTextNode(data[t].PNAME));
+						
+						var td5 = document.createElement("td");
+						td5.className="center";
+						td5.appendChild(document.createTextNode(data[t].PRICE));
 						
 						tr.appendChild(td1);
 						tr.appendChild(td2);
 						tr.appendChild(td3);
 						tr.appendChild(td4);
+						tr.appendChild(td5);
 						$("#recommend_tbody").append(tr);
 					}
 					
