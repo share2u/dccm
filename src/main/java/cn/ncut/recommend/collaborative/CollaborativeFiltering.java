@@ -5,9 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+
+
 import org.springframework.stereotype.Component;
 
 import cn.ncut.service.recommend.RecommendManager;
@@ -17,8 +16,6 @@ import cn.ncut.util.PageData;
 
 @Component("collaborativeFiltering")
 @Configuration
-@EnableAsync
-@EnableScheduling
 public class CollaborativeFiltering {
 	@Resource(name = "memberService")
 	private MemberManager memberService;
@@ -28,7 +25,7 @@ public class CollaborativeFiltering {
 	@Resource(name = "collaborativeFilteringOperation")
 	
 	private CollaborativeFilteringOperation collaborativeFilteringOperation;
-	//@Scheduled(cron = " 00 25 16 * * ?  ")
+	
 	public void Application() throws Exception{
 		PageData pd = new PageData();
 		 
@@ -38,17 +35,20 @@ public class CollaborativeFiltering {
 			collaborativeFilteringOperation.CollaborativeFiltering(i);
 			
 		}
-	/*	//计算推荐结果
+		/*//计算推荐结果
 		 int n = 0;
 		 int buysize = 0;
-		 int recommendsize = 0;
+		 int recommendsize = 0;//推荐的个数
 		 double precision = 0.0;
 		 double recall = 0.0;
+		 String[] servicecost_id;
+		 List<String> buylist;
 //1、查询所有用户
 		 PageData userpd = new PageData();
 		 //查询所有老用户
-		 
-		 List<PageData> userlist = recommendService.selectOldMember(userpd);
+		 //准确率：按系统中的老用户算
+		 //召回率：按系统中的新用户算
+		 List<PageData> userlist = recommendService.selectAllMember(userpd);//查询所有老用户
 		 for(PageData user : userlist){
 			 
 			 int uid2 = (int)user.get("uid");
@@ -66,10 +66,15 @@ public class CollaborativeFiltering {
 				if(recommendpd.getString("servicecost_ids")!=null){
 				 servicecost_ids = recommendpd.getString("servicecost_ids");
 				}
+				servicecost_ids ="";
 			}
-			String[] servicecost_id=servicecost_ids.split(",");
+			servicecost_id=servicecost_ids.split(",");
+		 
+			//查询所有用户的购买情况
+			
 			//查询他的购买情况
-			List<String> buylist = recommendService.selectAfterBuyByUid(uid2);
+			 buylist = recommendService.selectAfterBuyByUid(uid2);
+			
 			 //推荐∩购买
 			for(int m=0;m<servicecost_id.length;m++){
 				   if(buylist.contains(servicecost_id[m])){
@@ -85,9 +90,10 @@ public class CollaborativeFiltering {
 		 precision = (double)n/recommendsize;
 		 recall =(double) n/buysize;
 		 System.out.println("准确率："+precision);
-		 System.out.println("召回率："+recall);*/
+		 System.out.println("召回率："+recall);
 		
-	}
+	}*/
 	
 	
+}
 }

@@ -143,8 +143,8 @@ public class ServiceCostService implements ServiceCostManager{
 	 * @return
 	 * @throws Exception
 	 */
-	public String selectIscollByUid(Integer UID)throws Exception{
-		return  (String)dao.findForObject("RecommendMapper.selectIscollByUid", UID);
+	public int selectIscollByUid(Integer UID)throws Exception{
+		return  (int)dao.findForObject("RecommendMapper.selectIscollByUid", UID);
 		
 	}
 	/**

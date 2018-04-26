@@ -122,6 +122,13 @@ public class RecommendService  implements RecommendManager{
 	public void insertCF(PageData pd)throws Exception{
 		 dao.save("RecommendMapper.insertCF", pd);
 	}
+	/**更新协同过滤结果
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void updateCF(PageData pd)throws Exception{
+		 dao.save("RecommendMapper.updateCF", pd);
+	}
 	/**查询有多少各group2
 	 * @param pd
 	 * @throws Exception
@@ -204,6 +211,10 @@ public List<PageData> selectOldMember(PageData pd) throws Exception {
 		return (List<PageData>) dao.findForList("RecommendMapper.listOldUser", pd);
 	}
 	
+public List<PageData> selectAllMember(PageData pd) throws Exception {
+	
+	return (List<PageData>) dao.findForList("RecommendMapper.selectAllMember", pd);
+}
 	public List<PageData> selectUser(PageData pd) throws Exception {
 		// TODO Auto-generated method stub
 		return (List<PageData>) dao.findForList("MemberMapper.selectUser", pd);
@@ -263,6 +274,11 @@ public List<PageData> selectOldMember(PageData pd) throws Exception {
 		// TODO Auto-generated method stub
 		return (PageData) dao.findForObject("RecommendMapper.selectRecommendByUid", pd);
 	}
+	//进行初诊复诊过滤时使用
+	public PageData selectRecommendByUid2(PageData pd) throws Exception {
+		// TODO Auto-generated method stub
+		return (PageData) dao.findForObject("RecommendMapper.selectRecommendByUid2", pd);
+	}
 	public PageData selectTop10ByUid(PageData pd) throws Exception {
 		// TODO Auto-generated method stub
 		return (PageData) dao.findForObject("RecommendMapper.selectTop10ByUid", pd);
@@ -313,5 +329,8 @@ public List<PageData> selectOldMember(PageData pd) throws Exception {
 	}
 	public List<PageData> listSegmentationWeight(Page page)throws Exception{
 		return (List<PageData>)dao.findForList("SegmentationWeightMapper.listSegmentationWeight", page);
+	}
+	public PageData selectSegmentationWeight(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("SegmentationWeightMapper.selectSegmentationWeight", pd);
 	}
 }

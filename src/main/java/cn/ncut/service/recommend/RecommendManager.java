@@ -60,4 +60,8 @@ public interface RecommendManager {
 	public List<PageData> selectServicecostByUidGroupByStaffid(PageData pd)throws Exception;
 	public int insertSegmentationWeight(PageData pd)throws Exception;
 	public List<PageData> listSegmentationWeight(Page page)throws Exception;
+	public List<PageData> selectAllMember(PageData pd) throws Exception;
+	public void updateCF(PageData pd)throws Exception;
+	public PageData selectRecommendByUid2(PageData pd) throws Exception;
+	public PageData selectSegmentationWeight(PageData pd)throws Exception;
 }

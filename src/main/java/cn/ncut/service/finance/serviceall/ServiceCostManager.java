@@ -96,7 +96,7 @@ public interface ServiceCostManager{
 	public void batchUpdateStatusToInvalid(List<PageData> list) throws Exception;
 	//以下是课题加的
 	public int findmaxid(PageData pd)throws Exception;
-	public String selectIscollByUid(Integer UID)throws Exception;
+	public int selectIscollByUid(Integer UID)throws Exception;
 	public String selectservicecost_ids(PageData pd)throws Exception;
 	public String selecttop10(PageData pd)throws Exception;
 	public PageData selectPnameAndStaffName(PageData pd)throws Exception;

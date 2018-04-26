@@ -114,6 +114,10 @@ public class MemberService implements MemberManager{
 		return (List<PageData>)dao.findForList("MemberMapper.ListCompleteMemberlistPage", page);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<PageData> listMemberByUidlistPage(Page page) throws Exception{
+		return (List<PageData>)dao.findForList("MemberMapper.listMemberByUidlistPage", page);
+	}
 
 	/**
 	 * 用户缴费：查询客户的基本信息

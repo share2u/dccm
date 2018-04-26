@@ -19,6 +19,7 @@ public class FindKNeighbors {
 		List<Integer> neighborSerial = new ArrayList<Integer>();
 		double[] similarity = new double[similarityMatrix.length];//用户个数
 		for (int j = 0; j < similarityMatrix.length; j++) {//对于每一个用户
+			
 			if(i !=j) {//if(user_movie_base[i][j]!=0) 用户i对j的评分不为0
 				similarity[j] = similarityMatrix[i][j];
 			} 

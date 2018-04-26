@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import cn.ncut.entity.Page;
 import cn.ncut.recommend.segmentation.Player;
 import cn.ncut.service.recommend.RecommendManager;
 import cn.ncut.service.user.member.MemberManager;
@@ -38,6 +39,8 @@ public class SegmentationOperation {
 	public void KmeansOperation() throws Exception{
 		//对用户购买的商品类别进行聚类
         int k = 5;
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+        System.out.println("时间："+sd.format(new Date())+"： ---开始进行数据采集与预处理---");
 		List<Player> oriList = segmentationPreparation.prepareFile1();
 		//List<Player> oriList2 = segmentationPreparation.prepareFile2();
 		Object[] ob = segmentationPreparation.prepareFile2();
@@ -45,6 +48,7 @@ public class SegmentationOperation {
 	       
 	        Kmeans<Player> kmeans = new Kmeans<Player>(oriList2,k);//pointCenter,pointCenter.size()
 	        //2为聚类个数
+	        System.out.println("时间："+sd.format(new Date())+"： ---开始进行聚类---");
 	        List<Player>[] results = kmeans.comput();
 	       
 	   
@@ -66,7 +70,7 @@ public class SegmentationOperation {
 				double avg_refundcount = 0.0;
 				double avg_refundmoney  = 0.0;
 				int group_id=0;
-  			for(Player p : list){
+  			for(Player p : list){//对于每一个用户
   				outFile.println("第"+(i)+"组"+p.toString());
   				outFile.flush();
   				//写入数据库
@@ -208,17 +212,21 @@ public class SegmentationOperation {
   			pd.put("create_time", sdf.format(d));
   			recommendService.updateSegmentationInfoById(pd);
   			//插入segmentation_result()
+  			 System.out.println("时间："+sd.format(new Date())+"： ---将结果插入数据库---");
+  			 //查询用户细分各个维度权重
+  			PageData weightpd =recommendService.selectSegmentationWeight(pd);
   			PageData segmentationresultpd = new PageData();
-  			segmentationresultpd.put("avg_proportion", avg_proportion);
-  			segmentationresultpd.put("avg_attentiontime", avg_attentiontime);
-  			segmentationresultpd.put("avg_avgordercount", avg_avgordercount);
-  			segmentationresultpd.put("avg_avgordersum", avg_avgordersum);
-  			segmentationresultpd.put("avg_ordercount", avg_ordercount);
-  			segmentationresultpd.put("avg_ordersum", avg_ordersum);
-  			segmentationresultpd.put("avg_storedcount", avg_storedcount);
-  			segmentationresultpd.put("avg_remain", avg_remain);
-  			segmentationresultpd.put("avg_refundcount", avg_refundcount);
-  			segmentationresultpd.put("avg_refundmoney", avg_refundmoney);
+  			System.out.println("平均折扣："+(double)weightpd.get("proportion"));
+  			segmentationresultpd.put("avg_proportion", (avg_proportion/(double)weightpd.get("proportion")));
+  			segmentationresultpd.put("avg_attentiontime", (avg_attentiontime/(double)weightpd.get("attentiontime")));
+  			segmentationresultpd.put("avg_avgordercount", (avg_avgordercount/(double)weightpd.get("avgordercount")));
+  			segmentationresultpd.put("avg_avgordersum", (avg_avgordersum/(double)weightpd.get("avgordersum")));
+  			segmentationresultpd.put("avg_ordercount", (avg_ordercount/(double)weightpd.get("ordercount")));
+  			segmentationresultpd.put("avg_ordersum", (avg_ordersum/(double)weightpd.get("ordersum")));
+  			segmentationresultpd.put("avg_storedcount", (avg_storedcount/(double)weightpd.get("storedcount")));
+  			segmentationresultpd.put("avg_remain", (avg_remain/(double)weightpd.get("remain")));
+  			segmentationresultpd.put("avg_refundcount", (avg_refundcount/(double)weightpd.get("refundcount")));
+  			segmentationresultpd.put("avg_refundmoney", (avg_refundmoney/(double)weightpd.get("refundmoney")));
   			segmentationresultpd.put("segmentation_result", segmentation_result);
   			segmentationresultpd.put("group_id", group_id);
   			segmentationresultpd.put("result", result);

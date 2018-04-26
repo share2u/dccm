@@ -1,8 +1,10 @@
 package cn.ncut.recommend.collaborative;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Resource;
@@ -10,8 +12,6 @@ import org.springframework.stereotype.Component;
 import cn.ncut.service.finance.serviceall.ServiceCostManager;
 import cn.ncut.service.recommend.RecommendManager;
 import cn.ncut.util.PageData;
-
-
 
 @Component("collaborativeFilteringOperation")
 public class CollaborativeFilteringOperation {
@@ -34,9 +34,7 @@ public class CollaborativeFilteringOperation {
 			int usercount = recommendService.selectCountUidByGroup2(pd);
 			//2、查询所有项目个数的最大值
             int servicecostcount = servicecostService.findmaxid(pd);
-			
-			
-			
+		
 			//3、查询所有uid，从小到大排列
 			//建立一个uid的数组，把uid放进去
 			int[] uid=new int[usercount];//存放uid
@@ -50,17 +48,24 @@ public class CollaborativeFilteringOperation {
 			//对这个数组进行排序
 			Arrays.sort(uid);
 			//4、建立数组，读数据库
-			int[][] user_movie_base = new int[usercount][servicecostcount];//943*1682，第一列为uid
+			SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+			  //System.out.println(sd.format(new Date()));
+		int[][] user_movie_base = new int[usercount][servicecostcount];//943*1682，第一列为uid
+			System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组开始进行初始化---");
 			user_movie_base = readFile.readFile(i, uid, usercount, servicecostcount); // base中有943个用户对1682个项目的评分
-			System.out.println("第"+i+"组初始化完毕");
+			System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组初始化完毕---");
 		    //5、进行协同过滤
+			System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组开始计算相似度---");
+			System.out.println("-----使用改进后的相似度计算公式计算用户间相似度-----");
 			double[][] similarityMatrix = new ProduceSimilarityMatrix()
 			.produceSimilarityMatrix(user_movie_base,uid);//计算用户之间的相似度,以上都是对的
-			System.out.println("第"+i+"组计算相似度完毕");
+			System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组计算相似度完毕---");
+			System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组开始进行评分预测---");
 	        double[][] matrix = GetScore.getScore(user_movie_base, similarityMatrix);//预测评分
-	        System.out.println("第"+i+"组预测评分完毕");
+	        System.out.println("时间："+sd.format(new Date())+"： ---第"+i+"组预测评分完毕---");
 			
 			//6、删除初诊复诊，把结果写入数据库
+	        System.out.println("时间："+sd.format(new Date())+"： ---开始过滤初诊复诊---");
 	        List<RecommendEntity> relist= new ArrayList<RecommendEntity> ();
 			 for (int ii = 0; ii <usercount;++ii) {  
 				 List<Integer> pids = new ArrayList<Integer>();//放入的是pid
@@ -81,7 +86,7 @@ public class CollaborativeFilteringOperation {
 	        			 pids.add(new Integer(kk+1));
 	        			 count--;
 	        				 }
-	        			// System.out.println("uid:"+uid_i+", 加一："+(kk+1));
+	        			
 	        			 }
 	        		}
 	        	}
@@ -97,93 +102,8 @@ public class CollaborativeFilteringOperation {
 	        }
 	        
 	    }
-			 
-			//删除初诊复诊
-			 //1、删除初诊信息
-			 for(RecommendEntity re : relist){
-				 System.out.println("uid:"+re.getUid());
-				 //1、查询这个用户都购买了哪些医生的项目
-				 PageData pd2 = new PageData();
-				 pd2.put("UID", re.getUid());
-				 List<PageData> staffpdlist = recommendService.selectStaffByUid(pd2);//在预约表中进行查询
-				 for(PageData staffpd:staffpdlist){
-					 //查询该用户在该医生下购买了什么项目
-					 pd2.put("STAFF_ID", staffpd.get("STAFF_ID"));
-					 List<PageData> servicecostpdlist = recommendService.selectServicecostByUidAndStaffid(pd2);
-					 for(PageData servicecostpd:servicecostpdlist){
-						  String fuzhenpname = servicecostpd.getString("PNAME");
-						  String chuzhenpname = fuzhenpname.replace("复诊", "初诊");
-						  //查询初诊对应的servicecostid
-						  pd2.put("PNAME", chuzhenpname);
-						  List<PageData> servicecostidpdlist = recommendService.selectServicecostidByPname(pd2);
-						  for(PageData  servicecostidpd: servicecostidpdlist){
-							  List<Integer> pids = re.getPids();//推荐列表
-								 Iterator<Integer> ListIterator = pids.iterator();  
-								 while(ListIterator.hasNext()){  
-								     Integer e = ListIterator.next();  
-								     if(e==Integer.parseInt(servicecostidpd.getString("servicecost_id"))){  
-								     ListIterator.remove();  //删除初诊推荐
-								     }  
-								 }
-						  }
-					 }
-				 }
-				 
-			 }
-			 List<RecommendEntity> list2= new ArrayList<RecommendEntity> ();//保存要删除的复诊项目
-			 List<RecommendEntity> droplist= new ArrayList<RecommendEntity> ();//保存要删除的复诊项目
-			 list2.addAll(relist);//复制
-			 //2、删除复诊信息
-			 //以下删除复诊挂号
-			 Iterator<RecommendEntity> it= list2.iterator();//迭代器遍历
-			 while(it.hasNext()){
-				 RecommendEntity re2 = it.next();
-			
-				 //System.out.println("uid:"+re2.getUid());
-				 //这里错了，应该用迭代器
-				 int flag = 0;//未购买
-				 List<Integer> pids = re2.getPids();//得到推荐了什么项目
-				 Iterator<Integer> ListIterator = pids.iterator();  
-				 while(ListIterator.hasNext()){
-					 Integer pid = ListIterator.next(); //pid
-					 //根据pid查询pname
-					 PageData pd3 = new PageData();
-					 pd3.put("SERVICECOST_ID", pid);
-					List<PageData> servicecostpdlist = recommendService.selectPnameByServicecostid(pd3);
-						for(PageData servicecostpd:servicecostpdlist){
-							 String pname = servicecostpd.getString("PNAME");
-							 if(pname.indexOf("复诊")!=-1){//如果这个pname包含复诊
-								//查询该复诊项目对应的初诊项目的servicecost_id
-								  String fuzhenpname = servicecostpd.getString("PNAME");
-								 // System.out.println("复诊costid："+rs.getString(2)+"   复诊pname："+rs.getString(1));
-								  String chuzhenpname = fuzhenpname.replace("复诊", "初诊");
-								  //查询pname，servicecostid
-								  ////////////////////////
-								  String staff_id = servicecostpd.getString("STAFF_ID");
-								  pd3.put("STAFF_ID", staff_id);
-								  pd3.put("PNAME", chuzhenpname);
-								  List<PageData> chuzhenlistpd = recommendService.selectservicecostidBypname(pd3);//根据pname和staffif查询
-					              for(PageData chuzhenpd : chuzhenlistpd){
-					            	chuzhenpd.put("UID", re2.getUid());
-					            	/////
-					            	List<PageData> servicepdlist= recommendService.selectchuzhen(chuzhenpd);//根据uid和servicecostid
-					            	if(!servicepdlist.isEmpty()){
-					            		//如果购买了初诊项目
-					            		flag = 1;
-					            	}
-					            	}
-					              if(flag == 0){
-					              ListIterator.remove();
-					              }
-					              }
-									 
-						 }
-					
-			 }
-	    }  
-		
-	//把结果写入数据库
-			 for(RecommendEntity re : list2){//list2
+				//把结果写入数据库
+			 for(RecommendEntity re : relist){//list2
 					
 				 List<Integer> pidlist = re.getPids();//推荐列表
 				 //用，隔开拼字符串
@@ -200,6 +120,115 @@ public class CollaborativeFilteringOperation {
 				 recomendpd.put("SERVICECOST_IDS", pidstring);
 				 recommendService.insertCF(recomendpd);
 	}
-	
+			 
+			
+			 //查询每个人的个性化推荐
+			 PageData userpd = new PageData();
+			 userpd.put("group2", i);
+			 List<PageData> userlist = recommendService.selectAllMember(userpd);//查询所有协同过滤不是空的用户
+			 for(PageData upd : userlist){//对于每一个人
+				 
+				 upd.put("UID", upd.get("uid"));
+				
+				 PageData recommendpd = recommendService.selectRecommendByUid2(upd);//如果为空返回0
+				 
+				 String servicecost_ids = recommendpd.getString("servicecost_ids");
+				 
+				
+					  String servicecost_id[]=servicecost_ids.split(",");
+				
+				 List<Integer> pids = new ArrayList<Integer>();//该用户推荐的项目集合
+				
+				 if(servicecost_id.length>0){
+					for(int ii=0;ii<servicecost_id.length;ii++){
+						if(!servicecost_id[ii].endsWith("0")){
+						pids.add(Integer.parseInt(servicecost_id[ii]));//string 转int
+						}
+					}
+					}
+				
+					//1、查询用户购买了哪些医生的项目
+					 List<PageData> staffpdlist = recommendService.selectStaffByUid(upd);//在预约表中进行查询
+					 //2、查询用户在该医生下面买了什么项目
+					 for(PageData staffpd:staffpdlist){
+						 //查询该用户在该医生下购买了什么项目
+						 upd.put("STAFF_ID", staffpd.get("STAFF_ID"));
+						 List<PageData> servicecostpdlist = recommendService.selectServicecostByUidAndStaffid(upd);
+						 for(PageData servicecostpd:servicecostpdlist){
+							
+							  String fuzhenpname = servicecostpd.getString("PNAME");
+							  String chuzhenpname = fuzhenpname.replace("复诊", "初诊");
+							  //查询初诊对应的servicecostid
+							  upd.put("PNAME", chuzhenpname);
+							  List<PageData> servicecostidpdlist = recommendService.selectServicecostidByPname(upd);
+							  for(PageData  servicecostidpd: servicecostidpdlist){
+									 Iterator<Integer> ListIterator = pids.iterator();  
+									 while(ListIterator.hasNext()){  
+									     Integer e = ListIterator.next();//推荐的结果 
+									     if(e.equals((Integer)(servicecostidpd.get("servicecost_id")))){  
+									     ListIterator.remove();  //删除初诊推荐
+									    
+									     }  
+									 }
+							  }
+							  
+						 }
+						
+						//2、未购买初诊则删除复诊推荐
+						 Iterator<Integer> ListIterator = pids.iterator(); 
+						 int flag = 0;//未购买
+						 while(ListIterator.hasNext()){ 
+							//根据pid查询pname
+								 PageData pd3 = new PageData();
+							 pd3.put("SERVICECOST_ID", ListIterator.next());
+							List<PageData> servicecostpdlist2 = recommendService.selectPnameByServicecostid(pd3);
+							for(PageData servicecostpd:servicecostpdlist2){
+								 String pname = servicecostpd.getString("PNAME");
+								 if(pname.indexOf("复诊")!=-1){//如果这个pname包含复诊
+									//查询该复诊项目对应的初诊项目的servicecost_id
+									  String fuzhenpname = servicecostpd.getString("PNAME");
+									 
+									  String chuzhenpname = fuzhenpname.replace("复诊", "初诊");
+									  //查询pname，servicecostid
+									
+									  String staff_id = servicecostpd.getString("STAFF_ID");
+									  pd3.put("STAFF_ID", staff_id);
+									  pd3.put("PNAME", chuzhenpname);
+									  List<PageData> chuzhenlistpd = recommendService.selectservicecostidBypname(pd3);//根据pname和staffif查询
+									  for(PageData chuzhenpd:chuzhenlistpd){
+										  chuzhenpd.put("UID", upd.get("uid"));
+							            	
+							            	List<PageData> servicepdlist= recommendService.selectchuzhen(chuzhenpd);//根据uid和servicecostid
+							            	if(!servicepdlist.isEmpty()){
+							            		//如果购买了初诊项目
+							            		flag = 1;
+							            	}
+							            	}
+							              if(flag == 0){
+							              ListIterator.remove();
+							              }
+							              }
+										  
+									  }
+										  }
+									  }
+					 //更新数据库
+					 String pidstring="";
+					 for(Integer pid:pids){
+						pidstring = pidstring+pid+",";
+					 }
+					 if(!pidstring.equals("")){
+					 pidstring = pidstring.substring(0,pidstring.length()-1);//去掉最后一个，
+					 }
+					 else{pidstring = "";}
+					
+					 PageData recommendpd2 = new PageData();
+					 recommendpd2.put("UID", upd.get("UID"));
+					 recommendpd2.put("SERVICECOST_IDS", pidstring);
+					 recommendService.updateCF(recommendpd2);
+						 }
+					
+			
+		
 }
 }

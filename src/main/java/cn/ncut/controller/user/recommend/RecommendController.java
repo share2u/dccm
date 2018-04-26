@@ -111,11 +111,31 @@ import cn.ncut.util.PageData;
 			}
 			
 			page.setPd(pd);
-			List<PageData> userList = memberService.listCompleteMemberlistPage(page); // 列出Member列表
+			//List<PageData> userList = memberService.listCompleteMemberlistPage(page);
+			// 列出Member列表
+			
+			List<PageData> userList = memberService.listMemberByUidlistPage(page); 
 			mv.setViewName("user/recommend/recommend_analysis");
 			mv.addObject("userList", userList);
 			mv.addObject("pd", pd);
 			mv.addObject("QX", Jurisdiction.getHC()); // 按钮权限
+			return mv;
+		}
+		/**
+		 * 算法对比页面
+		 * 
+		 * @param page
+		 * @throws Exception
+		 */
+		@RequestMapping(value = "/showContrast")
+		public ModelAndView showContrast(Page page) throws Exception {
+			logBefore(logger, Jurisdiction.getUsername() + "展示用户");
+			
+			ModelAndView mv = this.getModelAndView();
+			
+			
+			mv.setViewName("user/recommend/contrast");
+			
 			return mv;
 		}
 		/**
@@ -133,21 +153,24 @@ import cn.ncut.util.PageData;
 	          pd.put("uid", pd.get("UID"));
 	          int uid = Integer.valueOf(pd.getString("UID"));
 				//查询其是否有协同过滤的推荐项目
-	           servicecost_ids = servicecostService.selectIscollByUid(uid);
-				if(servicecost_ids.equals("0")){
+	           iscoll = servicecostService.selectIscollByUid(uid);
+				if(iscoll==0){
 					//查询他的协同过滤推荐
 					servicecost_ids = servicecostService.selecttop10(pd);
+				}else if(iscoll==1){
+					servicecost_ids = servicecostService.selectservicecost_ids(pd);
 				}
 				List<PageData> array[] = new ArrayList[2]; 
 				List<PageData> servicepdlist = new ArrayList<PageData>();
 				String [] stringArr= servicecost_ids.split(","); //推荐的数组
 				for(int i =0;i<stringArr.length;i++){
 					PageData servicecostpd = new PageData();
+					if(!stringArr[i].endsWith("0")){
 					servicecostpd.put("SERVICECOST_ID", stringArr[i]);
 					
 					PageData projectpd = servicecostService.selectPnameAndStaffName(servicecostpd);
 					servicepdlist.add(projectpd);
-					
+					}
 					
 				}
 				array[0] = servicepdlist;

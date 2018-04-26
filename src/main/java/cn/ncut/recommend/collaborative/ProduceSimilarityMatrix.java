@@ -28,7 +28,7 @@ public class ProduceSimilarityMatrix {
 				c=0;
 			}
 			avgc = (double)sum/servicecostcount;
-			System.out.println("商品的平均评价次数："+avgc);
+			//System.out.println("商品的平均评价次数："+avgc);
 		double[][] similarityMatrix = new double[usercount][usercount];//servicecostcount
 		ComputeSimilarity cs = new ComputeSimilarity();
 		for (int i = 0; i < uid.length; i++) {//对于每一个用户，uid从小到大排列
@@ -39,9 +39,9 @@ public class ProduceSimilarityMatrix {
 				}
 				else {
 					
-					similarityMatrix[i][j] = new ComputeSimilarity().computeImproveSimilarity(preference[i], preference[j], preference,count,avgc);
+					similarityMatrix[i][j] = cs.computeImproveSimilarity(preference[i], preference[j], preference,count,avgc);
 					//similarityMatrix[i][j] = cs.computeSimilarity(preference[i], preference[j]);
-					System.out.println("用户"+i+"用户"+j+"的相似度为："+similarityMatrix[i][j]);
+					//System.out.println("用户"+i+"用户"+j+"的相似度为："+similarityMatrix[i][j]);
 				}			
 			}
 		}

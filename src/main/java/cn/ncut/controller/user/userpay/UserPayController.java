@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -160,29 +161,36 @@ public class UserPayController extends BaseController {
 	}
 	// 根据uid异步出属于他的推荐项目
 			@RequestMapping(value = "/refreshRecommend")
-			public void refreshRecommend(HttpServletResponse response)
+			public void refreshRecommend(HttpServletResponse response, HttpSession session)
 					throws Exception {
 	           String servicecost_ids= "";
+	           int iscoll = 0;
 				PageData pd = new PageData();
 				pd = this.getPageData();
 	        
 	          int uid = Integer.valueOf(pd.getString("UID"));
 				//查询是否进行协同过滤推荐
-	          servicecost_ids = servicecostService.selectIscollByUid(uid);
-				if(servicecost_ids.equals("0")){
-					
-					 servicecost_ids = servicecostService.selecttop10(pd);
+	          iscoll = servicecostService.selectIscollByUid(uid);
+	          if(iscoll==0){
+					//查询他的协同过滤推荐
+					servicecost_ids = servicecostService.selecttop10(pd);
+				}else if(iscoll==1){
+					servicecost_ids = servicecostService.selectservicecost_ids(pd);
 				}
 				//把字符串变成数组，然后遍历
 				//String finalstring = "";
 				List<PageData> servicepdlist = new ArrayList<PageData>();
 				String [] stringArr= servicecost_ids.split(","); 
 				for(int i =0;i<stringArr.length;i++){
+					if(!stringArr[i].endsWith("0")){
 					PageData servicecostpd = new PageData();
 					servicecostpd.put("SERVICECOST_ID", stringArr[i]);
-					//查询servicecost_id对应的医生和项目名
+					//查询servicecost_id对应的医生和项目名和门店信息
+					Staff sessionstaff = (Staff) session.getAttribute(Const.SESSION_USER);
+					servicecostpd.put("store_id", sessionstaff.getSTORE_ID());
 					PageData projectpd = servicecostService.selectPnameAndStaffName(servicecostpd);
 					servicepdlist.add(projectpd);
+					}
 					//finalstring = finalstring +projectpd.getString("STAFF_NAME")+" :"+projectpd.getString("PNAME")+"   ;";
 					
 				}

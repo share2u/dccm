@@ -125,8 +125,8 @@ public class PearsonCorrelation  {
 			//j++;
 		}
 		
-		System.out.println("n:"+n);
-		System.out.println("m:"+m);
+		//System.out.println("n:"+n);
+		//System.out.println("m:"+m);
 		int num = list1.size();//个数
 		double sum_prefOne = 0;//每个的和
 		double sum_prefTwo = 0;//每个的和

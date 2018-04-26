@@ -8,6 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import cn.ncut.service.recommend.RecommendManager;
 import cn.ncut.service.user.member.MemberManager;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +35,8 @@ public class ClassifyUsers {
 	public void Classify() throws Exception{
 		
 		//给用户进行分类，并计算每个组最常购买的十件商品
-		
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+		System.out.println("时间："+sd.format(new Date())+"： ---根据用户的年龄、性别、地域对用户进行分组---");
 		List<PageData> userlist = memberService.selectAll(new PageData());//所有用户
 		for(PageData userpd : userlist){
 			PageData pd = new PageData();
@@ -241,6 +245,7 @@ public class ClassifyUsers {
 				 }
 			 }
 		}
+		System.out.println("时间："+sd.format(new Date())+"： ---查询每一组用户最常购买的项目，并插入数据库---");
 		//查询每一个group1的用户经常购买的项目
 		for(int i = 1;i<=17;i++){
 			String pidstring="";
@@ -263,6 +268,7 @@ public class ClassifyUsers {
 			
 			
 		}
+		System.out.println("时间："+sd.format(new Date())+"： ---执行完毕---");
 		
 	}
 
