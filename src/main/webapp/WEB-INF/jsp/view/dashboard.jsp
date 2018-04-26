@@ -55,7 +55,7 @@
         myChart.setOption(arrayOption[i]);
     }
     function newView(){
-        window.open('http://www.liangliangempire.cn/view/chart/dashborad/create/'+${id});
+        window.open('http://www.liangliangempire.cn:8080/view/chart/dashborad/create/'+${id});
       /*  top.jzts();
         var diag = new top.Dialog();
         diag.Drag=true;
