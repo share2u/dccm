@@ -269,7 +269,7 @@
 				 or
 				 a.phone LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')		 
 		</if>
-		order by a.attention_time desc
+		
 	</select>
 	
 	<!-- 查询统计  用户管理——查询用户信息  -->
@@ -428,6 +428,29 @@
 		</if>
 	</select>
 	
+		<!--查询用户的uid查询用户的基本信息-->
+	<select id="listMemberByUidlistPage" parameterType="page" resultType="pd">
+		select a.openid,a.name,a.username,a.userimg,	
+		a.sex,	
+		a.age,	
+		a.phone,	
+		a.idcode,	
+		a.city,	
+		a.first_date,	
+		a.usercategory_id,
+		a.proportion,		
+		a.uid,b.SUM_MONEY,c.remain_money,c.remain_points,d.CATEGORY_NAME,d.PROPORTION as category_porportion
+		from tab_user a LEFT JOIN tb_prestore b on a.uid = b.UID 
+		LEFT JOIN tb_custom_stored c on a.uid =c.uid 
+		LEFT JOIN tb_usercategory d on a.usercategory_id=d.USERCATEGORY_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(   a.uid =#{pd.keywords}
+				    
+				)
+		</if>
+	</select>
 	<!--查询客户的基本信息，所属类别信息，用户的积分，用户的储值卡信息-->
 	<select id="userPayQueryMemberlistPage" parameterType="page" resultType="pd">
 		select 

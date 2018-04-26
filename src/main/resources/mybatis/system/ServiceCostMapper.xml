@@ -276,6 +276,13 @@
 		and b.store_id = d.store_id
 		and a.PID = c.PROJECT_ID
 		and a.SERVICECOST_ID = #{SERVICECOST_ID}
+			<if test='store_id!="1" and store_id!=null and store_id!=""'>
+		and
+		b.store_id = #{store_id}
+		</if>
+		
 		
 	</select>
+		
+	
 </mapper>
