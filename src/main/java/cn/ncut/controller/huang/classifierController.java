@@ -59,9 +59,12 @@ public ModelAndView list(Page page) throws Exception {
     pd.put("date", sdate);
 	
 	page.setPd(pd);
-	List<PageData> varList = ClusterService.listLiushi(page); // 列出Member列表
+	List<PageData> varList = ClusterService.listLiushi(page); 
+	List<PageData> liushigroups = ClusterService.findLiushi(page);
+	mv.addObject("liushigroups", new ObjectMapper().writeValueAsString(liushigroups));
 	mv.setViewName("datamining/liushi_list");
 	mv.addObject("varList", varList);
+	mv.addObject("liushigroups", new ObjectMapper().writeValueAsString(liushigroups));
 	mv.addObject("pd", pd);
 	mv.addObject("QX", Jurisdiction.getHC()); // 按钮权限
 	return mv;
@@ -87,10 +90,10 @@ public ModelAndView listclassifier(Page page) throws Exception {
 	}
 	page.setPd(pd);
 	List<PageData> classifier = ClusterService.listClassifier(page); 
-	List<PageData> liushigroups = ClusterService.findLiushi(page);
+	//List<PageData> liushigroups = ClusterService.findLiushi(page);
 	mv.setViewName("datamining/classifiersatis");
 	mv.addObject("classifier", new ObjectMapper().writeValueAsString(classifier));
-	mv.addObject("liushigroups", new ObjectMapper().writeValueAsString(liushigroups));
+	//mv.addObject("liushigroups", new ObjectMapper().writeValueAsString(liushigroups));
 	return mv;
  }
 
